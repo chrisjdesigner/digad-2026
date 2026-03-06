@@ -1,16 +1,28 @@
 # ================================
-# Variant: v2
+# Base Ad Configuration
 # ================================
-# Longer headline version
-# Only include values that differ from the base ad.config.yaml
+# Edit the values below for this ad size.
+# This file uses YAML format - comments start with #
 
 # ------ Copy / Headlines ------
-headline: This is Version 2 with a longer headline
-cta: Watch This
+headline: Version 2 Headline
+cta: Learn More
 
-# ------ Typography ------
-general-headline-font-size: 20px
+# ------ CSS Variables ------
+# These map directly to CSS custom properties
+# The key becomes --key-name in CSS
+css-variables:
+  # Images (use relative paths from HTML file)
+  photo-url: url(./src/img/photo-v1.jpg)
+  
+  # Typography
+  general-headline-font-size: 10px
+  
+  # Colors
+  white: "#ffffff"
+  border-color: grey
 
-# ------ Images ------
-images:
-  background: src/img/photo-v2.jpg
+# ------ Sprites ------
+# Image sprite configuration (for combining multiple images)
+sprites:
+  - name: sprite

@@ -8,13 +8,19 @@
 headline: We Make Belief
 cta: Learn More
 
-# ------ Typography ------
-general-headline-font-size: 37px
-
-# ------ Images ------
-# Paths are relative to this ad folder
-images:
-  background: src/img/photo-v1.jpg
+# ------ CSS Variables ------
+# These map directly to CSS custom properties
+# The key becomes --key-name in CSS
+css-variables:
+  # Images (use relative paths from HTML file)
+  photo-url: url(./src/img/photo-v1.jpg)
+  
+  # Typography
+  general-headline-font-size: 37px
+  
+  # Colors
+  white: "#ffffff"
+  border-color: grey
 
 # ------ Sprites ------
 # Image sprite configuration (for combining multiple images)

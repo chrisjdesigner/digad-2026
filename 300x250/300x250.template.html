@@ -14,28 +14,17 @@
     var clickTag = "";
   </script>
 
+  <!-- CSS Variables (populated from YAML config) -->
   <style>
     :root {
-      /* ================================
-         Ad Dimensions (auto-generated)
-         ================================ */
+      /* Width and height auto-generated */
       --ad-width: {{width}}px;
       --ad-height: {{height}}px;
 
-      /* ================================
-         Custom Variables
-         Edit these for your ad design
-         ================================ */
-
-      /* Colors */
-      --white: #ffffff;
-      --border-color: grey;
-
-      /* Images */
-      --photo-url: url({{images.background}});
-
-      /* Font Sizing */
-      --general-headline-font-size: {{general-headline-font-size}};
+      /* Automatically generated CSS variables from YAML config */
+      {{#each css-variables}}
+      --{{@key}}: {{this}};
+      {{/each}}
     }
   </style>
 </head>
