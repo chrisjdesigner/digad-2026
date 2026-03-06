@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ad.size" content="width={{width}},height={{height}}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{job}} - {{width}}x{{height}}</title>
+
+  <!-- External CSS (Google Fonts, etc.) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" />
+
+  <!-- Click Tag (populated by ad server) -->
+  <script type="text/javascript">
+    var clickTag = "";
+  </script>
+
+  <style>
+    :root {
+      /* ================================
+         Ad Dimensions (auto-generated)
+         ================================ */
+      --ad-width: {{width}}px;
+      --ad-height: {{height}}px;
+
+      /* ================================
+         Custom Variables
+         Edit these for your ad design
+         ================================ */
+
+      /* Colors */
+      --white: #ffffff;
+      --border-color: grey;
+
+      /* Images */
+      --photo-url: url({{images.background}});
+
+      /* Font Sizing */
+      --general-headline-font-size: {{general-headline-font-size}};
+    }
+  </style>
+</head>
+
+<body>
+  <div id="banner" class="container">
+    <a href="javascript:window.open(window.clickTag)">
+
+      <!-- Begin Your Ad Markup -->
+      <div class="background">
+        <div class="photo"></div>
+      </div>
+      <div class="main-content">
+        <div class="headline">{{headline}}</div>
+      </div>
+      <div class="footer">
+        <div class="logo"></div>
+        <div class="button">
+          <div class="cta-text">{{cta}}</div>
+        </div>
+      </div>
+      <!-- End Ad Markup -->
+
+    </a>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="./src/main.ts"></script>
+  {{#if devMode}}
+    <script type="module" src="../lib/dev-mode/index.ts"></script>
+  {{/if}}
+</body>
+</html>

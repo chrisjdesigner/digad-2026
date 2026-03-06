@@ -1,0 +1,16 @@
+# ================================
+# Variant: v2
+# ================================
+# Longer headline version
+# Only include values that differ from the base ad.config.yaml
+
+# ------ Copy / Headlines ------
+headline: This is Version 2 with a longer headline
+cta: Watch This
+
+# ------ Typography ------
+general-headline-font-size: 20px
+
+# ------ Images ------
+images:
+  background: src/img/photo-v2.jpg

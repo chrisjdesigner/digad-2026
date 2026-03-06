@@ -1,0 +1,22 @@
+# ================================
+# Base Ad Configuration
+# ================================
+# Edit the values below for this ad size.
+# This file uses YAML format - comments start with #
+
+# ------ Copy / Headlines ------
+headline: We Make Belief
+cta: Learn More
+
+# ------ Typography ------
+general-headline-font-size: 37px
+
+# ------ Images ------
+# Paths are relative to this ad folder
+images:
+  background: src/img/photo-v1.jpg
+
+# ------ Sprites ------
+# Image sprite configuration (for combining multiple images)
+sprites:
+  - name: sprite

@@ -1,0 +1,35 @@
+{
+  "name": "sr-digad",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "preview": "concurrently pnpm:preview:*",
+    "preview:300x250": "tsc && vite build",
+    "package": "node lib/scripts/package",
+    "postpreview": "node --no-warnings=ExperimentalWarning lib/scripts/postpreview",
+    "prettier:fix": "prettier --write \"{,!(build|node_modules|preview|templates)/**}/*.{js,ts,css,scss,html}\""
+  },
+  "devDependencies": {
+    "chalk": "^5.3.0",
+    "concurrently": "^8.2.2",
+    "fast-glob": "^3.3.2",
+    "prettier": "^3.2.2",
+    "sass": "^1.69.7",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vite-plugin-handlebars": "^2.0.0",
+    "vite-plugin-html": "^3.2.1",
+    "vite-plugin-imagemin": "^0.6.1",
+    "vite-plugin-restart": "^0.4.0",
+    "vite-plugin-singlefile": "^1.0.0",
+    "vite-plugin-spritesmith": "github:fishpondstudio/vite-plugin-spritesmith#a933c5fbda1b7288100781618078cc322071f1d4",
+    "vite-tsconfig-paths": "^4.2.3",
+    "zip-a-folder": "2.0.0"
+  },
+  "dependencies": {
+    "gsap": "file:lib/gsap/gsap-bonus-3.12.4.tgz",
+    "js-yaml": "^4.1.1"
+  }
+}
