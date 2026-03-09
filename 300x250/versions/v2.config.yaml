@@ -1,28 +1,10 @@
-# ================================
-# Base Ad Configuration
-# ================================
-# Edit the values below for this ad size.
-# This file uses YAML format - comments start with #
-
-# ------ Copy / Headlines ------
 headline: Version 2 Headline
 cta: Learn More
-
-# ------ CSS Variables ------
-# These map directly to CSS custom properties
-# The key becomes --key-name in CSS
 css-variables:
-  # Images (use relative paths from HTML file)
   photo-url: url(./src/img/photo-v2.jpg)
-  
-  # Typography
   general-headline-font-size: 10px
-  
-  # Colors
   white: "#ffffff"
   border-color: grey
-
-# ------ Sprites ------
-# Image sprite configuration (for combining multiple images)
+  red: "#b32929"
 sprites:
   - name: sprite

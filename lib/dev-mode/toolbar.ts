@@ -10,7 +10,18 @@ import html2canvas from 'html2canvas-pro';
 import cameraIcon from './icons/camera.svg?raw';
 import checkIcon from './icons/check.svg?raw';
 import chevronDownIcon from './icons/chevron-down.svg?raw';
+import chevronRightIcon from './icons/chevron-right.svg?raw';
 import editIcon from './icons/edit.svg?raw';
+import settingsIcon from './icons/settings.svg?raw';
+import closeIcon from './icons/close.svg?raw';
+import plusIcon from './icons/plus.svg?raw';
+import trashIcon from './icons/trash.svg?raw';
+import copyIcon from './icons/copy.svg?raw';
+import codeBracketIcon from './icons/code-bracket.svg?raw';
+import swatchIcon from './icons/swatch.svg?raw';
+import photoIcon from './icons/photo.svg?raw';
+import typographyIcon from './icons/typography.svg?raw';
+import adjustmentsIcon from './icons/adjustments.svg?raw';
 
 interface AdConfig {
   name: string;
@@ -256,9 +267,520 @@ function createToolbar() {
     <div class="toolbar-group">
       <button id="dev-screenshot-btn" title="Save screenshot to statics folder">${cameraIcon} Take a Screenshot</button>
     </div>
+    
+    <div class="toolbar-spacer"></div>
+    
+    <div class="toolbar-group">
+      <button id="dev-settings-btn" title="Edit ad config variables">${settingsIcon}</button>
+    </div>
   `;
 
   document.body.prepend(toolbar);
+
+  // Create settings tray
+  const tray = document.createElement('div');
+  tray.id = 'dev-settings-tray';
+  tray.innerHTML = `
+    <style>
+      #dev-settings-tray {
+        position: fixed;
+        top: 0;
+        right: -400px;
+        width: 400px;
+        height: 100vh;
+        background: #1a1a1a;
+        box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+        z-index: 1000000;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 13px;
+        transition: right 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      #dev-settings-tray.open {
+        right: 0;
+      }
+      
+      #dev-settings-tray .tray-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid #333;
+        background: #222;
+      }
+      
+      #dev-settings-tray .tray-title {
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      #dev-settings-tray .tray-title svg {
+        width: 18px;
+        height: 18px;
+        stroke: #888;
+      }
+      
+      #dev-settings-tray .tray-close {
+        background: transparent;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+      }
+      
+      #dev-settings-tray .tray-close:hover {
+        opacity: 1;
+      }
+      
+      #dev-settings-tray .tray-close svg {
+        width: 20px;
+        height: 20px;
+        stroke: #888;
+      }
+      
+      #dev-settings-tray .tray-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0;
+      }
+      
+      #dev-settings-tray .var-section {
+        border-bottom: 1px solid #333;
+      }
+      
+      #dev-settings-tray .var-section.collapsed .var-section-body {
+        display: none;
+      }
+      
+      #dev-settings-tray .var-section.disabled {
+        opacity: 0.5;
+      }
+      
+      #dev-settings-tray .var-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        background: #252525;
+        cursor: pointer;
+        user-select: none;
+      }
+      
+      #dev-settings-tray .var-section-header:hover {
+        background: #2a2a2a;
+      }
+      
+      #dev-settings-tray .var-section-header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      #dev-settings-tray .var-section-icon {
+        width: 16px;
+        height: 16px;
+        stroke: #666;
+        flex-shrink: 0;
+      }
+      
+      #dev-settings-tray .var-section-chevron {
+        width: 12px;
+        height: 12px;
+        stroke: #555;
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      
+      #dev-settings-tray .var-section.collapsed .var-section-chevron {
+        transform: rotate(-90deg);
+      }
+      
+      #dev-settings-tray .var-section-title {
+        color: #888;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      #dev-settings-tray .var-section-count {
+        color: #555;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      
+      #dev-settings-tray .var-section-body {
+        /* container for var-list and add button */
+      }
+      
+      #dev-settings-tray .var-list {
+        padding: 12px 20px 8px;
+      }
+      
+      #dev-settings-tray .var-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      
+      #dev-settings-tray .var-item:last-child {
+        margin-bottom: 0;
+      }
+      
+      #dev-settings-tray .var-name {
+        color: #888;
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 100px;
+        flex-shrink: 0;
+      }
+      
+      #dev-settings-tray .var-input {
+        flex: 1;
+        background: #333;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #fff;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-family: inherit;
+        transition: border-color 0.2s;
+      }
+      
+      #dev-settings-tray .var-input:hover {
+        border-color: #555;
+      }
+      
+      #dev-settings-tray .var-input:focus {
+        outline: none;
+        border-color: #0078d4;
+      }
+      
+      #dev-settings-tray .var-color-input {
+        width: 32px;
+        height: 28px;
+        padding: 2px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        background: #333;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      
+      #dev-settings-tray .var-color-input::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+      
+      #dev-settings-tray .var-color-input::-webkit-color-swatch {
+        border: none;
+        border-radius: 2px;
+      }
+      
+      #dev-settings-tray .var-action-btn {
+        background: transparent;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.3;
+        transition: opacity 0.2s;
+      }
+      
+      #dev-settings-tray .var-action-btn:hover {
+        opacity: 1;
+      }
+      
+      #dev-settings-tray .var-action-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: #888;
+      }
+      
+      #dev-settings-tray .var-action-btn.var-delete:hover svg {
+        stroke: #ff5555;
+      }
+      
+      #dev-settings-tray .var-action-btn.var-copy:hover svg {
+        stroke: #0078d4;
+      }
+      
+      #dev-settings-tray .add-var-btn-bottom {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        border: 1px dashed #444;
+        border-radius: 4px;
+        color: #666;
+        padding: 8px 12px;
+        margin: 8px 20px 16px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: calc(100% - 40px);
+      }
+      
+      #dev-settings-tray .add-var-btn-bottom:hover {
+        border-color: #666;
+        color: #888;
+        background: #2a2a2a;
+      }
+      
+      #dev-settings-tray .add-var-btn-bottom svg {
+        width: 12px;
+        height: 12px;
+        stroke: currentColor;
+      }
+      
+      #dev-settings-tray .add-var-form {
+        display: none;
+        padding: 12px 20px;
+        background: #222;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      
+      #dev-settings-tray .add-var-form.active {
+        display: flex;
+      }
+      
+      #dev-settings-tray .add-var-input {
+        flex: 1;
+        min-width: 100px;
+        background: #333;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #fff;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-family: inherit;
+      }
+      
+      #dev-settings-tray .add-var-input:focus {
+        outline: none;
+        border-color: #0078d4;
+      }
+      
+      #dev-settings-tray .add-var-color {
+        width: 36px;
+        height: 30px;
+        padding: 2px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        background: #333;
+        cursor: pointer;
+      }
+      
+      #dev-settings-tray .add-var-submit {
+        background: #0078d4;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      
+      #dev-settings-tray .add-var-submit:hover {
+        background: #0086ee;
+      }
+      
+      #dev-settings-tray .add-var-cancel {
+        background: transparent;
+        border: 1px solid #555;
+        border-radius: 4px;
+        color: #888;
+        padding: 6px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      #dev-settings-tray .add-var-cancel:hover {
+        border-color: #888;
+        color: #fff;
+      }
+      
+      #dev-settings-tray .sync-notice {
+        padding: 12px 20px;
+        background: #252525;
+        color: #888;
+        font-size: 11px;
+        border-top: 1px solid #333;
+      }
+      
+      #dev-settings-tray .sync-notice strong {
+        color: #aaa;
+      }
+      
+      #dev-settings-tray .empty-message {
+        color: #555;
+        font-size: 12px;
+        font-style: italic;
+        padding: 4px 0;
+      }
+      
+      #dev-settings-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 999999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      
+      #dev-settings-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+    <div class="tray-header">
+      <span class="tray-title" id="tray-title">${settingsIcon} ${currentAd} ${currentVariant ? currentVariant.toUpperCase() : 'Base'} Variables</span>
+      <button class="tray-close" title="Close">${closeIcon}</button>
+    </div>
+    <div class="tray-content">
+      <div class="var-section" data-type="template">
+        <div class="var-section-header">
+          <div class="var-section-header-left">
+            ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
+            ${codeBracketIcon.replace('<svg', '<svg class="var-section-icon"')}
+            <span class="var-section-title">Template Variables</span>
+            <span class="var-section-count" id="template-count">(0)</span>
+          </div>
+        </div>
+        <div class="var-section-body">
+          <div class="var-list" id="template-vars-list">
+            <div class="empty-message">No template variables defined</div>
+          </div>
+          <button class="add-var-btn-bottom" data-section="template">${plusIcon} Add Template Variable</button>
+          <div class="add-var-form">
+            <input type="text" class="add-var-input var-name-input" placeholder="Variable name" />
+            <input type="text" class="add-var-input var-value-input" placeholder="Default value" />
+            <button class="add-var-submit">Add to All Versions</button>
+            <button class="add-var-cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="var-section" data-type="css-colors">
+        <div class="var-section-header">
+          <div class="var-section-header-left">
+            ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
+            ${swatchIcon.replace('<svg', '<svg class="var-section-icon"')}
+            <span class="var-section-title">Colors</span>
+            <span class="var-section-count" id="colors-count">(0)</span>
+          </div>
+        </div>
+        <div class="var-section-body">
+          <div class="var-list" id="css-colors-list">
+            <div class="empty-message">No color variables defined</div>
+          </div>
+          <button class="add-var-btn-bottom" data-section="css-colors">${plusIcon} Add Color Variable</button>
+          <div class="add-var-form" data-use-color-picker="true">
+            <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., bg-color)" />
+            <input type="color" class="add-var-color var-value-input" value="#ffffff" />
+            <button class="add-var-submit">Add to All Versions</button>
+            <button class="add-var-cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="var-section" data-type="css-images">
+        <div class="var-section-header">
+          <div class="var-section-header-left">
+            ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
+            ${photoIcon.replace('<svg', '<svg class="var-section-icon"')}
+            <span class="var-section-title">Images</span>
+            <span class="var-section-count" id="images-count">(0)</span>
+          </div>
+        </div>
+        <div class="var-section-body">
+          <div class="var-list" id="css-images-list">
+            <div class="empty-message">No image variables defined</div>
+          </div>
+          <button class="add-var-btn-bottom" data-section="css-images">${plusIcon} Add Image Variable</button>
+          <div class="add-var-form">
+            <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., hero-image)" />
+            <input type="text" class="add-var-input var-value-input" placeholder="url(./img/image.jpg)" />
+            <button class="add-var-submit">Add to All Versions</button>
+            <button class="add-var-cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="var-section" data-type="css-typography">
+        <div class="var-section-header">
+          <div class="var-section-header-left">
+            ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
+            ${typographyIcon.replace('<svg', '<svg class="var-section-icon"')}
+            <span class="var-section-title">Typography</span>
+            <span class="var-section-count" id="typography-count">(0)</span>
+          </div>
+        </div>
+        <div class="var-section-body">
+          <div class="var-list" id="css-typography-list">
+            <div class="empty-message">No typography variables defined</div>
+          </div>
+          <button class="add-var-btn-bottom" data-section="css-typography">${plusIcon} Add Typography Variable</button>
+          <div class="add-var-form">
+            <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., headline-size)" />
+            <input type="text" class="add-var-input var-value-input" placeholder="Default value (e.g., 24px)" />
+            <button class="add-var-submit">Add to All Versions</button>
+            <button class="add-var-cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="var-section" data-type="css-other">
+        <div class="var-section-header">
+          <div class="var-section-header-left">
+            ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
+            ${adjustmentsIcon.replace('<svg', '<svg class="var-section-icon"')}
+            <span class="var-section-title">Other</span>
+            <span class="var-section-count" id="other-count">(0)</span>
+          </div>
+        </div>
+        <div class="var-section-body">
+          <div class="var-list" id="css-other-list">
+            <div class="empty-message">No other CSS variables defined</div>
+          </div>
+          <button class="add-var-btn-bottom" data-section="css-other">${plusIcon} Add CSS Variable</button>
+          <div class="add-var-form">
+            <input type="text" class="add-var-input var-name-input" placeholder="Variable name" />
+            <input type="text" class="add-var-input var-value-input" placeholder="Default value" />
+            <button class="add-var-submit">Add to All Versions</button>
+            <button class="add-var-cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sync-notice">
+      <strong>Note:</strong> Adding or removing variables syncs across all versions in this ad size. Value changes only affect the current version.
+    </div>
+  `;
+
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'dev-settings-overlay';
+
+  document.body.appendChild(tray);
+  document.body.appendChild(overlay);
 
   // Get elements
   const sizeSelect = document.getElementById('dev-size-select') as HTMLSelectElement;
@@ -451,6 +973,531 @@ function createToolbar() {
         screenshotBtn.innerHTML = defaultBtnContent;
         screenshotBtn.disabled = false;
       }, 2000);
+    }
+  });
+
+  // Settings tray logic
+  const settingsBtn = document.getElementById('dev-settings-btn') as HTMLButtonElement;
+  const settingsTray = document.getElementById('dev-settings-tray') as HTMLDivElement;
+  const settingsOverlay = document.getElementById('dev-settings-overlay') as HTMLDivElement;
+  const trayClose = settingsTray.querySelector('.tray-close') as HTMLButtonElement;
+  const templateVarsList = document.getElementById('template-vars-list') as HTMLDivElement;
+  const cssColorsList = document.getElementById('css-colors-list') as HTMLDivElement;
+  const cssImagesList = document.getElementById('css-images-list') as HTMLDivElement;
+  const cssTypographyList = document.getElementById('css-typography-list') as HTMLDivElement;
+  const cssOtherList = document.getElementById('css-other-list') as HTMLDivElement;
+
+  // Section toggle (collapse/expand)
+  settingsTray.querySelectorAll('.var-section-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const section = header.closest('.var-section') as HTMLElement;
+      section.classList.toggle('collapsed');
+    });
+  });
+
+  // Categorize CSS variables
+  function categorizeCssVar(name: string, value: string): 'colors' | 'images' | 'typography' | 'other' {
+    const nameLower = name.toLowerCase();
+    const valueLower = value.toLowerCase();
+    
+    // Images: url() values or name hints
+    if (valueLower.includes('url(') || 
+        nameLower.includes('url') || 
+        nameLower.includes('image') || 
+        nameLower.includes('img') || 
+        nameLower.includes('photo')) {
+      return 'images';
+    }
+    
+    // Typography: font/size/text related
+    if (nameLower.includes('font') || 
+        nameLower.includes('size') || 
+        nameLower.includes('line-height') ||
+        nameLower.includes('weight') || 
+        nameLower.includes('family') || 
+        nameLower.includes('text') ||
+        nameLower.includes('letter') ||
+        nameLower.includes('spacing') ||
+        valueLower.match(/^\d+(\.\d+)?(px|em|rem|pt|%)$/)) {
+      return 'typography';
+    }
+    
+    // Colors: hex colors, rgb, rgba, hsl, color keywords, or name hints
+    if (nameLower.includes('color') || 
+        nameLower.includes('bg') ||
+        nameLower.includes('background') ||
+        valueLower.match(/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i) ||
+        valueLower.match(/^(rgb|rgba|hsl|hsla)\(/) ||
+        ['white', 'black', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'gray', 'grey', 'transparent'].some(c => valueLower === c)) {
+      return 'colors';
+    }
+    
+    // Default to other
+    return 'other';
+  }
+
+  // Current config data
+  let configData: {
+    templateVariables: Record<string, string>;
+    cssVariables: Record<string, string>;
+  } = { templateVariables: {}, cssVariables: {} };
+
+  // Open/close tray
+  const openTray = () => {
+    settingsTray.classList.add('open');
+    settingsOverlay.classList.add('active');
+    loadConfig();
+  };
+
+  const closeTray = () => {
+    settingsTray.classList.remove('open');
+    settingsOverlay.classList.remove('active');
+    // Close any open add forms
+    settingsTray.querySelectorAll('.add-var-form').forEach(form => {
+      form.classList.remove('active');
+    });
+  };
+
+  settingsBtn.addEventListener('click', openTray);
+  trayClose.addEventListener('click', closeTray);
+  settingsOverlay.addEventListener('click', closeTray);
+
+  // Handle Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && settingsTray.classList.contains('open')) {
+      closeTray();
+    }
+  });
+
+  // Load config from server
+  async function loadConfig() {
+    // Don't load if viewing "all" pages
+    if (currentAd === 'all' || currentVariant === 'all') {
+      templateVarsList.innerHTML = '<div class="empty-message">Select a specific ad size and version to edit variables</div>';
+      cssColorsList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
+      cssImagesList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
+      cssTypographyList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
+      cssOtherList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
+      updateSectionCounts(0, 0, 0, 0, 0);
+      return;
+    }
+
+    try {
+      const version = currentVariant || 'base';
+      const response = await fetch(`/api/ad-config?adSize=${currentAd}&version=${version}`);
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      configData = {
+        templateVariables: data.templateVariables || {},
+        cssVariables: data.cssVariables || {},
+      };
+
+      renderVariables();
+    } catch (error) {
+      console.error('Failed to load config:', error);
+      templateVarsList.innerHTML = '<div class="empty-message">Failed to load config</div>';
+      cssColorsList.innerHTML = '<div class="empty-message">Failed to load config</div>';
+      cssImagesList.innerHTML = '<div class="empty-message">Failed to load config</div>';
+      cssTypographyList.innerHTML = '<div class="empty-message">Failed to load config</div>';
+      cssOtherList.innerHTML = '<div class="empty-message">Failed to load config</div>';
+    }
+  }
+
+  // Update section item counts
+  function updateSectionCounts(template: number, colors: number, images: number, typography: number, other: number) {
+    const templateCount = document.getElementById('template-count');
+    const colorsCount = document.getElementById('colors-count');
+    const imagesCount = document.getElementById('images-count');
+    const typographyCount = document.getElementById('typography-count');
+    const otherCount = document.getElementById('other-count');
+    
+    if (templateCount) templateCount.textContent = `(${template})`;
+    if (colorsCount) colorsCount.textContent = `(${colors})`;
+    if (imagesCount) imagesCount.textContent = `(${images})`;
+    if (typographyCount) typographyCount.textContent = `(${typography})`;
+    if (otherCount) otherCount.textContent = `(${other})`;
+    
+    // Disable empty sections visually
+    const otherSection = cssOtherList.closest('.var-section');
+    if (otherSection) {
+      if (other === 0) {
+        otherSection.classList.add('disabled');
+      } else {
+        otherSection.classList.remove('disabled');
+      }
+    }
+  }
+
+  // Helper to convert hex to closest color value for picker
+  function toHexColor(value: string): string {
+    const v = value.trim().toLowerCase();
+    // If already a hex color
+    if (v.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)) {
+      return v.length === 4 ? `#${v[1]}${v[1]}${v[2]}${v[2]}${v[3]}${v[3]}` : v;
+    }
+    // Color keywords
+    const colorMap: Record<string, string> = {
+      white: '#ffffff', black: '#000000', red: '#ff0000', blue: '#0000ff',
+      green: '#008000', yellow: '#ffff00', orange: '#ffa500', purple: '#800080',
+      gray: '#808080', grey: '#808080', transparent: '#ffffff'
+    };
+    return colorMap[v] || '#ffffff';
+  }
+
+  // Render variable lists
+  function renderVariables() {
+    // Render template variables
+    const templateVars = Object.entries(configData.templateVariables);
+    if (templateVars.length === 0) {
+      templateVarsList.innerHTML = '<div class="empty-message">No template variables defined</div>';
+    } else {
+      templateVarsList.innerHTML = templateVars.map(([name, value]) => `
+        <div class="var-item" data-name="${name}">
+          <span class="var-name">${name}</span>
+          <input type="text" class="var-input" value="${escapeHtml(String(value))}" />
+          <button class="var-action-btn var-copy" title="Copy as template variable">${copyIcon}</button>
+          <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
+        </div>
+      `).join('');
+    }
+
+    // Categorize and render CSS variables
+    const cssVars = Object.entries(configData.cssVariables);
+    const colorVars: [string, string][] = [];
+    const imageVars: [string, string][] = [];
+    const typographyVars: [string, string][] = [];
+    const otherVars: [string, string][] = [];
+
+    cssVars.forEach(([name, value]) => {
+      const category = categorizeCssVar(name, String(value));
+      if (category === 'colors') colorVars.push([name, String(value)]);
+      else if (category === 'images') imageVars.push([name, String(value)]);
+      else if (category === 'typography') typographyVars.push([name, String(value)]);
+      else otherVars.push([name, String(value)]);
+    });
+
+    // Update counts
+    updateSectionCounts(templateVars.length, colorVars.length, imageVars.length, typographyVars.length, otherVars.length);
+
+    // Render color variables with color pickers
+    if (colorVars.length === 0) {
+      cssColorsList.innerHTML = '<div class="empty-message">No color variables defined</div>';
+    } else {
+      cssColorsList.innerHTML = colorVars.map(([name, value]) => `
+        <div class="var-item" data-name="${name}">
+          <span class="var-name">${name}</span>
+          <input type="color" class="var-color-input" value="${toHexColor(value)}" data-original="${escapeHtml(value)}" />
+          <input type="text" class="var-input" value="${escapeHtml(value)}" />
+          <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
+          <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
+        </div>
+      `).join('');
+    }
+
+    // Render image variables
+    if (imageVars.length === 0) {
+      cssImagesList.innerHTML = '<div class="empty-message">No image variables defined</div>';
+    } else {
+      cssImagesList.innerHTML = imageVars.map(([name, value]) => `
+        <div class="var-item" data-name="${name}">
+          <span class="var-name">${name}</span>
+          <input type="text" class="var-input" value="${escapeHtml(value)}" />
+          <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
+          <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
+        </div>
+      `).join('');
+    }
+
+    // Render typography variables
+    if (typographyVars.length === 0) {
+      cssTypographyList.innerHTML = '<div class="empty-message">No typography variables defined</div>';
+    } else {
+      cssTypographyList.innerHTML = typographyVars.map(([name, value]) => `
+        <div class="var-item" data-name="${name}">
+          <span class="var-name">${name}</span>
+          <input type="text" class="var-input" value="${escapeHtml(value)}" />
+          <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
+          <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
+        </div>
+      `).join('');
+    }
+
+    // Render other variables
+    if (otherVars.length === 0) {
+      cssOtherList.innerHTML = '<div class="empty-message">No other CSS variables defined</div>';
+    } else {
+      cssOtherList.innerHTML = otherVars.map(([name, value]) => `
+        <div class="var-item" data-name="${name}">
+          <span class="var-name">${name}</span>
+          <input type="text" class="var-input" value="${escapeHtml(value)}" />
+          <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
+          <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
+        </div>
+      `).join('');
+    }
+
+    // Attach event listeners to inputs
+    attachVariableListeners();
+  }
+
+  // Helper to escape HTML
+  function escapeHtml(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Attach listeners to variable inputs and delete buttons
+  function attachVariableListeners() {
+    // Helper for copy feedback - show checkmark briefly
+    const showCopyFeedback = (btn: HTMLButtonElement) => {
+      const originalIcon = btn.innerHTML;
+      btn.innerHTML = checkIcon;
+      btn.style.opacity = '1';
+      btn.querySelector('svg')!.style.stroke = '#22c55e';
+      setTimeout(() => {
+        btn.innerHTML = originalIcon;
+        btn.style.opacity = '';
+      }, 1500);
+    };
+
+    // Template variable inputs
+    templateVarsList.querySelectorAll('.var-item').forEach(item => {
+      const name = item.getAttribute('data-name')!;
+      const input = item.querySelector('.var-input') as HTMLInputElement;
+      const copyBtn = item.querySelector('.var-copy') as HTMLButtonElement;
+      const deleteBtn = item.querySelector('.var-delete') as HTMLButtonElement;
+
+      input.addEventListener('blur', () => {
+        configData.templateVariables[name] = input.value;
+        saveConfig();
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          input.blur();
+        }
+      });
+
+      // Copy button handler for template variables
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const templateVar = `{{${name}}}`;
+          try {
+            await navigator.clipboard.writeText(templateVar);
+            showCopyFeedback(copyBtn);
+          } catch (err) {
+            console.error('Failed to copy:', err);
+          }
+        });
+      }
+
+      deleteBtn.addEventListener('click', () => {
+        if (confirm(`Remove "${name}" from all versions?`)) {
+          deleteVariable(name, 'template');
+        }
+      });
+    });
+
+    // CSS variable inputs (all categories including other)
+    [cssColorsList, cssImagesList, cssTypographyList, cssOtherList].forEach(list => {
+      list.querySelectorAll('.var-item').forEach(item => {
+        const name = item.getAttribute('data-name')!;
+        const input = item.querySelector('.var-input') as HTMLInputElement;
+        const colorInput = item.querySelector('.var-color-input') as HTMLInputElement;
+        const copyBtn = item.querySelector('.var-copy') as HTMLButtonElement;
+        const deleteBtn = item.querySelector('.var-delete') as HTMLButtonElement;
+
+        // Text input handlers
+        input.addEventListener('blur', () => {
+          configData.cssVariables[name] = input.value;
+          saveConfig();
+          // Update color picker if present
+          if (colorInput) {
+            colorInput.value = toHexColor(input.value);
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            input.blur();
+          }
+        });
+
+        // Color picker handler
+        if (colorInput) {
+          colorInput.addEventListener('input', () => {
+            input.value = colorInput.value;
+            configData.cssVariables[name] = colorInput.value;
+            saveConfig();
+          });
+        }
+
+        // Copy button handler
+        if (copyBtn) {
+          copyBtn.addEventListener('click', async () => {
+            const cssVar = `var(--${name})`;
+            try {
+              await navigator.clipboard.writeText(cssVar);
+              showCopyFeedback(copyBtn);
+            } catch (err) {
+              console.error('Failed to copy:', err);
+            }
+          });
+        }
+
+        // Delete button handler
+        deleteBtn.addEventListener('click', () => {
+          if (confirm(`Remove "${name}" from all versions?`)) {
+            deleteVariable(name, 'css');
+          }
+        });
+      });
+    });
+  }
+
+  // Save config to server
+  async function saveConfig() {
+    try {
+      const version = currentVariant || 'base';
+      await fetch(`/api/ad-config?adSize=${currentAd}&version=${version}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(configData),
+      });
+    } catch (error) {
+      console.error('Failed to save config:', error);
+    }
+  }
+
+  // Add variable to all versions
+  async function addVariable(name: string, defaultValue: string, type: 'template' | 'css') {
+    try {
+      await fetch('/api/ad-config/sync-variable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adSize: currentAd,
+          variableName: name,
+          variableType: type,
+          action: 'add',
+          defaultValue,
+        }),
+      });
+      
+      // Update local state
+      if (type === 'template') {
+        configData.templateVariables[name] = defaultValue;
+      } else {
+        configData.cssVariables[name] = defaultValue;
+      }
+      
+      renderVariables();
+    } catch (error) {
+      console.error('Failed to add variable:', error);
+    }
+  }
+
+  // Delete variable from all versions
+  async function deleteVariable(name: string, type: 'template' | 'css') {
+    try {
+      await fetch('/api/ad-config/sync-variable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adSize: currentAd,
+          variableName: name,
+          variableType: type,
+          action: 'remove',
+        }),
+      });
+      
+      // Update local state
+      if (type === 'template') {
+        delete configData.templateVariables[name];
+      } else {
+        delete configData.cssVariables[name];
+      }
+      
+      renderVariables();
+    } catch (error) {
+      console.error('Failed to delete variable:', error);
+    }
+  }
+
+  // Add variable form handlers
+  settingsTray.querySelectorAll('.var-section').forEach(section => {
+    const dataType = section.getAttribute('data-type')!;
+    // Map data-type to API type ('template' or 'css')
+    const apiType: 'template' | 'css' = dataType === 'template' ? 'template' : 'css';
+    const addBtn = section.querySelector('.add-var-btn-bottom') as HTMLButtonElement;
+    const form = section.querySelector('.add-var-form') as HTMLDivElement;
+    const nameInput = form.querySelector('.var-name-input') as HTMLInputElement;
+    const valueInput = form.querySelector('.var-value-input') as HTMLInputElement | HTMLElement;
+    const submitBtn = form.querySelector('.add-var-submit') as HTMLButtonElement;
+    const cancelBtn = form.querySelector('.add-var-cancel') as HTMLButtonElement;
+    const isColorPicker = form.getAttribute('data-use-color-picker') === 'true';
+
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      form.classList.add('active');
+      addBtn.style.display = 'none';
+      nameInput.focus();
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      form.classList.remove('active');
+      addBtn.style.display = '';
+      nameInput.value = '';
+      if (valueInput instanceof HTMLInputElement) {
+        valueInput.value = isColorPicker ? '#ffffff' : '';
+      }
+    });
+
+    submitBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      let value = '';
+      if (valueInput instanceof HTMLInputElement) {
+        value = valueInput.value;
+      }
+      
+      if (!name) {
+        nameInput.focus();
+        return;
+      }
+
+      addVariable(name, value, apiType);
+      form.classList.remove('active');
+      addBtn.style.display = '';
+      nameInput.value = '';
+      if (valueInput instanceof HTMLInputElement) {
+        valueInput.value = isColorPicker ? '#ffffff' : '';
+      }
+    });
+
+    // Handle Enter key in form
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (valueInput instanceof HTMLInputElement) valueInput.focus();
+      } else if (e.key === 'Escape') {
+        cancelBtn.click();
+      }
+    });
+
+    if (valueInput instanceof HTMLInputElement && valueInput.type !== 'color') {
+      valueInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitBtn.click();
+        } else if (e.key === 'Escape') {
+          cancelBtn.click();
+        }
+      });
     }
   });
 }
