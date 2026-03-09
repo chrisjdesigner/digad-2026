@@ -54,6 +54,12 @@
   <!-- Scripts -->
   <script type="module" src="./src/main.ts"></script>
   {{#if devMode}}
+    <script>
+      window.__DEV_AD_CONFIGS__ = {{{__devAdConfigs}}};
+      window.__DEV_CURRENT_AD__ = "{{__devCurrentAd}}";
+      window.__DEV_CURRENT_VARIANT__ = "{{__devCurrentVariant}}";
+    </script>
+    <script type="module" src="../lib/dev-mode/toolbar.ts"></script>
     <script type="module" src="../lib/dev-mode/index.ts"></script>
   {{/if}}
 </body>
