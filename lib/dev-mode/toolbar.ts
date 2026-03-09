@@ -10,6 +10,7 @@ import html2canvas from 'html2canvas-pro';
 import cameraIcon from './icons/camera.svg?raw';
 import checkIcon from './icons/check.svg?raw';
 import chevronDownIcon from './icons/chevron-down.svg?raw';
+import editIcon from './icons/edit.svg?raw';
 
 interface AdConfig {
   name: string;
@@ -44,7 +45,7 @@ function createToolbar() {
         display: flex;
         align-items: center;
         padding: 0 6px;
-        gap: 0;
+        gap: 10px;
         z-index: 999999;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         font-size: 13px;
@@ -85,25 +86,61 @@ function createToolbar() {
       }
       
       #dev-toolbar input[type="text"] {
-        background: #222;
-        border: 1px solid #333;
+        background: transparent;
+        border: none;
         border-radius: 4px;
-        color: #fff;
+        color: #888;
         padding: 5px 8px;
         font-size: 12px;
         font-family: inherit;
-        width: 80px;
+        display: inline-flex;
+        width: auto;
+        min-width: 50px;
         transition: all 0.2s;
+        font-weight: 700;
       }
       
+      #dev-toolbar input[type="text"]:hover,
       #dev-toolbar input[type="text"]:focus {
         outline: none;
-        border-color: #0078d4;
-        background: #2a2a2a;
+        color: #fff;
       }
       
       #dev-toolbar input[type="text"]::placeholder {
         color: #555;
+      }
+      
+      #dev-toolbar .edit-btn {
+        background: transparent;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.4;
+        transition: opacity 0.2s;
+      }
+      
+      #dev-toolbar .edit-btn:hover {
+        opacity: 1;
+      }
+      
+      #dev-toolbar .edit-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: #888;
+      }
+      
+      #dev-toolbar .edit-btn:hover svg {
+        stroke: #fff;
+      }
+      
+      #dev-toolbar .input-prefix {
+        color: #888;
+        font-size: 12px;
+        font-weight: 700;
+        margin-left: 4px;
       }
       
       #dev-toolbar .input-label {
@@ -117,7 +154,7 @@ function createToolbar() {
       #dev-toolbar .toolbar-group {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 0;
       }
       
       #dev-toolbar .toolbar-divider {
@@ -192,17 +229,15 @@ function createToolbar() {
     </style>
     
     <div class="toolbar-group">
-      <span class="input-label">Job #</span>
-      <input type="text" id="dev-job-number" placeholder="000000" />
+      <button class="edit-btn" id="dev-edit-job-number" title="Edit job number">${editIcon}</button>
+      <input type="text" id="dev-job-number" placeholder="#000000" />
     </div>
     
     <div class="toolbar-group">
-      <span class="input-label">Name</span>
+      <button class="edit-btn" id="dev-edit-job-name" title="Edit job name">${editIcon}</button>
       <input type="text" id="dev-job-name" placeholder="job-name" />
     </div>
-    
-    <div class="toolbar-divider"></div>
-    
+        
     <div class="toolbar-group">
       <select id="dev-size-select">
         ${adConfigs.map(ad => `
@@ -211,16 +246,12 @@ function createToolbar() {
       </select>
     </div>
     
-    <div class="toolbar-divider"></div>
-    
     <div class="toolbar-group">
       <select id="dev-version-select">
         <!-- Options populated dynamically -->
       </select>
     </div>
-    
-    <div class="toolbar-spacer"></div>
-    
+        
     <div class="toolbar-group">
       <button id="dev-screenshot-btn" title="Save screenshot to statics folder">${cameraIcon} Take a Screenshot</button>
     </div>
@@ -234,22 +265,44 @@ function createToolbar() {
   const jobNumberInput = document.getElementById('dev-job-number') as HTMLInputElement;
   const jobNameInput = document.getElementById('dev-job-name') as HTMLInputElement;
 
+  // Helper to resize input to fit text
+  const resizeInput = (input: HTMLInputElement) => {
+    const value = input.value || input.placeholder || '';
+    const span = document.createElement('span');
+    span.style.visibility = 'hidden';
+    span.style.position = 'absolute';
+    span.style.whiteSpace = 'pre';
+    span.style.font = '700 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    span.textContent = value;
+    document.body.appendChild(span);
+    input.style.width = `${Math.max(span.offsetWidth + 20, 50)}px`;
+    document.body.removeChild(span);
+  };
+
   // Load job settings and populate inputs
   fetch('/api/job-settings')
     .then(res => res.json())
     .then(data => {
-      jobNumberInput.value = data.jobNumber || '';
+      jobNumberInput.value = '#' + (data.jobNumber || '');
       jobNameInput.value = data.jobName || '';
+      resizeInput(jobNumberInput);
+      resizeInput(jobNameInput);
     })
     .catch(err => console.error('Failed to load job settings:', err));
 
-  // Save job settings on blur
+  // Save job settings on blur (strip # from job number)
   const saveJobSettings = () => {
+    const jobNumber = jobNumberInput.value.replace(/^#/, '') || '000000';
+    // Ensure # is always shown in the input
+    if (!jobNumberInput.value.startsWith('#')) {
+      jobNumberInput.value = '#' + jobNumber;
+      resizeInput(jobNumberInput);
+    }
     fetch('/api/job-settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        jobNumber: jobNumberInput.value || '000000',
+        jobNumber,
         jobName: jobNameInput.value || 'job-name',
       }),
     }).catch(err => console.error('Failed to save job settings:', err));
@@ -257,6 +310,31 @@ function createToolbar() {
 
   jobNumberInput.addEventListener('blur', saveJobSettings);
   jobNameInput.addEventListener('blur', saveJobSettings);
+
+  // Handle Enter key - resize and blur
+  const handleEnterKey = (e: KeyboardEvent, input: HTMLInputElement) => {
+    if (e.key === 'Enter') {
+      resizeInput(input);
+      input.blur();
+    }
+  };
+
+  jobNumberInput.addEventListener('keydown', (e) => handleEnterKey(e, jobNumberInput));
+  jobNameInput.addEventListener('keydown', (e) => handleEnterKey(e, jobNameInput));
+
+  // Edit button handlers - clear input and focus
+  const editJobNumberBtn = document.getElementById('dev-edit-job-number') as HTMLButtonElement;
+  const editJobNameBtn = document.getElementById('dev-edit-job-name') as HTMLButtonElement;
+
+  editJobNumberBtn.addEventListener('click', () => {
+    jobNumberInput.value = '#';
+    jobNumberInput.focus();
+  });
+
+  editJobNameBtn.addEventListener('click', () => {
+    jobNameInput.value = '';
+    jobNameInput.focus();
+  });
 
   // Populate version options based on current ad
   function updateVersionOptions(adName: string) {
