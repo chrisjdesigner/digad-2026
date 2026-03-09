@@ -264,15 +264,19 @@ function createToolbar() {
       </select>
     </div>
         
+    ${currentAd !== 'all' && currentVariant !== 'all' ? `
     <div class="toolbar-group">
       <button id="dev-screenshot-btn" title="Save screenshot to statics folder">${cameraIcon} Take a Screenshot</button>
     </div>
+    ` : ''}
     
     <div class="toolbar-spacer"></div>
     
+    ${currentAd !== 'all' && currentVariant !== 'all' ? `
     <div class="toolbar-group">
       <button id="dev-settings-btn" title="Edit ad config variables">${settingsIcon} Edit ${currentAd} ${currentVariant ? currentVariant.toUpperCase() : 'Base'} Variables</button>
     </div>
+    ` : ''}
   `;
 
   document.body.prepend(toolbar);
@@ -1016,9 +1020,10 @@ function createToolbar() {
   });
 
   // Handle screenshot button
-  const screenshotBtn = document.getElementById('dev-screenshot-btn') as HTMLButtonElement;
+  const screenshotBtn = document.getElementById('dev-screenshot-btn') as HTMLButtonElement | null;
   const defaultBtnContent = `${cameraIcon} Take a Screenshot`;
   
+  if (screenshotBtn) {
   screenshotBtn.addEventListener('click', async () => {
     screenshotBtn.disabled = true;
     screenshotBtn.innerHTML = '<div class="spinner"></div> Take a Screenshot';
@@ -1086,9 +1091,10 @@ function createToolbar() {
       }, 2000);
     }
   });
+  }
 
   // Settings tray logic
-  const settingsBtn = document.getElementById('dev-settings-btn') as HTMLButtonElement;
+  const settingsBtn = document.getElementById('dev-settings-btn') as HTMLButtonElement | null;
   const settingsTray = document.getElementById('dev-settings-tray') as HTMLDivElement;
   const settingsOverlay = document.getElementById('dev-settings-overlay') as HTMLDivElement;
   const trayClose = settingsTray.querySelector('.tray-close') as HTMLButtonElement;
@@ -1179,7 +1185,7 @@ function createToolbar() {
     });
   };
 
-  settingsBtn.addEventListener('click', openTray);
+  settingsBtn?.addEventListener('click', openTray);
   trayClose.addEventListener('click', closeTray);
   settingsOverlay.addEventListener('click', closeTray);
 
@@ -1461,13 +1467,31 @@ function createToolbar() {
       const copyBtn = item.querySelector('.var-copy') as HTMLButtonElement;
       const deleteBtn = item.querySelector('.var-delete') as HTMLButtonElement;
 
+      // Store original value for reverting on blur/Escape
+      let originalValue = input.value;
+
+      input.addEventListener('focus', () => {
+        originalValue = input.value;
+      });
+
       input.addEventListener('blur', () => {
-        configData.templateVariables[name] = input.value;
-        saveConfig();
+        // Silently revert - no save, no side effects
+        input.value = originalValue;
       });
 
       input.addEventListener('keydown', (e) => {
+        // Stop propagation so GSDevTools and other listeners don't interfere
+        e.stopPropagation();
         if (e.key === 'Enter') {
+          e.preventDefault();
+          originalValue = input.value;
+          configData.templateVariables[name] = input.value;
+          saveConfig().then(() => {
+            // Template variables are server-rendered, reload to apply
+            window.location.reload();
+          });
+        } else if (e.key === 'Escape') {
+          input.value = originalValue;
           input.blur();
         }
       });
@@ -1502,20 +1526,41 @@ function createToolbar() {
         const deleteBtn = item.querySelector('.var-delete') as HTMLButtonElement;
         const category = item.getAttribute('data-category') as 'colors' | 'images' | 'typography' | 'other';
 
-        // Text input handlers
+        // Store original value for reverting on blur/Escape
+        let originalValue = input.value;
+
+        input.addEventListener('focus', () => {
+          originalValue = input.value;
+        });
+
+        // Text input handlers - revert on blur, save only on Enter
         input.addEventListener('blur', () => {
-          if (category && configData.cssVariables[category]) {
-            configData.cssVariables[category][name] = input.value;
-          }
-          saveConfig();
-          // Update color picker if present
+          input.value = originalValue;
+          // Revert live CSS variable too
+          document.documentElement.style.setProperty(`--${category}-${name}`, originalValue);
           if (colorInput) {
-            colorInput.value = toHexColor(input.value);
+            colorInput.value = toHexColor(originalValue);
           }
         });
 
         input.addEventListener('keydown', (e) => {
+          // Stop propagation so GSDevTools and other listeners don't interfere
+          e.stopPropagation();
           if (e.key === 'Enter') {
+            e.preventDefault();
+            // Commit the new value
+            originalValue = input.value;
+            if (category && configData.cssVariables[category]) {
+              configData.cssVariables[category][name] = input.value;
+            }
+            document.documentElement.style.setProperty(`--${category}-${name}`, input.value);
+            saveConfig();
+            if (colorInput) {
+              colorInput.value = toHexColor(input.value);
+            }
+            input.blur();
+          } else if (e.key === 'Escape') {
+            input.value = originalValue;
             input.blur();
           }
         });
@@ -1527,6 +1572,8 @@ function createToolbar() {
             if (category && configData.cssVariables[category]) {
               configData.cssVariables[category][name] = colorInput.value;
             }
+            // Update live CSS variable in the DOM
+            document.documentElement.style.setProperty(`--${category}-${name}`, colorInput.value);
             saveConfig();
           });
         }
@@ -1594,6 +1641,8 @@ function createToolbar() {
         configData.templateVariables[name] = defaultValue;
       } else if (category) {
         configData.cssVariables[category][name] = defaultValue;
+        // Apply live CSS variable to the DOM
+        document.documentElement.style.setProperty(`--${category}-${name}`, defaultValue);
       }
       
       renderVariables();
@@ -1626,6 +1675,8 @@ function createToolbar() {
         delete configData.templateVariables[name];
       } else if (category && configData.cssVariables[category]) {
         delete configData.cssVariables[category][name];
+        // Remove live CSS variable from the DOM
+        document.documentElement.style.removeProperty(`--${category}-${name}`);
       }
       
       renderVariables();
