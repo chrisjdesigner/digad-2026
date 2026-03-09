@@ -1,10 +1,18 @@
-headline: Version 2 Headline
+headline: We Make Belief
 cta: Learn More
 css-variables:
-  photo-url: url(./src/img/photo-v2.jpg)
-  general-headline-font-size: 10px
-  white: "#ffffff"
-  border-color: grey
-  red: "#b32929"
+  colors:
+    white: "#ffffff"
+    border-color: grey
+  images:
+    photo-url: url(./src/img/photo-v1.jpg)
+    photo-2-url: url(./src/img/photo-v2.jpg)
+  typography:
+    general-headline-font-size: 37px
+    general-headline-line-height: 20px
+  other:
+    test-variable: test
+    general-headline-test: test
+    other-var: other
 sprites:
   - name: sprite

@@ -23,7 +23,9 @@
 
       /* Automatically generated CSS variables from YAML config */
       {{#each css-variables}}
-      --{{@key}}: {{this}};
+      {{#each this}}
+      --{{@../key}}-{{@key}}: {{this}};
+      {{/each}}
       {{/each}}
     }
   </style>

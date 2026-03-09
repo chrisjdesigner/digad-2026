@@ -271,7 +271,7 @@ function createToolbar() {
     <div class="toolbar-spacer"></div>
     
     <div class="toolbar-group">
-      <button id="dev-settings-btn" title="Edit ad config variables">${settingsIcon}</button>
+      <button id="dev-settings-btn" title="Edit ad config variables">${settingsIcon} Edit ${currentAd} ${currentVariant ? currentVariant.toUpperCase() : 'Base'} Variables</button>
     </div>
   `;
 
@@ -362,7 +362,8 @@ function createToolbar() {
         display: none;
       }
       
-      #dev-settings-tray .var-section.disabled {
+      #dev-settings-tray .var-section.disabled .var-section-header,
+      #dev-settings-tray .var-section.disabled .var-list {
         opacity: 0.5;
       }
       
@@ -517,6 +518,87 @@ function createToolbar() {
         stroke: #0078d4;
       }
       
+      /* Sprite subsection styles */
+      #dev-settings-tray .sprite-subsection {
+        border-top: 1px solid #333;
+        margin-top: 8px;
+      }
+      
+      #dev-settings-tray .sprite-subsection-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px 8px;
+        color: #666;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      #dev-settings-tray .sprite-subsection-count {
+        color: #555;
+        font-weight: 400;
+      }
+      
+      #dev-settings-tray .sprite-list {
+        padding: 0 20px 12px;
+      }
+      
+      #dev-settings-tray .sprite-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        background: #2a2a2a;
+        border-radius: 4px;
+        padding: 8px 10px;
+      }
+      
+      #dev-settings-tray .sprite-item:last-child {
+        margin-bottom: 0;
+      }
+      
+      #dev-settings-tray .sprite-name {
+        color: #999;
+        font-size: 12px;
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+        flex: 1;
+      }
+      
+      #dev-settings-tray .sprite-filename {
+        color: #555;
+        font-size: 10px;
+        flex-shrink: 0;
+      }
+      
+      #dev-settings-tray .sprite-copy-btn {
+        background: transparent;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.4;
+        transition: opacity 0.2s;
+        flex-shrink: 0;
+      }
+      
+      #dev-settings-tray .sprite-copy-btn:hover {
+        opacity: 1;
+      }
+      
+      #dev-settings-tray .sprite-copy-btn svg {
+        width: 16px;
+        height: 16px;
+        stroke: #888;
+      }
+      
+      #dev-settings-tray .sprite-copy-btn:hover svg {
+        stroke: #fff;
+      }
+
       #dev-settings-tray .add-var-btn-bottom {
         display: flex;
         align-items: center;
@@ -571,6 +653,24 @@ function createToolbar() {
       }
       
       #dev-settings-tray .add-var-input:focus {
+        outline: none;
+        border-color: #0078d4;
+      }
+      
+      #dev-settings-tray .var-image-select {
+        flex: 1;
+        min-width: 120px;
+        background: #333;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #fff;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-family: inherit;
+        cursor: pointer;
+      }
+      
+      #dev-settings-tray .var-image-select:focus {
         outline: none;
         border-color: #0078d4;
       }
@@ -717,11 +817,22 @@ function createToolbar() {
             <div class="empty-message">No image variables defined</div>
           </div>
           <button class="add-var-btn-bottom" data-section="css-images">${plusIcon} Add Image Variable</button>
-          <div class="add-var-form">
+          <div class="add-var-form" data-use-image-picker="true">
             <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., hero-image)" />
-            <input type="text" class="add-var-input var-value-input" placeholder="url(./img/image.jpg)" />
+            <select class="add-var-input var-image-select">
+              <option value="">Loading images...</option>
+            </select>
             <button class="add-var-submit">Add to All Versions</button>
             <button class="add-var-cancel">Cancel</button>
+          </div>
+          <div class="sprite-subsection">
+            <div class="sprite-subsection-header">
+              <span class="sprite-subsection-title">Sprite Images</span>
+              <span class="sprite-subsection-count" id="sprites-count">(0)</span>
+            </div>
+            <div class="sprite-list" id="sprite-images-list">
+              <div class="empty-message">No sprite images found</div>
+            </div>
           </div>
         </div>
       </div>
@@ -986,6 +1097,8 @@ function createToolbar() {
   const cssImagesList = document.getElementById('css-images-list') as HTMLDivElement;
   const cssTypographyList = document.getElementById('css-typography-list') as HTMLDivElement;
   const cssOtherList = document.getElementById('css-other-list') as HTMLDivElement;
+  const spriteImagesList = document.getElementById('sprite-images-list') as HTMLDivElement;
+  const spritesCount = document.getElementById('sprites-count') as HTMLSpanElement;
 
   // Section toggle (collapse/expand)
   settingsTray.querySelectorAll('.var-section-header').forEach(header => {
@@ -1036,11 +1149,19 @@ function createToolbar() {
     return 'other';
   }
 
-  // Current config data
+  // Current config data - cssVariables is now categorized
   let configData: {
     templateVariables: Record<string, string>;
-    cssVariables: Record<string, string>;
-  } = { templateVariables: {}, cssVariables: {} };
+    cssVariables: {
+      colors: Record<string, string>;
+      images: Record<string, string>;
+      typography: Record<string, string>;
+      other: Record<string, string>;
+    };
+  } = { 
+    templateVariables: {}, 
+    cssVariables: { colors: {}, images: {}, typography: {}, other: {} } 
+  };
 
   // Open/close tray
   const openTray = () => {
@@ -1078,6 +1199,8 @@ function createToolbar() {
       cssImagesList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
       cssTypographyList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
       cssOtherList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
+      spriteImagesList.innerHTML = '<div class="empty-message">Select a specific ad size</div>';
+      if (spritesCount) spritesCount.textContent = '(0)';
       updateSectionCounts(0, 0, 0, 0, 0);
       return;
     }
@@ -1093,10 +1216,16 @@ function createToolbar() {
 
       configData = {
         templateVariables: data.templateVariables || {},
-        cssVariables: data.cssVariables || {},
+        cssVariables: {
+          colors: data.cssVariables?.colors || {},
+          images: data.cssVariables?.images || {},
+          typography: data.cssVariables?.typography || {},
+          other: data.cssVariables?.other || {},
+        },
       };
 
       renderVariables();
+      loadSprites();
     } catch (error) {
       console.error('Failed to load config:', error);
       templateVarsList.innerHTML = '<div class="empty-message">Failed to load config</div>';
@@ -1105,6 +1234,75 @@ function createToolbar() {
       cssTypographyList.innerHTML = '<div class="empty-message">Failed to load config</div>';
       cssOtherList.innerHTML = '<div class="empty-message">Failed to load config</div>';
     }
+  }
+
+  // Load sprite images from server
+  async function loadSprites() {
+    if (currentAd === 'all') {
+      spriteImagesList.innerHTML = '<div class="empty-message">Select a specific ad size</div>';
+      if (spritesCount) spritesCount.textContent = '(0)';
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/sprites?adSize=${currentAd}`);
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      const sprites = data.sprites || [];
+      if (spritesCount) spritesCount.textContent = `(${sprites.length})`;
+
+      if (sprites.length === 0) {
+        spriteImagesList.innerHTML = '<div class="empty-message">No sprite images found</div>';
+        return;
+      }
+
+      spriteImagesList.innerHTML = sprites.map((sprite: { name: string; file: string }) => `
+        <div class="sprite-item" data-name="${sprite.name}">
+          <span class="sprite-name">${sprite.name}</span>
+          <span class="sprite-filename">${sprite.file}</span>
+          <button class="sprite-copy-btn" title="Copy SCSS include">${copyIcon}</button>
+        </div>
+      `).join('');
+
+      // Attach copy listeners to sprite items
+      attachSpriteListeners();
+    } catch (error) {
+      console.error('Failed to load sprites:', error);
+      spriteImagesList.innerHTML = '<div class="empty-message">Failed to load sprites</div>';
+      if (spritesCount) spritesCount.textContent = '(0)';
+    }
+  }
+
+  // Attach listeners to sprite copy buttons
+  function attachSpriteListeners() {
+    spriteImagesList.querySelectorAll('.sprite-item').forEach(item => {
+      const name = item.getAttribute('data-name')!;
+      const copyBtn = item.querySelector('.sprite-copy-btn') as HTMLButtonElement;
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const scssInclude = `@include sprite.sprite(sprite.$${name});`;
+          try {
+            await navigator.clipboard.writeText(scssInclude);
+            // Show feedback
+            const originalIcon = copyBtn.innerHTML;
+            copyBtn.innerHTML = checkIcon;
+            copyBtn.style.opacity = '1';
+            copyBtn.querySelector('svg')!.style.stroke = '#22c55e';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalIcon;
+              copyBtn.style.opacity = '';
+            }, 1500);
+          } catch (err) {
+            console.error('Failed to copy:', err);
+          }
+        });
+      }
+    });
   }
 
   // Update section item counts
@@ -1165,20 +1363,11 @@ function createToolbar() {
       `).join('');
     }
 
-    // Categorize and render CSS variables
-    const cssVars = Object.entries(configData.cssVariables);
-    const colorVars: [string, string][] = [];
-    const imageVars: [string, string][] = [];
-    const typographyVars: [string, string][] = [];
-    const otherVars: [string, string][] = [];
-
-    cssVars.forEach(([name, value]) => {
-      const category = categorizeCssVar(name, String(value));
-      if (category === 'colors') colorVars.push([name, String(value)]);
-      else if (category === 'images') imageVars.push([name, String(value)]);
-      else if (category === 'typography') typographyVars.push([name, String(value)]);
-      else otherVars.push([name, String(value)]);
-    });
+    // Use pre-categorized CSS variables from API
+    const colorVars = Object.entries(configData.cssVariables.colors);
+    const imageVars = Object.entries(configData.cssVariables.images);
+    const typographyVars = Object.entries(configData.cssVariables.typography);
+    const otherVars = Object.entries(configData.cssVariables.other);
 
     // Update counts
     updateSectionCounts(templateVars.length, colorVars.length, imageVars.length, typographyVars.length, otherVars.length);
@@ -1188,10 +1377,10 @@ function createToolbar() {
       cssColorsList.innerHTML = '<div class="empty-message">No color variables defined</div>';
     } else {
       cssColorsList.innerHTML = colorVars.map(([name, value]) => `
-        <div class="var-item" data-name="${name}">
+        <div class="var-item" data-name="${name}" data-category="colors">
           <span class="var-name">${name}</span>
-          <input type="color" class="var-color-input" value="${toHexColor(value)}" data-original="${escapeHtml(value)}" />
-          <input type="text" class="var-input" value="${escapeHtml(value)}" />
+          <input type="color" class="var-color-input" value="${toHexColor(String(value))}" data-original="${escapeHtml(String(value))}" />
+          <input type="text" class="var-input" value="${escapeHtml(String(value))}" />
           <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
           <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
         </div>
@@ -1203,9 +1392,9 @@ function createToolbar() {
       cssImagesList.innerHTML = '<div class="empty-message">No image variables defined</div>';
     } else {
       cssImagesList.innerHTML = imageVars.map(([name, value]) => `
-        <div class="var-item" data-name="${name}">
+        <div class="var-item" data-name="${name}" data-category="images">
           <span class="var-name">${name}</span>
-          <input type="text" class="var-input" value="${escapeHtml(value)}" />
+          <input type="text" class="var-input" value="${escapeHtml(String(value))}" />
           <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
           <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
         </div>
@@ -1217,9 +1406,9 @@ function createToolbar() {
       cssTypographyList.innerHTML = '<div class="empty-message">No typography variables defined</div>';
     } else {
       cssTypographyList.innerHTML = typographyVars.map(([name, value]) => `
-        <div class="var-item" data-name="${name}">
+        <div class="var-item" data-name="${name}" data-category="typography">
           <span class="var-name">${name}</span>
-          <input type="text" class="var-input" value="${escapeHtml(value)}" />
+          <input type="text" class="var-input" value="${escapeHtml(String(value))}" />
           <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
           <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
         </div>
@@ -1231,9 +1420,9 @@ function createToolbar() {
       cssOtherList.innerHTML = '<div class="empty-message">No other CSS variables defined</div>';
     } else {
       cssOtherList.innerHTML = otherVars.map(([name, value]) => `
-        <div class="var-item" data-name="${name}">
+        <div class="var-item" data-name="${name}" data-category="other">
           <span class="var-name">${name}</span>
-          <input type="text" class="var-input" value="${escapeHtml(value)}" />
+          <input type="text" class="var-input" value="${escapeHtml(String(value))}" />
           <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
           <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
         </div>
@@ -1311,10 +1500,13 @@ function createToolbar() {
         const colorInput = item.querySelector('.var-color-input') as HTMLInputElement;
         const copyBtn = item.querySelector('.var-copy') as HTMLButtonElement;
         const deleteBtn = item.querySelector('.var-delete') as HTMLButtonElement;
+        const category = item.getAttribute('data-category') as 'colors' | 'images' | 'typography' | 'other';
 
         // Text input handlers
         input.addEventListener('blur', () => {
-          configData.cssVariables[name] = input.value;
+          if (category && configData.cssVariables[category]) {
+            configData.cssVariables[category][name] = input.value;
+          }
           saveConfig();
           // Update color picker if present
           if (colorInput) {
@@ -1332,7 +1524,9 @@ function createToolbar() {
         if (colorInput) {
           colorInput.addEventListener('input', () => {
             input.value = colorInput.value;
-            configData.cssVariables[name] = colorInput.value;
+            if (category && configData.cssVariables[category]) {
+              configData.cssVariables[category][name] = colorInput.value;
+            }
             saveConfig();
           });
         }
@@ -1340,7 +1534,7 @@ function createToolbar() {
         // Copy button handler
         if (copyBtn) {
           copyBtn.addEventListener('click', async () => {
-            const cssVar = `var(--${name})`;
+            const cssVar = `var(--${category}-${name})`;
             try {
               await navigator.clipboard.writeText(cssVar);
               showCopyFeedback(copyBtn);
@@ -1353,7 +1547,7 @@ function createToolbar() {
         // Delete button handler
         deleteBtn.addEventListener('click', () => {
           if (confirm(`Remove "${name}" from all versions?`)) {
-            deleteVariable(name, 'css');
+            deleteVariable(name, 'css', category);
           }
         });
       });
@@ -1375,9 +1569,9 @@ function createToolbar() {
   }
 
   // Add variable to all versions
-  async function addVariable(name: string, defaultValue: string, type: 'template' | 'css') {
+  async function addVariable(name: string, defaultValue: string, type: 'template' | 'css', category?: 'colors' | 'images' | 'typography' | 'other') {
     try {
-      await fetch('/api/ad-config/sync-variable', {
+      const response = await fetch('/api/ad-config/sync-variable', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1386,14 +1580,20 @@ function createToolbar() {
           variableType: type,
           action: 'add',
           defaultValue,
+          category: type === 'css' ? category : undefined,
         }),
       });
+      
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to add variable');
+      }
       
       // Update local state
       if (type === 'template') {
         configData.templateVariables[name] = defaultValue;
-      } else {
-        configData.cssVariables[name] = defaultValue;
+      } else if (category) {
+        configData.cssVariables[category][name] = defaultValue;
       }
       
       renderVariables();
@@ -1403,9 +1603,9 @@ function createToolbar() {
   }
 
   // Delete variable from all versions
-  async function deleteVariable(name: string, type: 'template' | 'css') {
+  async function deleteVariable(name: string, type: 'template' | 'css', category?: 'colors' | 'images' | 'typography' | 'other') {
     try {
-      await fetch('/api/ad-config/sync-variable', {
+      const response = await fetch('/api/ad-config/sync-variable', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1416,11 +1616,16 @@ function createToolbar() {
         }),
       });
       
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to delete variable');
+      }
+      
       // Update local state
       if (type === 'template') {
         delete configData.templateVariables[name];
-      } else {
-        delete configData.cssVariables[name];
+      } else if (category && configData.cssVariables[category]) {
+        delete configData.cssVariables[category][name];
       }
       
       renderVariables();
@@ -1432,20 +1637,64 @@ function createToolbar() {
   // Add variable form handlers
   settingsTray.querySelectorAll('.var-section').forEach(section => {
     const dataType = section.getAttribute('data-type')!;
-    // Map data-type to API type ('template' or 'css')
+    // Map data-type to API type ('template' or 'css') and category
     const apiType: 'template' | 'css' = dataType === 'template' ? 'template' : 'css';
-    const addBtn = section.querySelector('.add-var-btn-bottom') as HTMLButtonElement;
-    const form = section.querySelector('.add-var-form') as HTMLDivElement;
+    // Map data-type to CSS category
+    const categoryMap: Record<string, 'colors' | 'images' | 'typography' | 'other'> = {
+      'css-colors': 'colors',
+      'css-images': 'images',
+      'css-typography': 'typography',
+      'css-other': 'other',
+    };
+    const cssCategory = categoryMap[dataType];
+    
+    const addBtn = section.querySelector('.add-var-btn-bottom') as HTMLButtonElement | null;
+    const form = section.querySelector('.add-var-form') as HTMLDivElement | null;
+    
+    // Skip sections without add forms (like sprite images)
+    if (!addBtn || !form) return;
+    
     const nameInput = form.querySelector('.var-name-input') as HTMLInputElement;
     const valueInput = form.querySelector('.var-value-input') as HTMLInputElement | HTMLElement;
+    const imageSelect = form.querySelector('.var-image-select') as HTMLSelectElement | null;
     const submitBtn = form.querySelector('.add-var-submit') as HTMLButtonElement;
     const cancelBtn = form.querySelector('.add-var-cancel') as HTMLButtonElement;
     const isColorPicker = form.getAttribute('data-use-color-picker') === 'true';
+    const isImagePicker = form.getAttribute('data-use-image-picker') === 'true';
 
-    addBtn.addEventListener('click', (e) => {
+    // Auto-convert spaces to hyphens and enforce lowercase
+    nameInput.addEventListener('input', () => {
+      // Replace spaces with hyphens and remove invalid characters
+      nameInput.value = nameInput.value
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
+    });
+
+    addBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
       form.classList.add('active');
       addBtn.style.display = 'none';
+      
+      // Load images for image picker
+      if (isImagePicker && imageSelect) {
+        imageSelect.innerHTML = '<option value="">Loading images...</option>';
+        try {
+          const res = await fetch(`/api/images?adSize=${currentAd}`);
+          const data = await res.json();
+          if (data.images && data.images.length > 0) {
+            imageSelect.innerHTML = '<option value="">Select an image...</option>' +
+              data.images.map((img: { filename: string; cssValue: string }) => 
+                `<option value="${img.cssValue}">${img.filename}</option>`
+              ).join('');
+          } else {
+            imageSelect.innerHTML = '<option value="">No images found in src/img/</option>';
+          }
+        } catch (err) {
+          imageSelect.innerHTML = '<option value="">Error loading images</option>';
+        }
+      }
+      
       nameInput.focus();
     });
 
@@ -1456,12 +1705,17 @@ function createToolbar() {
       if (valueInput instanceof HTMLInputElement) {
         valueInput.value = isColorPicker ? '#ffffff' : '';
       }
+      if (imageSelect) {
+        imageSelect.selectedIndex = 0;
+      }
     });
 
     submitBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       let value = '';
-      if (valueInput instanceof HTMLInputElement) {
+      if (isImagePicker && imageSelect) {
+        value = imageSelect.value;
+      } else if (valueInput instanceof HTMLInputElement) {
         value = valueInput.value;
       }
       
@@ -1469,13 +1723,28 @@ function createToolbar() {
         nameInput.focus();
         return;
       }
+      
+      if (isImagePicker && !value) {
+        imageSelect?.focus();
+        return;
+      }
+      
+      // Validate name format (lowercase, hyphens, alphanumeric)
+      if (!/^[a-z][a-z0-9-]*$/.test(name)) {
+        alert('Variable names must start with a letter and contain only lowercase letters, numbers, and hyphens');
+        nameInput.focus();
+        return;
+      }
 
-      addVariable(name, value, apiType);
+      addVariable(name, value, apiType, cssCategory);
       form.classList.remove('active');
       addBtn.style.display = '';
       nameInput.value = '';
       if (valueInput instanceof HTMLInputElement) {
         valueInput.value = isColorPicker ? '#ffffff' : '';
+      }
+      if (imageSelect) {
+        imageSelect.selectedIndex = 0;
       }
     });
 

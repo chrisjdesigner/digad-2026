@@ -1,28 +1,18 @@
-# ================================
-# Base Ad Configuration
-# ================================
-# Edit the values below for this ad size.
-# This file uses YAML format - comments start with #
-
-# ------ Copy / Headlines ------
 headline: We Make Belief
 cta: Learn More
-
-# ------ CSS Variables ------
-# These map directly to CSS custom properties
-# The key becomes --key-name in CSS
 css-variables:
-  # Images (use relative paths from HTML file)
-  photo-url: url(./src/img/photo-v1.jpg)
-  
-  # Typography
-  general-headline-font-size: 37px
-  
-  # Colors
-  white: "#ffffff"
-  border-color: grey
-
-# ------ Sprites ------
-# Image sprite configuration (for combining multiple images)
+  colors:
+    white: "#ffffff"
+    border-color: grey
+  images:
+    photo-url: url(./src/img/photo-v1.jpg)
+    photo-2-url: url(./src/img/photo-v2.jpg)
+  typography:
+    general-headline-font-size: 37px
+    general-headline-line-height: 20px
+  other:
+    test-variable: test
+    general-headline-test: test
+    other-var: other
 sprites:
   - name: sprite
