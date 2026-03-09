@@ -13,7 +13,7 @@ cta: Learn More
 # The key becomes --key-name in CSS
 css-variables:
   # Images (use relative paths from HTML file)
-  photo-url: url(./src/img/photo-v1.jpg)
+  photo-url: url(./src/img/photo-v2.jpg)
   
   # Typography
   general-headline-font-size: 10px
