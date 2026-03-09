@@ -26,6 +26,11 @@ declare global {
 }
 
 function createToolbar() {
+  // Skip toolbar if ?notoolbar=1 is in the URL (used for iframe previews)
+  if (new URLSearchParams(window.location.search).get('notoolbar') === '1') {
+    return;
+  }
+
   const adConfigs = window.__DEV_AD_CONFIGS__ || [];
   const currentAd = window.__DEV_CURRENT_AD__ || '';
   const currentVariant = window.__DEV_CURRENT_VARIANT__ || null;
@@ -221,11 +226,6 @@ function createToolbar() {
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
-      
-      /* Push body content down to make room for toolbar */
-      body {
-        margin-top: 40px !important;
-      }
     </style>
     
     <div class="toolbar-group">
@@ -243,6 +243,7 @@ function createToolbar() {
         ${adConfigs.map(ad => `
           <option value="${ad.name}" ${ad.name === currentAd ? 'selected' : ''}>${ad.name}</option>
         `).join('')}
+        <option value="all" ${currentAd === 'all' ? 'selected' : ''}>All</option>
       </select>
     </div>
     
@@ -338,6 +339,13 @@ function createToolbar() {
 
   // Populate version options based on current ad
   function updateVersionOptions(adName: string) {
+    // Hide version dropdown when "all" sizes is selected
+    if (adName === 'all') {
+      versionSelect.style.display = 'none';
+      return;
+    }
+    versionSelect.style.display = '';
+    
     const ad = adConfigs.find(a => a.name === adName);
     const variants = ad?.variants || [];
     
@@ -346,6 +354,7 @@ function createToolbar() {
       ${variants.map(v => `
         <option value="${v}" ${v === currentVariant ? 'selected' : ''}>${v}</option>
       `).join('')}
+      <option value="all" ${currentVariant === 'all' ? 'selected' : ''}>All</option>
     `;
   }
 
@@ -355,8 +364,12 @@ function createToolbar() {
   // Handle size change
   sizeSelect.addEventListener('change', () => {
     const newSize = sizeSelect.value;
-    // Navigate to base version of new size
-    window.location.href = `/${newSize}/index.html`;
+    if (newSize === 'all') {
+      window.location.href = '/all.html';
+    } else {
+      // Navigate to base version of new size
+      window.location.href = `/${newSize}/index.html`;
+    }
   });
 
   // Handle version change
