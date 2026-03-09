@@ -83,6 +83,7 @@ $sprite: (100px, 39.5px, '../img/sprite.png', $sprite-sprites, );
   @include sprite-position($sprite);
   @include sprite-width($sprite);
   @include sprite-height($sprite);
+  background-repeat: no-repeat;
 }
 
 // The `sprites` mixin generates identical output to the CSS template

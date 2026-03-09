@@ -17,11 +17,14 @@
     "prettier:fix": "prettier --write \"{,!(build|node_modules|preview|templates)/**}/*.{js,ts,css,scss,html}\""
   },
   "devDependencies": {
+    "archiver": "^7.0.1",
     "chalk": "^5.6.2",
     "concurrently": "^9.2.1",
     "fast-glob": "^3.3.3",
+    "html2canvas-pro": "^2.0.2",
     "prettier": "^3.8.1",
     "sass": "^1.97.3",
+    "sharp": "^0.34.5",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-handlebars": "^2.0.0",
@@ -30,8 +33,7 @@
     "vite-plugin-restart": "^2.0.0",
     "vite-plugin-singlefile": "^2.3.0",
     "vite-plugin-spritesmith": "github:fishpondstudio/vite-plugin-spritesmith#a933c5fbda1b7288100781618078cc322071f1d4",
-    "vite-tsconfig-paths": "^6.1.1",
-    "zip-a-folder": "4.0.4"
+    "vite-tsconfig-paths": "^6.1.1"
   },
   "dependencies": {
     "gsap": "file:lib/gsap/gsap-bonus-3.12.4.tgz",
