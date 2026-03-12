@@ -1,15 +1,15 @@
-headline: Ad Version 2
+headline: ad
 cta: CTA
 css-variables:
   colors:
-    white: "#b23838"
+    white: "#ffffff"
     border-color: grey
     red: "#c63939"
   images:
     photo-url: url(./src/img/photo-v1.jpg)
     photo-2-url: url(./src/img/photo-v2.jpg)
   typography:
-    general-headline-font-size: 40px
+    general-headline-font-size: 22px
     general-headline-line-height: 20px
   other:
     test-variable: test
