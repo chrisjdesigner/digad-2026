@@ -85,3 +85,75 @@ export async function fetchImages(currentAd: string): Promise<ImageInfo[]> {
   const data = await res.json();
   return data.images || [];
 }
+
+export async function createVersion(
+  adSize: string,
+  newVersionName: string,
+  sourceVersion: string,
+): Promise<{ success: boolean; versionName: string; variants: string[] }> {
+  const response = await fetch('/api/create-version', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adSize, newVersionName, sourceVersion }),
+  });
+
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to create version');
+  }
+
+  return result;
+}
+
+export async function deleteVersion(
+  adSize: string,
+  versionName: string,
+): Promise<{ success: boolean; variants: string[] }> {
+  const response = await fetch('/api/delete-version', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adSize, versionName }),
+  });
+
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to delete version');
+  }
+
+  return result;
+}
+
+export async function createSize(
+  newSizeName: string,
+  sourceSize: string,
+): Promise<{ success: boolean; sizeName: string; adConfigs: { name: string; variants: string[] }[] }> {
+  const response = await fetch('/api/create-size', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ newSizeName, sourceSize }),
+  });
+
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to create size');
+  }
+
+  return result;
+}
+
+export async function deleteSize(
+  sizeName: string,
+): Promise<{ success: boolean; adConfigs: { name: string; variants: string[] }[] }> {
+  const response = await fetch('/api/delete-size', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sizeName }),
+  });
+
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to delete size');
+  }
+
+  return result;
+}

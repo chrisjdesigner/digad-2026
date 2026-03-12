@@ -1,9 +1,10 @@
-import type { ConfigData } from '../toolbar/types';
-import { fetchConfig, fetchImages } from '../toolbar/config-api';
+import type { AdConfig, ConfigData } from '../toolbar/types';
+import { fetchConfig, fetchImages, createVersion, deleteVersion, createSize, deleteSize } from '../toolbar/config-api';
 import { setupVariables } from './variables';
 import type { VariableElements } from './variables';
 
 const STORAGE_KEY = 'dev-sidebar-width';
+const TAB_STORAGE_KEY = 'dev-sidebar-tab';
 const DEFAULT_WIDTH = 340;
 const MIN_WIDTH = 240;
 const MAX_WIDTH = 600;
@@ -22,6 +23,7 @@ function applySidebarWidth(width: number) {
 }
 
 export function setupSidebar(
+  adConfigs: AdConfig[],
   currentAd: string,
   currentVariant: string | null,
 ): void {
@@ -58,6 +60,18 @@ export function setupSidebar(
     header.addEventListener('click', () => {
       const section = header.closest('.var-section') as HTMLElement;
       section.classList.toggle('collapsed');
+    });
+  });
+
+  // --- Tab switching ---
+  sidebar.querySelectorAll('.sidebar-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabName = (tab as HTMLElement).getAttribute('data-tab')!;
+      sidebar.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+      sidebar.querySelectorAll('.sidebar-tab-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      sidebar.querySelector(`.sidebar-tab-panel[data-panel="${tabName}"]`)?.classList.add('active');
+      localStorage.setItem(TAB_STORAGE_KEY, tabName);
     });
   });
 
@@ -126,6 +140,150 @@ export function setupSidebar(
   // Auto-load config since sidebar is always visible
   loadConfig();
 
+  // --- Delete version handlers ---
+  sidebar.querySelectorAll('.delete-version').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const versionName = (btn as HTMLElement).getAttribute('data-version')!;
+      if (!confirm(`Delete version "${versionName}"? This cannot be undone.`)) return;
+
+      try {
+        await deleteVersion(currentAd, versionName);
+        // If we deleted the version we're currently viewing, go to base
+        if (currentVariant === versionName) {
+          window.location.href = `/${currentAd}/index.html`;
+        } else {
+          window.location.reload();
+        }
+      } catch (error) {
+        alert(`Failed to delete version: ${(error as Error).message}`);
+      }
+    });
+  });
+
+  // --- Add version button ---
+  const addVersionBtn = document.getElementById('dev-add-version-btn') as HTMLButtonElement | null;
+  if (addVersionBtn) {
+    addVersionBtn.addEventListener('click', async () => {
+      const ad = adConfigs.find(a => a.name === currentAd);
+      const variants = ad?.variants || [];
+      const allVersions = ['Base', ...variants];
+
+      // Determine source version
+      let sourceVersion: string;
+      if (allVersions.length === 1) {
+        sourceVersion = 'base';
+      } else {
+        const choices = allVersions.map((v, i) => `${i + 1}. ${v}`).join('\n');
+        const input = prompt(`Which version would you like to duplicate?\n\n${choices}\n\nEnter the number:`);
+        if (!input) return;
+        const index = parseInt(input, 10) - 1;
+        if (isNaN(index) || index < 0 || index >= allVersions.length) {
+          alert('Invalid selection.');
+          return;
+        }
+        sourceVersion = index === 0 ? 'base' : variants[index - 1];
+      }
+
+      // Auto-generate next version name
+      const existingNumbers = variants
+        .map(v => { const m = v.match(/^v(\d+)$/); return m ? parseInt(m[1], 10) : 0; })
+        .filter(n => n > 0);
+      const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 2;
+      const newName = prompt('Enter a name for the new version:', `v${nextNumber}`);
+      if (!newName) return;
+
+      try {
+        addVersionBtn.disabled = true;
+        addVersionBtn.textContent = 'Creating...';
+        await createVersion(currentAd, newName, sourceVersion);
+        window.location.href = `/${currentAd}/${newName}.html`;
+      } catch (error) {
+        alert(`Failed to create version: ${(error as Error).message}`);
+        addVersionBtn.disabled = false;
+        addVersionBtn.textContent = '+ Add Version';
+      }
+    });
+  }
+
+  // --- Add size button ---
+  const addSizeBtn = document.getElementById('dev-add-size-btn') as HTMLButtonElement | null;
+  if (addSizeBtn) {
+    addSizeBtn.addEventListener('click', async () => {
+      const allSizes = adConfigs.map(a => a.name);
+
+      // Determine source size
+      let sourceSize: string;
+      if (allSizes.length === 1) {
+        sourceSize = allSizes[0];
+      } else {
+        const choices = allSizes.map((s, i) => `${i + 1}. ${s}`).join('\n');
+        const input = prompt(`Which size would you like to duplicate?\n\n${choices}\n\nEnter the number:`);
+        if (!input) return;
+        const index = parseInt(input, 10) - 1;
+        if (isNaN(index) || index < 0 || index >= allSizes.length) {
+          alert('Invalid selection.');
+          return;
+        }
+        sourceSize = allSizes[index];
+      }
+
+      const newName = prompt('Enter the new ad size (e.g. 728x90):');
+      if (!newName) return;
+
+      if (!/^\d+x\d+(-\w+)*$/.test(newName)) {
+        alert('Size name must be in format WIDTHxHEIGHT (e.g. 728x90)');
+        return;
+      }
+
+      // Show loading overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'dev-loading-overlay';
+      overlay.innerHTML = '<div class="spinner"></div><div class="spinner-label">Creating size&hellip;</div>';
+      document.body.appendChild(overlay);
+      addSizeBtn.disabled = true;
+
+      try {
+        await createSize(newName, sourceSize);
+        window.location.href = `/${newName}/index.html`;
+      } catch (error) {
+        overlay.remove();
+        alert(`Failed to create size: ${(error as Error).message}`);
+        addSizeBtn.disabled = false;
+      }
+    });
+  }
+
+  // --- Delete size handlers ---
+  sidebar.querySelectorAll('.delete-ad-size').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const sizeName = (btn as HTMLElement).getAttribute('data-ad-size')!;
+
+      if (adConfigs.length <= 1) {
+        alert('Cannot delete the last remaining ad size.');
+        return;
+      }
+
+      if (!confirm(`Delete size "${sizeName}" and all its versions? This cannot be undone.`)) return;
+
+      try {
+        await deleteSize(sizeName);
+        // If we deleted the size we're currently viewing, go to another size
+        if (currentAd === sizeName) {
+          const remaining = adConfigs.find(a => a.name !== sizeName);
+          window.location.href = remaining ? `/${remaining.name}/index.html` : '/';
+        } else {
+          window.location.reload();
+        }
+      } catch (error) {
+        alert(`Failed to delete size: ${(error as Error).message}`);
+      }
+    });
+  });
+
   // Add variable form handlers
   setupAddVariableForms(sidebar, currentAd, addVariable);
 }
@@ -136,7 +294,7 @@ function setupAddVariableForms(
   currentAd: string,
   addVariable: (name: string, defaultValue: string, type: 'template' | 'css', category?: 'colors' | 'images' | 'typography' | 'other') => Promise<void>,
 ): void {
-  sidebar.querySelectorAll('.var-section').forEach(section => {
+  sidebar.querySelectorAll('.var-section[data-type]').forEach(section => {
     const dataType = section.getAttribute('data-type')!;
     const apiType: 'template' | 'css' = dataType === 'template' ? 'template' : 'css';
     const categoryMap: Record<string, 'colors' | 'images' | 'typography' | 'other'> = {

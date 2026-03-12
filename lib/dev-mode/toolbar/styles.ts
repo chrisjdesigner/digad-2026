@@ -20,6 +20,12 @@ export const layoutStyles = `
     justify-content: center;
     overflow: auto;
     background: #222;
+    position: relative;
+  }
+
+  /* Contain GSDevTools bar within the main area, not spanning the sidebar */
+  .gs-dev-tools {
+    width: calc(100% - var(--sidebar-width, 340px)) !important;
   }
 `;
 

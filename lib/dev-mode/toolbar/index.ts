@@ -47,7 +47,7 @@ function createToolbar() {
   main.appendChild(adContent);
 
   // Create sidebar
-  const sidebar = createSidebarElement(currentAd, currentVariant);
+  const sidebar = createSidebarElement(adConfigs, currentAd, currentVariant);
 
   wrapper.appendChild(main);
   wrapper.appendChild(sidebar);
@@ -57,7 +57,7 @@ function createToolbar() {
   setupJobSettings();
   setupNavigation(adConfigs, currentAd, currentVariant);
   setupScreenshot(currentAd, currentVariant);
-  setupSidebar(currentAd, currentVariant);
+  setupSidebar(adConfigs, currentAd, currentVariant);
 }
 
 // Initialize toolbar when DOM is ready

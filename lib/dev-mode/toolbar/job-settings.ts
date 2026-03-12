@@ -1,4 +1,3 @@
-import { resizeInput } from './utils';
 import { fetchJobSettings, saveJobSettings } from './config-api';
 
 export function setupJobSettings(): void {
@@ -12,8 +11,6 @@ export function setupJobSettings(): void {
     .then(data => {
       jobNumberInput.value = '#' + (data.jobNumber || '');
       jobNameInput.value = data.jobName || '';
-      resizeInput(jobNumberInput);
-      resizeInput(jobNameInput);
     })
     .catch(err => console.error('Failed to load job settings:', err));
 
@@ -23,7 +20,6 @@ export function setupJobSettings(): void {
     // Ensure # is always shown in the input
     if (!jobNumberInput.value.startsWith('#')) {
       jobNumberInput.value = '#' + jobNumber;
-      resizeInput(jobNumberInput);
     }
     saveJobSettings(jobNumber, jobNameInput.value || 'job-name')
       .catch(err => console.error('Failed to save job settings:', err));
@@ -32,10 +28,9 @@ export function setupJobSettings(): void {
   jobNumberInput.addEventListener('blur', save);
   jobNameInput.addEventListener('blur', save);
 
-  // Handle Enter key - resize and blur
+  // Handle Enter key - blur to save
   const handleEnterKey = (e: KeyboardEvent, input: HTMLInputElement) => {
     if (e.key === 'Enter') {
-      resizeInput(input);
       input.blur();
     }
   };

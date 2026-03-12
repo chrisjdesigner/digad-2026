@@ -13,6 +13,8 @@ import swatchIcon from '../icons/swatch.svg?raw';
 import photoIcon from '../icons/photo.svg?raw';
 import typographyIcon from '../icons/typography.svg?raw';
 import adjustmentsIcon from '../icons/adjustments.svg?raw';
+import squaresIcon from '../icons/squares.svg?raw';
+import layersIcon from '../icons/layers.svg?raw';
 
 export {
   cameraIcon,
@@ -30,4 +32,6 @@ export {
   photoIcon,
   typographyIcon,
   adjustmentsIcon,
+  squaresIcon,
+  layersIcon,
 };

@@ -1,5 +1,5 @@
 import type { AdConfig } from './types';
-import { editIcon, cameraIcon } from './icons';
+import { cameraIcon } from './icons';
 import { toolbarStyles } from './styles';
 
 export function createToolbarElement(
@@ -11,16 +11,6 @@ export function createToolbarElement(
   toolbar.id = 'dev-toolbar';
   toolbar.innerHTML = `
     <style>${toolbarStyles}</style>
-    
-    <div class="toolbar-group">
-      <button class="edit-btn" id="dev-edit-job-number" title="Edit job number">${editIcon}</button>
-      <input type="text" id="dev-job-number" placeholder="#000000" />
-    </div>
-    
-    <div class="toolbar-group">
-      <button class="edit-btn" id="dev-edit-job-name" title="Edit job name">${editIcon}</button>
-      <input type="text" id="dev-job-name" placeholder="job-name" />
-    </div>
         
     <div class="toolbar-group">
       <select id="dev-size-select">
@@ -37,13 +27,13 @@ export function createToolbarElement(
       </select>
     </div>
         
+    <div class="toolbar-spacer"></div>
+    
     ${currentAd !== 'all' && currentVariant !== 'all' ? `
     <div class="toolbar-group">
       <button id="dev-screenshot-btn" title="Save screenshot to statics folder">${cameraIcon} Take a Screenshot</button>
     </div>
     ` : ''}
-    
-    <div class="toolbar-spacer"></div>
   `;
 
   return toolbar;
