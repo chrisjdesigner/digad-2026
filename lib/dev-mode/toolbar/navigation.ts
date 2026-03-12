@@ -6,10 +6,12 @@ export function setupNavigation(
   currentVariant: string | null,
 ): void {
   const sizeSelect = document.getElementById('dev-size-select') as HTMLSelectElement;
-  const versionSelect = document.getElementById('dev-version-select') as HTMLSelectElement;
+  const versionSelect = document.getElementById('dev-version-select') as HTMLSelectElement | null;
 
   // Populate version options based on current ad
   function updateVersionOptions(adName: string) {
+    if (!versionSelect) return;
+
     // Hide version dropdown when "all" sizes is selected
     if (adName === 'all') {
       versionSelect.style.display = 'none';
@@ -44,12 +46,14 @@ export function setupNavigation(
   });
 
   // Handle version change
-  versionSelect.addEventListener('change', () => {
-    const newVersion = versionSelect.value;
-    if (newVersion) {
-      window.location.href = `/${currentAd}/${newVersion}.html`;
-    } else {
-      window.location.href = `/${currentAd}/index.html`;
-    }
-  });
+  if (versionSelect) {
+    versionSelect.addEventListener('change', () => {
+      const newVersion = versionSelect.value;
+      if (newVersion) {
+        window.location.href = `/${currentAd}/${newVersion}.html`;
+      } else {
+        window.location.href = `/${currentAd}/index.html`;
+      }
+    });
+  }
 }

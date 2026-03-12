@@ -6,8 +6,8 @@ export const sidebarStyles = `
     max-width: 600px;
     height: 100vh;
     flex-shrink: 0;
-    background: #1a1a1a;
-    border-left: 1px solid #333;
+    background: var(--dev-bg-secondary);
+    border-left: 1px solid var(--dev-border);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 13px;
     display: flex;
@@ -26,7 +26,7 @@ export const sidebarStyles = `
   
   #dev-settings-tray .sidebar-resize-handle:hover,
   #dev-settings-tray .sidebar-resize-handle.dragging {
-    background: #0078d4;
+    background: var(--dev-accent);
     opacity: 0.5;
   }
 
@@ -39,34 +39,45 @@ export const sidebarStyles = `
   /* Tabs */
   #dev-settings-tray .sidebar-tabs {
     display: flex;
-    background: #222;
-    border-bottom: 1px solid #333;
+    background: var(--dev-bg-tertiary);
+    border-bottom: 1px solid var(--dev-border);
     flex-shrink: 0;
   }
 
   #dev-settings-tray .sidebar-tab {
     flex: 1;
-    padding: 10px 12px;
+    padding: 15px 12px;
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
-    color: #666;
+    color: var(--dev-text-dimmed);
     font-size: 12px;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
     transition: all 0.2s;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  #dev-settings-tray .sidebar-tab .sidebar-tab-icon {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    flex-shrink: 0;
   }
 
   #dev-settings-tray .sidebar-tab:hover {
-    color: #aaa;
-    background: #2a2a2a;
+    color: var(--dev-text-secondary);
+    background: var(--dev-bg-hover);
   }
 
   #dev-settings-tray .sidebar-tab.active {
-    color: #fff;
-    border-bottom-color: #0078d4;
+    color: var(--dev-text-secondary);
+    background: var(--dev-bg-hover);
   }
 
   #dev-settings-tray .sidebar-tab-panel {
@@ -91,12 +102,12 @@ export const sidebarStyles = `
 
   #dev-settings-tray .project-field {
     padding: 12px 20px;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid var(--dev-bg-hover);
   }
 
   #dev-settings-tray .project-field-label {
     display: block;
-    color: #666;
+    color: var(--dev-text-dimmed);
     font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
@@ -112,10 +123,10 @@ export const sidebarStyles = `
 
   #dev-settings-tray .project-field-input {
     flex: 1;
-    background: #333;
-    border: 1px solid #444;
+    background: var(--dev-bg-input);
+    border: 1px solid var(--dev-border-input);
     border-radius: 4px;
-    color: #fff;
+    color: var(--dev-text-primary);
     padding: 7px 10px;
     font-size: 13px;
     font-weight: 600;
@@ -124,16 +135,16 @@ export const sidebarStyles = `
   }
 
   #dev-settings-tray .project-field-input:hover {
-    border-color: #555;
+    border-color: var(--dev-border-hover);
   }
 
   #dev-settings-tray .project-field-input:focus {
     outline: none;
-    border-color: #0078d4;
+    border-color: var(--dev-accent);
   }
 
   #dev-settings-tray .project-field-input::placeholder {
-    color: #555;
+    color: var(--dev-text-faint);
   }
 
   #dev-settings-tray .project-field-edit {
@@ -155,11 +166,11 @@ export const sidebarStyles = `
   #dev-settings-tray .project-field-edit svg {
     width: 14px;
     height: 14px;
-    stroke: #888;
+    stroke: var(--dev-text-muted);
   }
 
   #dev-settings-tray .project-field-edit:hover svg {
-    stroke: #fff;
+    stroke: var(--dev-text-primary);
   }
 
   /* Project list items (ad sizes, versions) */
@@ -177,20 +188,20 @@ export const sidebarStyles = `
   }
 
   #dev-settings-tray .project-list-item:hover {
-    background: #2a2a2a;
+    background: var(--dev-bg-hover);
   }
 
   #dev-settings-tray .project-list-item.active {
-    background: #2a2a2a;
+    background: var(--dev-bg-hover);
   }
 
   #dev-settings-tray .project-list-item.active .project-list-item-link {
-    color: #fff;
+    color: var(--dev-text-primary);
   }
 
   #dev-settings-tray .project-list-item-link {
     flex: 1;
-    color: #888;
+    color: var(--dev-text-muted);
     font-size: 12px;
     font-weight: 600;
     text-decoration: none;
@@ -200,7 +211,7 @@ export const sidebarStyles = `
   }
 
   #dev-settings-tray .project-list-item-link:hover {
-    color: #fff;
+    color: var(--dev-text-primary);
   }
 
   #dev-settings-tray .project-list-item-action {
@@ -223,16 +234,16 @@ export const sidebarStyles = `
   #dev-settings-tray .project-list-item-action svg {
     width: 14px;
     height: 14px;
-    stroke: #888;
+    stroke: var(--dev-text-muted);
   }
 
   #dev-settings-tray .project-list-item-action.delete-version:hover svg,
   #dev-settings-tray .project-list-item-action.delete-ad-size:hover svg {
-    stroke: #ff5555;
+    stroke: var(--dev-danger);
   }
   
   #dev-settings-tray .var-section {
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--dev-border);
   }
   
   #dev-settings-tray .var-section.collapsed .var-section-body {
@@ -249,13 +260,13 @@ export const sidebarStyles = `
     align-items: center;
     justify-content: space-between;
     padding: 12px 20px;
-    background: #252525;
+    background: var(--dev-bg-section);
     cursor: pointer;
     user-select: none;
   }
   
   #dev-settings-tray .var-section-header:hover {
-    background: #2a2a2a;
+    background: var(--dev-bg-hover);
   }
   
   #dev-settings-tray .var-section-header-left {
@@ -267,14 +278,14 @@ export const sidebarStyles = `
   #dev-settings-tray .var-section-icon {
     width: 16px;
     height: 16px;
-    stroke: #666;
+    stroke: var(--dev-text-dimmed);
     flex-shrink: 0;
   }
   
   #dev-settings-tray .var-section-chevron {
     width: 12px;
     height: 12px;
-    stroke: #555;
+    stroke: var(--dev-text-faint);
     transition: transform 0.2s;
     flex-shrink: 0;
   }
@@ -284,7 +295,7 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .var-section-title {
-    color: #888;
+    color: var(--dev-text-muted);
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -292,7 +303,7 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .var-section-count {
-    color: #555;
+    color: var(--dev-text-faint);
     font-size: 10px;
     font-weight: 600;
   }
@@ -317,7 +328,7 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .var-name {
-    color: #888;
+    color: var(--dev-text-muted);
     font-size: 12px;
     font-weight: 600;
     min-width: 100px;
@@ -326,10 +337,10 @@ export const sidebarStyles = `
   
   #dev-settings-tray .var-input {
     flex: 1;
-    background: #333;
-    border: 1px solid #444;
+    background: var(--dev-bg-input);
+    border: 1px solid var(--dev-border-input);
     border-radius: 4px;
-    color: #fff;
+    color: var(--dev-text-primary);
     padding: 6px 10px;
     font-size: 12px;
     font-family: inherit;
@@ -337,21 +348,21 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .var-input:hover {
-    border-color: #555;
+    border-color: var(--dev-border-hover);
   }
   
   #dev-settings-tray .var-input:focus {
     outline: none;
-    border-color: #0078d4;
+    border-color: var(--dev-accent);
   }
   
   #dev-settings-tray .var-color-input {
     width: 32px;
     height: 28px;
     padding: 2px;
-    border: 1px solid #444;
+    border: 1px solid var(--dev-border-input);
     border-radius: 4px;
-    background: #333;
+    background: var(--dev-bg-input);
     cursor: pointer;
     flex-shrink: 0;
   }
@@ -384,20 +395,20 @@ export const sidebarStyles = `
   #dev-settings-tray .var-action-btn svg {
     width: 14px;
     height: 14px;
-    stroke: #888;
+    stroke: var(--dev-text-muted);
   }
   
   #dev-settings-tray .var-action-btn.var-delete:hover svg {
-    stroke: #ff5555;
+    stroke: var(--dev-danger);
   }
   
   #dev-settings-tray .var-action-btn.var-copy:hover svg {
-    stroke: #0078d4;
+    stroke: var(--dev-accent);
   }
   
   /* Sprite subsection styles */
   #dev-settings-tray .sprite-subsection {
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--dev-border);
     margin-top: 8px;
   }
   
@@ -406,7 +417,7 @@ export const sidebarStyles = `
     align-items: center;
     gap: 8px;
     padding: 12px 20px 8px;
-    color: #666;
+    color: var(--dev-text-dimmed);
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -414,7 +425,7 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .sprite-subsection-count {
-    color: #555;
+    color: var(--dev-text-faint);
     font-weight: 400;
   }
   
@@ -427,7 +438,7 @@ export const sidebarStyles = `
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
-    background: #2a2a2a;
+    background: var(--dev-bg-hover);
     border-radius: 4px;
     padding: 8px 10px;
   }
@@ -437,14 +448,14 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .sprite-name {
-    color: #999;
+    color: var(--dev-text-secondary);
     font-size: 12px;
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
     flex: 1;
   }
   
   #dev-settings-tray .sprite-filename {
-    color: #555;
+    color: var(--dev-text-faint);
     font-size: 10px;
     flex-shrink: 0;
   }
@@ -469,11 +480,11 @@ export const sidebarStyles = `
   #dev-settings-tray .sprite-copy-btn svg {
     width: 16px;
     height: 16px;
-    stroke: #888;
+    stroke: var(--dev-text-muted);
   }
   
   #dev-settings-tray .sprite-copy-btn:hover svg {
-    stroke: #fff;
+    stroke: var(--dev-text-primary);
   }
 
   #dev-settings-tray .add-var-btn-bottom {
@@ -481,9 +492,9 @@ export const sidebarStyles = `
     align-items: center;
     gap: 6px;
     background: transparent;
-    border: 1px dashed #444;
+    border: 1px dashed var(--dev-border-input);
     border-radius: 4px;
-    color: #666;
+    color: var(--dev-text-dimmed);
     padding: 8px 12px;
     margin: 8px 20px 16px;
     font-size: 11px;
@@ -494,9 +505,9 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .add-var-btn-bottom:hover {
-    border-color: #666;
-    color: #888;
-    background: #2a2a2a;
+    border-color: var(--dev-text-dimmed);
+    color: var(--dev-text-muted);
+    background: var(--dev-bg-hover);
   }
   
   #dev-settings-tray .add-var-btn-bottom svg {
@@ -508,7 +519,7 @@ export const sidebarStyles = `
   #dev-settings-tray .add-var-form {
     display: none;
     padding: 12px 20px;
-    background: #222;
+    background: var(--dev-bg-tertiary);
     gap: 8px;
     flex-wrap: wrap;
   }
@@ -520,10 +531,10 @@ export const sidebarStyles = `
   #dev-settings-tray .add-var-input {
     flex: 1;
     min-width: 100px;
-    background: #333;
-    border: 1px solid #444;
+    background: var(--dev-bg-input);
+    border: 1px solid var(--dev-border-input);
     border-radius: 4px;
-    color: #fff;
+    color: var(--dev-text-primary);
     padding: 6px 10px;
     font-size: 12px;
     font-family: inherit;
@@ -531,16 +542,16 @@ export const sidebarStyles = `
   
   #dev-settings-tray .add-var-input:focus {
     outline: none;
-    border-color: #0078d4;
+    border-color: var(--dev-accent);
   }
   
   #dev-settings-tray .var-image-select {
     flex: 1;
     min-width: 120px;
-    background: #333;
-    border: 1px solid #444;
+    background: var(--dev-bg-input);
+    border: 1px solid var(--dev-border-input);
     border-radius: 4px;
-    color: #fff;
+    color: var(--dev-text-primary);
     padding: 6px 10px;
     font-size: 12px;
     font-family: inherit;
@@ -549,21 +560,21 @@ export const sidebarStyles = `
   
   #dev-settings-tray .var-image-select:focus {
     outline: none;
-    border-color: #0078d4;
+    border-color: var(--dev-accent);
   }
   
   #dev-settings-tray .add-var-color {
     width: 36px;
     height: 30px;
     padding: 2px;
-    border: 1px solid #444;
+    border: 1px solid var(--dev-border-input);
     border-radius: 4px;
-    background: #333;
+    background: var(--dev-bg-input);
     cursor: pointer;
   }
   
   #dev-settings-tray .add-var-submit {
-    background: #0078d4;
+    background: var(--dev-accent);
     border: none;
     border-radius: 4px;
     color: #fff;
@@ -575,14 +586,14 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .add-var-submit:hover {
-    background: #0086ee;
+    background: var(--dev-accent-hover);
   }
   
   #dev-settings-tray .add-var-cancel {
     background: transparent;
-    border: 1px solid #555;
+    border: 1px solid var(--dev-border-hover);
     border-radius: 4px;
-    color: #888;
+    color: var(--dev-text-muted);
     padding: 6px 12px;
     font-size: 12px;
     cursor: pointer;
@@ -590,24 +601,24 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .add-var-cancel:hover {
-    border-color: #888;
-    color: #fff;
+    border-color: var(--dev-text-muted);
+    color: var(--dev-text-primary);
   }
   
   #dev-settings-tray .sync-notice {
     padding: 12px 20px;
-    background: #252525;
-    color: #888;
+    background: var(--dev-bg-section);
+    color: var(--dev-text-muted);
     font-size: 11px;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--dev-border);
   }
   
   #dev-settings-tray .sync-notice strong {
-    color: #aaa;
+    color: var(--dev-text-secondary);
   }
   
   #dev-settings-tray .empty-message {
-    color: #555;
+    color: var(--dev-text-faint);
     font-size: 12px;
     font-style: italic;
     padding: 4px 0;
@@ -617,7 +628,7 @@ export const sidebarStyles = `
   #dev-loading-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--dev-overlay);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -629,14 +640,14 @@ export const sidebarStyles = `
   #dev-loading-overlay .spinner {
     width: 36px;
     height: 36px;
-    border: 3px solid #444;
-    border-top-color: #0078d4;
+    border: 3px solid var(--dev-spinner-track);
+    border-top-color: var(--dev-accent);
     border-radius: 50%;
     animation: dev-spin 0.7s linear infinite;
   }
 
   #dev-loading-overlay .spinner-label {
-    color: #ccc;
+    color: var(--dev-text-secondary);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 13px;
   }

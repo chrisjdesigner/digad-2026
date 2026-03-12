@@ -38,8 +38,8 @@ export function createSidebarElement(
     <style>${sidebarStyles}</style>
     <div class="sidebar-resize-handle"></div>
     <div class="sidebar-tabs">
-      <button class="sidebar-tab${projectActive ? ' active' : ''}" data-tab="project">Project</button>
-      <button class="sidebar-tab${!projectActive ? ' active' : ''}" data-tab="variables">Version Variables</button>
+      <button class="sidebar-tab${projectActive ? ' active' : ''}" data-tab="project">${settingsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} Project</button>
+      <button class="sidebar-tab${!projectActive ? ' active' : ''}" data-tab="variables">${adjustmentsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} Version Variables</button>
     </div>
     <div class="sidebar-tab-panel${projectActive ? ' active' : ''}" data-panel="project">
       <div class="tray-content">

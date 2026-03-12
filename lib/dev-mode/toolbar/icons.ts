@@ -15,6 +15,8 @@ import typographyIcon from '../icons/typography.svg?raw';
 import adjustmentsIcon from '../icons/adjustments.svg?raw';
 import squaresIcon from '../icons/squares.svg?raw';
 import layersIcon from '../icons/layers.svg?raw';
+import sunIcon from '../icons/sun.svg?raw';
+import moonIcon from '../icons/moon.svg?raw';
 
 export {
   cameraIcon,
@@ -34,4 +36,6 @@ export {
   adjustmentsIcon,
   squaresIcon,
   layersIcon,
+  sunIcon,
+  moonIcon,
 };

@@ -28,9 +28,12 @@ function createToolbar() {
   layoutStyleEl.textContent = layoutStyles;
   document.head.appendChild(layoutStyleEl);
 
+  const isAllView = currentAd === 'all' || currentVariant === 'all';
+
   // Build layout structure
   const wrapper = document.createElement('div');
   wrapper.id = 'dev-layout-wrapper';
+  if (isAllView) wrapper.classList.add('no-sidebar');
   const main = document.createElement('div');
   main.id = 'dev-layout-main';
   const adContent = document.createElement('div');
@@ -46,18 +49,25 @@ function createToolbar() {
   }
   main.appendChild(adContent);
 
-  // Create sidebar
-  const sidebar = createSidebarElement(adConfigs, currentAd, currentVariant);
-
   wrapper.appendChild(main);
-  wrapper.appendChild(sidebar);
+
+  // Create sidebar (skip in "all" views)
+  if (!isAllView) {
+    const sidebar = createSidebarElement(adConfigs, currentAd, currentVariant);
+    wrapper.appendChild(sidebar);
+  }
+
   document.body.appendChild(wrapper);
 
   // Wire up behaviors
-  setupJobSettings();
+  if (!isAllView) {
+    setupJobSettings();
+  }
   setupNavigation(adConfigs, currentAd, currentVariant);
   setupScreenshot(currentAd, currentVariant);
-  setupSidebar(adConfigs, currentAd, currentVariant);
+  if (!isAllView) {
+    setupSidebar(adConfigs, currentAd, currentVariant);
+  }
 }
 
 // Initialize toolbar when DOM is ready
