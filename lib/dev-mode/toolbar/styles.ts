@@ -1,56 +1,4 @@
 export const layoutStyles = `
-  /* Dark theme (default) */
-  :root, [data-dev-theme="dark"] {
-    --dev-bg-primary: #111111;
-    --dev-bg-secondary: #1a1a1a;
-    --dev-bg-tertiary: #222;
-    --dev-bg-hover: #2a2a2a;
-    --dev-bg-section: #252525;
-    --dev-bg-input: #2a2a2a;
-    --dev-border: #333;
-    --dev-border-input: #444;
-    --dev-border-hover: #555;
-    --dev-text-primary: #fff;
-    --dev-text-secondary: #aaa;
-    --dev-text-muted: #888;
-    --dev-text-dimmed: #666;
-    --dev-text-faint: #555;
-    --dev-shadow: rgba(0, 0, 0, 0.3);
-    --dev-ad-content-bg: #222;
-    --dev-accent: #0078d4;
-    --dev-accent-hover: #0086ee;
-    --dev-danger: #ff5555;
-    --dev-resize-active: rgba(0, 120, 212, 0.5);
-    --dev-spinner-track: #444;
-    --dev-overlay: rgba(0, 0, 0, 0.7);
-  }
-
-  /* Light theme */
-  [data-dev-theme="light"] {
-    --dev-bg-primary: #f5f5f5;
-    --dev-bg-secondary: #fff;
-    --dev-bg-tertiary: #fafafa;
-    --dev-bg-hover: #eee;
-    --dev-bg-section: #f0f0f0;
-    --dev-bg-input: #fff;
-    --dev-border: #ddd;
-    --dev-border-input: #ccc;
-    --dev-border-hover: #aaa;
-    --dev-text-primary: #444;
-    --dev-text-secondary: #444;
-    --dev-text-muted: #666;
-    --dev-text-dimmed: #888;
-    --dev-text-faint: #aaa;
-    --dev-shadow: rgba(0, 0, 0, 0.1);
-    --dev-ad-content-bg: #e8e8e8;
-    --dev-accent: #0078d4;
-    --dev-accent-hover: #0065b8;
-    --dev-danger: #dc3545;
-    --dev-resize-active: rgba(0, 120, 212, 0.3);
-    --dev-spinner-track: #ccc;
-    --dev-overlay: rgba(255, 255, 255, 0.7);
-  }
-
   #dev-layout-wrapper {
     display: flex;
     height: 100vh;
@@ -195,14 +143,13 @@ export const toolbarStyles = `
     appearance: none;
     -webkit-appearance: none;
     background: var(--dev-bg-secondary);
-    border: 1px solid var(--dev-border) !important;
+    border: 1px solid var(--dev-border);
     border-radius: 9999px;
     transition: all 0.2s;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23888'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 14px;
-    border: none;
     font-weight: 700;
     color: var(--dev-text-muted);
     padding: 6px 33px 6px 15px;
@@ -307,7 +254,7 @@ export const toolbarStyles = `
   
   #dev-toolbar button {
     background: var(--dev-bg-secondary);
-    border: 1px solid var(--dev-border) !important;
+    border: 1px solid var(--dev-border);
     border-radius: 9999px;
     color: var(--dev-text-muted);
     padding: 6px 15px;

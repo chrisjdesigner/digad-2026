@@ -2,11 +2,11 @@ export const sidebarStyles = `
   #dev-settings-tray {
     position: relative;
     width: var(--sidebar-width, 340px);
-    min-width: 240px;
+    min-width: 370px;
     max-width: 600px;
     height: 100vh;
     flex-shrink: 0;
-    background: var(--dev-bg-secondary);
+    background: var(--dev-bg-primary);
     border-left: 1px solid var(--dev-border);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 13px;
@@ -17,17 +17,17 @@ export const sidebarStyles = `
   #dev-settings-tray .sidebar-resize-handle {
     position: absolute;
     top: 0;
-    left: -4px;
-    width: 8px;
+    left: -1px;
+    width: 2px;
     height: 100%;
     cursor: col-resize;
-    z-index: 10;
+    z-index: 999999;
   }
   
   #dev-settings-tray .sidebar-resize-handle:hover,
   #dev-settings-tray .sidebar-resize-handle.dragging {
-    background: var(--dev-accent);
-    opacity: 0.5;
+    background: var(--dev-resize-active);
+    opacity: 1;
   }
 
   #dev-settings-tray .tray-content {
@@ -39,7 +39,7 @@ export const sidebarStyles = `
   /* Tabs */
   #dev-settings-tray .sidebar-tabs {
     display: flex;
-    background: var(--dev-bg-tertiary);
+    background: var(--dev-bg-primary);
     border-bottom: 1px solid var(--dev-border);
     flex-shrink: 0;
   }
@@ -50,7 +50,7 @@ export const sidebarStyles = `
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
-    color: var(--dev-text-dimmed);
+    color: var(--dev-text-faint);
     font-size: 12px;
     font-weight: 600;
     font-family: inherit;
@@ -81,7 +81,6 @@ export const sidebarStyles = `
 
   #dev-settings-tray .sidebar-tab.active {
     color: var(--dev-text-secondary);
-    background: var(--dev-bg-hover);
   }
 
   #dev-settings-tray .sidebar-tab-panel {
@@ -285,6 +284,7 @@ export const sidebarStyles = `
     width: 16px;
     height: 16px;
     stroke: var(--dev-text-dimmed);
+    color: var(--dev-text-dimmed);
     flex-shrink: 0;
   }
   
@@ -414,7 +414,7 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .var-action-btn.var-copy:hover svg {
-    fill: var(--dev-accent);
+    fill: var(--dev-text-primary);
   }
   
   /* Sprite subsection styles */
@@ -447,7 +447,8 @@ export const sidebarStyles = `
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
-    background: var(--dev-bg-hover);
+    background: var(--dev-bg-section);
+    border: 1px solid var(--dev-border);
     border-radius: 10px;
     padding: 8px 10px;
   }
@@ -486,13 +487,13 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .sprite-copy-btn svg {
-    width: 16px;
-    height: 16px;
-    stroke: var(--dev-text-muted);
+    width: 13px;
+    height: 13px;
+    fill: var(--dev-text-muted);
   }
   
   #dev-settings-tray .sprite-copy-btn:hover svg {
-    stroke: var(--dev-text-primary);
+    fill: var(--dev-text-primary);
   }
 
   #dev-settings-tray .add-var-btn-bottom {

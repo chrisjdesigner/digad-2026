@@ -6,6 +6,7 @@
 
 import type { AdConfig } from './types';
 import { layoutStyles } from './styles';
+import { themeStyles } from '../theme';
 import { createToolbarElement } from './toolbar-html';
 import { createSidebarElement } from '../sidebar/sidebar-html';
 import { setupJobSettings } from './job-settings';
@@ -26,7 +27,7 @@ function createToolbar() {
 
   // Inject layout styles
   const layoutStyleEl = document.createElement('style');
-  layoutStyleEl.textContent = layoutStyles;
+  layoutStyleEl.textContent = themeStyles + layoutStyles;
   document.head.appendChild(layoutStyleEl);
 
   const isAllView = currentAd === 'all' || currentVariant === 'all';

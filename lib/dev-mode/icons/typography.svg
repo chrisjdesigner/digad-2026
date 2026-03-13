@@ -1,3 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M7 20l5-16m0 0l5 16m-5-16v16M4 7h16" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+  <!-- frame -->
+  <rect x="2" y="2" width="20" height="20" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <!-- corner handles -->
+  <circle cx="2" cy="2" r="2"/>
+  <circle cx="22" cy="2" r="2"/>
+  <circle cx="2" cy="22" r="2"/>
+  <circle cx="22" cy="22" r="2"/>
+  <!-- T letterform -->
+  <path d="M7 6.5h10v3h-1.2V8.2h-3V17h1.8v1.2h-5.2V17h1.8V8.2h-3v1.3H7V6.5z"/>
 </svg>

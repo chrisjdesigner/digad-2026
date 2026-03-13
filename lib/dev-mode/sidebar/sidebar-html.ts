@@ -5,6 +5,7 @@ import {
   photoIcon,
   typographyIcon,
   adjustmentsIcon,
+  variableIcon,
   plusIcon,
   settingsIcon,
   squaresIcon,
@@ -236,7 +237,7 @@ export function createSidebarElement(
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
-              ${adjustmentsIcon.replace('<svg', '<svg class="var-section-icon"')}
+              ${variableIcon.replace('<svg', '<svg class="var-section-icon"')}
               <span class="var-section-title">Other</span>
               <span class="var-section-count" id="other-count">(0)</span>
             </div>
