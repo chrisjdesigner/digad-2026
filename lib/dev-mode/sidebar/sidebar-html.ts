@@ -6,7 +6,6 @@ import {
   typographyIcon,
   adjustmentsIcon,
   plusIcon,
-  editIcon,
   settingsIcon,
   squaresIcon,
   layersIcon,
@@ -56,15 +55,13 @@ export function createSidebarElement(
               <div class="project-field">
                 <label class="project-field-label" for="dev-job-number">Job Number</label>
                 <div class="project-field-input-wrap">
-                  <input type="text" class="project-field-input" id="dev-job-number" placeholder="#000000" />
-                  <button class="project-field-edit" id="dev-edit-job-number" title="Edit job number">${editIcon}</button>
+                  <input type="text" class="project-field-input" id="dev-job-number" placeholder="000000" />
                 </div>
               </div>
               <div class="project-field">
                 <label class="project-field-label" for="dev-job-name">Job Name</label>
                 <div class="project-field-input-wrap">
                   <input type="text" class="project-field-input" id="dev-job-name" placeholder="job-name" />
-                  <button class="project-field-edit" id="dev-edit-job-name" title="Edit job name">${editIcon}</button>
                 </div>
               </div>
             </div>

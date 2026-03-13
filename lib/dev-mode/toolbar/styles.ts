@@ -6,7 +6,7 @@ export const layoutStyles = `
     --dev-bg-tertiary: #222;
     --dev-bg-hover: #2a2a2a;
     --dev-bg-section: #252525;
-    --dev-bg-input: #333;
+    --dev-bg-input: #2a2a2a;
     --dev-border: #333;
     --dev-border-input: #444;
     --dev-border-hover: #555;
@@ -176,7 +176,7 @@ export const toolbarStyles = `
     background: var(--dev-bg-primary);
     display: flex;
     align-items: center;
-    padding: 0 6px;
+    padding: 0 18px;
     gap: 10px;
     z-index: 999999;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -194,16 +194,18 @@ export const toolbarStyles = `
   #dev-toolbar select {
     appearance: none;
     -webkit-appearance: none;
-    background: transparent;
+    background: var(--dev-bg-secondary);
+    border: 1px solid var(--dev-border) !important;
+    border-radius: 9999px;
     transition: all 0.2s;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23888'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 4px center;
+    background-position: right 10px center;
     background-size: 14px;
     border: none;
     font-weight: 700;
     color: var(--dev-text-muted);
-    padding: 6px 24px 6px 10px;
+    padding: 6px 33px 6px 15px;
     font-size: 13px;
     cursor: pointer;
   }
@@ -299,10 +301,6 @@ export const toolbarStyles = `
   }
 
   #dev-toolbar .toolbar-brand {
-    padding-left: 22px;
-  }
-
-  #dev-toolbar .toolbar-brand {
     padding-right: 6px;
     margin-right: 2px;
   }
@@ -310,9 +308,7 @@ export const toolbarStyles = `
   #dev-toolbar .toolbar-brand-logo {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     color: var(--dev-text-primary);
-    opacity: 0.95;
   }
 
   #dev-toolbar .toolbar-brand-logo svg {
@@ -334,14 +330,14 @@ export const toolbarStyles = `
   }
   
   #dev-toolbar button {
-    background: transparent;
-    border: none;
+    background: var(--dev-bg-secondary);
+    border: 1px solid var(--dev-border) !important;
+    border-radius: 9999px;
     color: var(--dev-text-muted);
-    padding: 6px 12px;
+    padding: 6px 15px;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    border-radius: 4px;
     transition: all 0.2s;
     display: flex;
     align-items: center;
@@ -407,7 +403,7 @@ export const toolbarStyles = `
     position: relative;
     width: 52px;
     height: 28px;
-    background: #2a2a2a;
+    background: var(--dev-bg-secondary);
     border-radius: 14px;
     transition: background 0.3s ease;
     display: flex;
@@ -416,7 +412,7 @@ export const toolbarStyles = `
   }
 
   .theme-switch input:checked ~ .theme-switch-track {
-    background: #e7e7e7;
+    background: var(--dev-bg-hover);
   }
 
   .theme-switch-thumb {

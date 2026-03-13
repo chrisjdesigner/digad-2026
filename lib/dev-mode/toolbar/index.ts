@@ -12,6 +12,7 @@ import { setupJobSettings } from './job-settings';
 import { setupNavigation } from './navigation';
 import { setupScreenshot } from './screenshot';
 import { setupSidebar } from '../sidebar/sidebar';
+import { fetchJobSettings } from './config-api';
 
 function createToolbar() {
   // Skip toolbar if ?notoolbar=1 is in the URL (used for iframe previews)
@@ -68,6 +69,17 @@ function createToolbar() {
   if (!isAllView) {
     setupSidebar(adConfigs, currentAd, currentVariant);
   }
+
+  // Set page title to job info + current ad size
+  fetchJobSettings()
+    .then(({ jobNumber, jobName }) => {
+      const num = jobNumber || '000000';
+      const name = jobName || 'job-name';
+      const parts = [num, name];
+      parts.push(currentAd && currentAd !== 'all' ? currentAd : 'All Ads');
+      document.title = parts.join(' - ');
+    })
+    .catch(() => {});
 }
 
 // Initialize toolbar when DOM is ready

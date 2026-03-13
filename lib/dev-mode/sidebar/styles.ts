@@ -63,6 +63,10 @@ export const sidebarStyles = `
     gap: 6px;
   }
 
+  #dev-settings-tray .sidebar-tab:first-of-type {
+    border-right: 1px solid var(--dev-border);
+  }
+
   #dev-settings-tray .sidebar-tab .sidebar-tab-icon {
     width: 14px;
     height: 14px;
@@ -93,7 +97,10 @@ export const sidebarStyles = `
 
   /* Project tab */
   #dev-settings-tray .project-fields {
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    padding: 15px 0 20px;
   }
 
   #dev-settings-tray .project-section {
@@ -101,8 +108,7 @@ export const sidebarStyles = `
   }
 
   #dev-settings-tray .project-field {
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--dev-bg-hover);
+    padding: 0 20px;
   }
 
   #dev-settings-tray .project-field-label {
@@ -125,7 +131,7 @@ export const sidebarStyles = `
     flex: 1;
     background: var(--dev-bg-input);
     border: 1px solid var(--dev-border-input);
-    border-radius: 4px;
+    border-radius: 8px;
     color: var(--dev-text-primary);
     padding: 7px 10px;
     font-size: 13px;
@@ -175,7 +181,7 @@ export const sidebarStyles = `
 
   /* Project list items (ad sizes, versions) */
   #dev-settings-tray .project-list {
-    padding: 4px 12px;
+    padding: 0 12px 15px;
   }
 
   #dev-settings-tray .project-list-item {
@@ -310,6 +316,7 @@ export const sidebarStyles = `
   
   #dev-settings-tray .var-section-body {
     /* container for var-list and add button */
+    padding: 15px 0;
   }
   
   #dev-settings-tray .var-list {
@@ -496,7 +503,7 @@ export const sidebarStyles = `
     border-radius: 4px;
     color: var(--dev-text-dimmed);
     padding: 8px 12px;
-    margin: 8px 20px 16px;
+    margin: 0 20px 0;
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
