@@ -81,7 +81,7 @@ export function createSidebarElement(
               ${adConfigs.map(a => `
                 <div class="project-list-item${a.name === currentAd ? ' active' : ''}" data-ad-size="${a.name}">
                   <a class="project-list-item-link" href="/${a.name}/index.html">${a.name}</a>
-                  <button class="project-list-item-action delete-ad-size" data-ad-size="${a.name}" title="Delete ${a.name}">${trashIcon}</button>
+                  <button class="project-list-item-action delete-ad-size" data-ad-size="${a.name}" title="Delete ${a.name}"${adConfigs.length <= 1 ? ' disabled' : ''}>${trashIcon}</button>
                 </div>
               `).join('')}
             </div>
@@ -101,6 +101,7 @@ export function createSidebarElement(
             <div class="project-list" id="dev-versions-list">
               <div class="project-list-item${!currentVariant || currentVariant === '' ? ' active' : ''}" data-version="">
                 <a class="project-list-item-link" href="/${currentAd}/index.html">Base</a>
+                <button class="project-list-item-action delete-version" disabled title="Cannot delete base version">${trashIcon}</button>
               </div>
               ${variants.map(v => `
                 <div class="project-list-item${v === currentVariant ? ' active' : ''}" data-version="${v}">
@@ -131,10 +132,14 @@ export function createSidebarElement(
             </div>
             <button class="add-var-btn-bottom" data-section="template">${plusIcon} Add Template Variable</button>
             <div class="add-var-form">
-              <input type="text" class="add-var-input var-name-input" placeholder="Variable name" />
-              <input type="text" class="add-var-input var-value-input" placeholder="Default value" />
-              <button class="add-var-submit">Add to All Versions</button>
-              <button class="add-var-cancel">Cancel</button>
+              <div class="add-var-form-inputs">
+                <input type="text" class="add-var-input var-name-input" placeholder="Variable name" />
+                <input type="text" class="add-var-input var-value-input" placeholder="Default value" />
+              </div>
+              <div class="add-var-form-actions">
+                <button class="add-var-submit">Add to All Versions</button>
+                <button class="add-var-cancel">Cancel</button>
+              </div>
             </div>
           </div>
         </div>
@@ -153,10 +158,14 @@ export function createSidebarElement(
             </div>
             <button class="add-var-btn-bottom" data-section="css-colors">${plusIcon} Add Color Variable</button>
             <div class="add-var-form" data-use-color-picker="true">
-              <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., bg-color)" />
-              <input type="color" class="add-var-color var-value-input" value="#ffffff" />
-              <button class="add-var-submit">Add to All Versions</button>
-              <button class="add-var-cancel">Cancel</button>
+              <div class="add-var-form-inputs">
+                <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., bg-color)" />
+                <input type="color" class="add-var-color var-value-input" value="#ffffff" />
+              </div>
+              <div class="add-var-form-actions">
+                <button class="add-var-submit">Add to All Versions</button>
+                <button class="add-var-cancel">Cancel</button>
+              </div>
             </div>
           </div>
         </div>
@@ -175,12 +184,16 @@ export function createSidebarElement(
             </div>
             <button class="add-var-btn-bottom" data-section="css-images">${plusIcon} Add Image Variable</button>
             <div class="add-var-form" data-use-image-picker="true">
-              <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., hero-image)" />
-              <select class="add-var-input var-image-select">
-                <option value="">Loading images...</option>
-              </select>
-              <button class="add-var-submit">Add to All Versions</button>
-              <button class="add-var-cancel">Cancel</button>
+              <div class="add-var-form-inputs">
+                <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., hero-image)" />
+                <select class="add-var-input var-image-select">
+                  <option value="">Loading images...</option>
+                </select>
+              </div>
+              <div class="add-var-form-actions">
+                <button class="add-var-submit">Add to All Versions</button>
+                <button class="add-var-cancel">Cancel</button>
+              </div>
             </div>
             <div class="sprite-subsection">
               <div class="sprite-subsection-header">
@@ -208,10 +221,14 @@ export function createSidebarElement(
             </div>
             <button class="add-var-btn-bottom" data-section="css-typography">${plusIcon} Add Typography Variable</button>
             <div class="add-var-form">
-              <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., headline-size)" />
-              <input type="text" class="add-var-input var-value-input" placeholder="Default value (e.g., 24px)" />
-              <button class="add-var-submit">Add to All Versions</button>
-              <button class="add-var-cancel">Cancel</button>
+              <div class="add-var-form-inputs">
+                <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., headline-size)" />
+                <input type="text" class="add-var-input var-value-input" placeholder="Default value (e.g., 24px)" />
+              </div>
+              <div class="add-var-form-actions">
+                <button class="add-var-submit">Add to All Versions</button>
+                <button class="add-var-cancel">Cancel</button>
+              </div>
             </div>
           </div>
         </div>
@@ -230,10 +247,14 @@ export function createSidebarElement(
             </div>
             <button class="add-var-btn-bottom" data-section="css-other">${plusIcon} Add CSS Variable</button>
             <div class="add-var-form">
-              <input type="text" class="add-var-input var-name-input" placeholder="Variable name" />
-              <input type="text" class="add-var-input var-value-input" placeholder="Default value" />
-              <button class="add-var-submit">Add to All Versions</button>
-              <button class="add-var-cancel">Cancel</button>
+              <div class="add-var-form-inputs">
+                <input type="text" class="add-var-input var-name-input" placeholder="Variable name" />
+                <input type="text" class="add-var-input var-value-input" placeholder="Default value" />
+              </div>
+              <div class="add-var-form-actions">
+                <button class="add-var-submit">Add to All Versions</button>
+                <button class="add-var-cancel">Cancel</button>
+              </div>
             </div>
           </div>
         </div>

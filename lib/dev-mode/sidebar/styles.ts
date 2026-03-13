@@ -70,7 +70,7 @@ export const sidebarStyles = `
   #dev-settings-tray .sidebar-tab .sidebar-tab-icon {
     width: 14px;
     height: 14px;
-    stroke: currentColor;
+    fill: currentColor;
     flex-shrink: 0;
   }
 
@@ -100,7 +100,7 @@ export const sidebarStyles = `
     display: flex;
     flex-direction: column;
     gap: 17px;
-    padding: 15px 0 20px;
+    padding: 0;
   }
 
   #dev-settings-tray .project-section {
@@ -108,7 +108,7 @@ export const sidebarStyles = `
   }
 
   #dev-settings-tray .project-field {
-    padding: 0 20px;
+    padding: 0;
   }
 
   #dev-settings-tray .project-field-label {
@@ -116,9 +116,7 @@ export const sidebarStyles = `
     color: var(--dev-text-dimmed);
     font-size: 10px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 
   #dev-settings-tray .project-field-input-wrap {
@@ -181,24 +179,18 @@ export const sidebarStyles = `
 
   /* Project list items (ad sizes, versions) */
   #dev-settings-tray .project-list {
-    padding: 0 12px 15px;
+    padding: 0;
   }
 
   #dev-settings-tray .project-list-item {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 0 8px;
-    border-radius: 4px;
-    transition: background 0.15s;
   }
 
-  #dev-settings-tray .project-list-item:hover {
+  #dev-settings-tray .project-list-item.active .project-list-item-link {
     background: var(--dev-bg-hover);
-  }
-
-  #dev-settings-tray .project-list-item.active {
-    background: var(--dev-bg-hover);
+    border: 1px solid var(--dev-border);
   }
 
   #dev-settings-tray .project-list-item.active .project-list-item-link {
@@ -211,9 +203,10 @@ export const sidebarStyles = `
     font-size: 12px;
     font-weight: 600;
     text-decoration: none;
-    padding: 7px 0;
+    padding: 7px 15px;
+    border-radius: 9999px;
     display: block;
-    transition: color 0.15s;
+    transition: all 0.15s;
   }
 
   #dev-settings-tray .project-list-item-link:hover {
@@ -237,15 +230,21 @@ export const sidebarStyles = `
     opacity: 1;
   }
 
+  #dev-settings-tray .project-list-item-action:disabled {
+    opacity: 0.15;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   #dev-settings-tray .project-list-item-action svg {
     width: 14px;
     height: 14px;
-    stroke: var(--dev-text-muted);
+    fill: var(--dev-text-muted);
   }
 
   #dev-settings-tray .project-list-item-action.delete-version:hover svg,
   #dev-settings-tray .project-list-item-action.delete-ad-size:hover svg {
-    stroke: var(--dev-danger);
+    fill: var(--dev-danger);
   }
   
   #dev-settings-tray .var-section {
@@ -267,6 +266,7 @@ export const sidebarStyles = `
     justify-content: space-between;
     padding: 12px 20px;
     background: var(--dev-bg-section);
+    border-bottom: 1px solid var(--dev-border);
     cursor: pointer;
     user-select: none;
   }
@@ -316,15 +316,19 @@ export const sidebarStyles = `
   
   #dev-settings-tray .var-section-body {
     /* container for var-list and add button */
-    padding: 15px 0;
+    padding: 15px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
   
   #dev-settings-tray .var-list {
-    padding: 12px 20px 8px;
+    padding: 0;
   }
   
   #dev-settings-tray .var-item {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     margin-bottom: 10px;
@@ -335,10 +339,10 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .var-name {
-    color: var(--dev-text-muted);
-    font-size: 12px;
+    color: var(--dev-text-dimmed);
+    font-size: 10px;
     font-weight: 600;
-    min-width: 100px;
+    width: 100%;
     flex-shrink: 0;
   }
   
@@ -402,15 +406,15 @@ export const sidebarStyles = `
   #dev-settings-tray .var-action-btn svg {
     width: 14px;
     height: 14px;
-    stroke: var(--dev-text-muted);
+    fill: var(--dev-text-muted);
   }
   
   #dev-settings-tray .var-action-btn.var-delete:hover svg {
-    stroke: var(--dev-danger);
+    fill: var(--dev-danger);
   }
   
   #dev-settings-tray .var-action-btn.var-copy:hover svg {
-    stroke: var(--dev-accent);
+    fill: var(--dev-accent);
   }
   
   /* Sprite subsection styles */
@@ -423,12 +427,10 @@ export const sidebarStyles = `
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 20px 8px;
+    padding: 12px 0 8px;
     color: var(--dev-text-dimmed);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
   
   #dev-settings-tray .sprite-subsection-count {
@@ -437,7 +439,7 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .sprite-list {
-    padding: 0 20px 12px;
+    padding: 0 0 12px;
   }
   
   #dev-settings-tray .sprite-item {
@@ -446,7 +448,7 @@ export const sidebarStyles = `
     gap: 8px;
     margin-bottom: 8px;
     background: var(--dev-bg-hover);
-    border-radius: 4px;
+    border-radius: 10px;
     padding: 8px 10px;
   }
   
@@ -456,8 +458,7 @@ export const sidebarStyles = `
   
   #dev-settings-tray .sprite-name {
     color: var(--dev-text-secondary);
-    font-size: 12px;
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 10px;
     flex: 1;
   }
   
@@ -496,24 +497,24 @@ export const sidebarStyles = `
 
   #dev-settings-tray .add-var-btn-bottom {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 6px;
     background: transparent;
-    border: 1px dashed var(--dev-border-input);
-    border-radius: 4px;
+    border: 1px solid var(--dev-border-input);
+    border-radius: 9999px;
     color: var(--dev-text-dimmed);
     padding: 8px 12px;
-    margin: 0 20px 0;
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    width: calc(100% - 40px);
+    width: 100%;
   }
   
   #dev-settings-tray .add-var-btn-bottom:hover {
-    border-color: var(--dev-text-dimmed);
-    color: var(--dev-text-muted);
+    border-color: var(--dev-border-hover);
+    color: var(--dev-text-secondary);
     background: var(--dev-bg-hover);
   }
   
@@ -525,14 +526,25 @@ export const sidebarStyles = `
   
   #dev-settings-tray .add-var-form {
     display: none;
+    flex-direction: column;
     padding: 12px 20px;
     background: var(--dev-bg-tertiary);
     gap: 8px;
-    flex-wrap: wrap;
   }
   
   #dev-settings-tray .add-var-form.active {
     display: flex;
+  }
+  
+  #dev-settings-tray .add-var-form-inputs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  #dev-settings-tray .add-var-form-actions {
+    display: flex;
+    gap: 8px;
   }
   
   #dev-settings-tray .add-var-input {
@@ -582,34 +594,37 @@ export const sidebarStyles = `
   
   #dev-settings-tray .add-var-submit {
     background: var(--dev-accent);
-    border: none;
-    border-radius: 4px;
+    border: 1px solid var(--dev-accent) !important;
+    border-radius: 9999px;
     color: #fff;
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 6px 15px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
   }
   
   #dev-settings-tray .add-var-submit:hover {
     background: var(--dev-accent-hover);
+    border-color: var(--dev-accent-hover) !important;
   }
   
   #dev-settings-tray .add-var-cancel {
     background: transparent;
-    border: 1px solid var(--dev-border-hover);
-    border-radius: 4px;
-    color: var(--dev-text-muted);
-    padding: 6px 12px;
-    font-size: 12px;
+    border: 1px solid var(--dev-border-input);
+    border-radius: 9999px;
+    color: var(--dev-text-dimmed);
+    padding: 6px 15px;
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
   }
   
   #dev-settings-tray .add-var-cancel:hover {
-    border-color: var(--dev-text-muted);
-    color: var(--dev-text-primary);
+    border-color: var(--dev-border-hover);
+    color: var(--dev-text-secondary);
+    background: var(--dev-bg-hover);
   }
   
   #dev-settings-tray .sync-notice {

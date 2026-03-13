@@ -212,7 +212,9 @@ export const toolbarStyles = `
   
   #dev-toolbar select:hover {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23fff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
-    color: var(--dev-text-primary);
+    color: var(--dev-text-secondary);
+    border-color: var(--dev-border-hover) !important;
+    background-color: var(--dev-bg-hover);
   }
 
   [data-dev-theme="light"] #dev-toolbar select {
@@ -251,32 +253,6 @@ export const toolbarStyles = `
   
   #dev-toolbar input[type="text"]::placeholder {
     color: var(--dev-text-faint);
-  }
-  
-  #dev-toolbar .edit-btn {
-    background: transparent;
-    border: none;
-    padding: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.4;
-    transition: opacity 0.2s;
-  }
-  
-  #dev-toolbar .edit-btn:hover {
-    opacity: 1;
-  }
-  
-  #dev-toolbar .edit-btn svg {
-    width: 14px;
-    height: 14px;
-    stroke: var(--dev-text-muted);
-  }
-  
-  #dev-toolbar .edit-btn:hover svg {
-    stroke: var(--dev-text-primary);
   }
   
   #dev-toolbar .input-prefix {
@@ -352,8 +328,9 @@ export const toolbarStyles = `
   }
   
   #dev-toolbar button:hover {
-    border-color: var(--dev-border-input);
+    border-color: var(--dev-border-hover);
     color: var(--dev-text-secondary);
+    background: var(--dev-bg-hover);
   }
   
   #dev-toolbar button:hover svg {
@@ -405,10 +382,15 @@ export const toolbarStyles = `
     height: 28px;
     background: var(--dev-bg-secondary);
     border-radius: 14px;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     border: 1px solid var(--dev-border);
+  }
+
+  .theme-switch:hover .theme-switch-track {
+    border-color: var(--dev-border-hover);
+    background: var(--dev-bg-hover);
   }
 
   .theme-switch input:checked ~ .theme-switch-track {
