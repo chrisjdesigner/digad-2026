@@ -36,7 +36,7 @@ export const layoutStyles = `
     --dev-border: #ddd;
     --dev-border-input: #ccc;
     --dev-border-hover: #aaa;
-    --dev-text-primary: #111;
+    --dev-text-primary: #444;
     --dev-text-secondary: #444;
     --dev-text-muted: #666;
     --dev-text-dimmed: #888;
@@ -108,6 +108,7 @@ export const layoutStyles = `
 
   [data-dev-theme="light"] .gs-dev-tools .gs-btn-white {
     fill: rgba(0, 0, 0, 0.5) !important;
+    stroke: none !important;
   }
 
   [data-dev-theme="light"] .gs-dev-tools .time-scale,
@@ -171,7 +172,7 @@ export const toolbarStyles = `
     position: relative;
     top: 0;
     left: 0;
-    height: 46px;
+    height: 48px;
     background: var(--dev-bg-primary);
     display: flex;
     align-items: center;
@@ -180,8 +181,8 @@ export const toolbarStyles = `
     z-index: 999999;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 13px;
-    box-shadow: 0 2px 8px var(--dev-shadow);
     flex-shrink: 0;
+    border-bottom: 1px solid var(--dev-border);
   }
   
   #dev-toolbar label {
@@ -296,6 +297,30 @@ export const toolbarStyles = `
     align-items: center;
     gap: 0;
   }
+
+  #dev-toolbar .toolbar-brand {
+    padding-left: 22px;
+  }
+
+  #dev-toolbar .toolbar-brand {
+    padding-right: 6px;
+    margin-right: 2px;
+  }
+
+  #dev-toolbar .toolbar-brand-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dev-text-primary);
+    opacity: 0.95;
+  }
+
+  #dev-toolbar .toolbar-brand-logo svg {
+    display: block;
+    width: 18px;
+    height: auto;
+    max-height: 28px;
+  }
   
   #dev-toolbar .toolbar-divider {
     width: 1px;
@@ -361,15 +386,81 @@ export const toolbarStyles = `
     to { transform: rotate(360deg); }
   }
 
-  /* Theme toggle icon visibility */
-  #dev-theme-toggle .theme-icon-dark,
-  #dev-theme-toggle .theme-icon-light {
-    display: flex;
+  /* Theme toggle switch */
+  .theme-switch {
+    position: relative;
+    display: inline-flex;
     align-items: center;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
   }
 
-  [data-dev-theme="dark"] #dev-theme-toggle .theme-icon-dark { display: flex; }
-  [data-dev-theme="dark"] #dev-theme-toggle .theme-icon-light { display: none; }
-  [data-dev-theme="light"] #dev-theme-toggle .theme-icon-dark { display: none; }
-  [data-dev-theme="light"] #dev-theme-toggle .theme-icon-light { display: flex; }
+  .theme-switch input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .theme-switch-track {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    background: #2a2a2a;
+    border-radius: 14px;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--dev-border);
+  }
+
+  .theme-switch input:checked ~ .theme-switch-track {
+    background: #e7e7e7;
+  }
+
+  .theme-switch-thumb {
+    position: absolute;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-switch input:checked ~ .theme-switch-track .theme-switch-thumb {
+    transform: translateX(24px);
+  }
+
+  .theme-switch-icon {
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-switch-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Dark mode: show moon icon in thumb */
+  .theme-switch-icon--moon {
+    display: flex;
+    color: #2a2a2a;
+  }
+  .theme-switch-icon--sun {
+    display: none;
+  }
+
+  /* Light mode: show sun icon in thumb */
+  .theme-switch input:checked ~ .theme-switch-track .theme-switch-icon--moon {
+    display: none;
+  }
+  .theme-switch input:checked ~ .theme-switch-track .theme-switch-icon--sun {
+    display: flex;
+  }
 `;

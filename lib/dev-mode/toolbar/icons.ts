@@ -15,6 +15,7 @@ import typographyIcon from '../icons/typography.svg?raw';
 import adjustmentsIcon from '../icons/adjustments.svg?raw';
 import squaresIcon from '../icons/squares.svg?raw';
 import layersIcon from '../icons/layers.svg?raw';
+import srLogoIcon from '../icons/sr-logo.svg?raw';
 import sunIcon from '../icons/sun.svg?raw';
 import moonIcon from '../icons/moon.svg?raw';
 
@@ -36,6 +37,7 @@ export {
   adjustmentsIcon,
   squaresIcon,
   layersIcon,
+  srLogoIcon,
   sunIcon,
   moonIcon,
 };

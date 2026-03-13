@@ -1,5 +1,5 @@
 import type { AdConfig } from './types';
-import { cameraIcon, sunIcon, moonIcon } from './icons';
+import { cameraIcon, srLogoIcon, sunIcon, moonIcon } from './icons';
 import { toolbarStyles } from './styles';
 
 const THEME_STORAGE_KEY = 'dev-theme';
@@ -20,7 +20,11 @@ export function createToolbarElement(
   toolbar.id = 'dev-toolbar';
   toolbar.innerHTML = `
     <style>${toolbarStyles}</style>
-        
+
+    <div class="toolbar-group toolbar-brand" aria-label="SR logo">
+      <span class="toolbar-brand-logo">${srLogoIcon}</span>
+    </div>
+    
     <div class="toolbar-group">
       <select id="dev-size-select">
         ${adConfigs.map(ad => `
@@ -41,10 +45,15 @@ export function createToolbarElement(
     <div class="toolbar-spacer"></div>
 
     <div class="toolbar-group">
-      <button id="dev-theme-toggle" title="Toggle light/dark mode">
-        <span class="theme-icon-dark">${moonIcon}</span>
-        <span class="theme-icon-light">${sunIcon}</span>
-      </button>
+      <label class="theme-switch" title="Toggle light/dark mode">
+        <input type="checkbox" id="dev-theme-toggle" ${isDark ? '' : 'checked'}>
+        <span class="theme-switch-track">
+          <span class="theme-switch-thumb">
+            <span class="theme-switch-icon theme-switch-icon--sun">${sunIcon}</span>
+            <span class="theme-switch-icon theme-switch-icon--moon">${moonIcon}</span>
+          </span>
+        </span>
+      </label>
     </div>
     
     ${currentAd !== 'all' && currentVariant !== 'all' ? `
@@ -58,10 +67,9 @@ export function createToolbarElement(
   document.documentElement.setAttribute('data-dev-theme', savedTheme);
 
   // Wire up theme toggle
-  const toggleBtn = toolbar.querySelector('#dev-theme-toggle') as HTMLButtonElement;
-  toggleBtn.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-dev-theme') || 'dark';
-    const next = current === 'dark' ? 'light' : 'dark';
+  const toggleCheckbox = toolbar.querySelector('#dev-theme-toggle') as HTMLInputElement;
+  toggleCheckbox.addEventListener('change', () => {
+    const next = toggleCheckbox.checked ? 'light' : 'dark';
     document.documentElement.setAttribute('data-dev-theme', next);
     localStorage.setItem(THEME_STORAGE_KEY, next);
   });
