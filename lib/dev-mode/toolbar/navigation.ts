@@ -49,7 +49,9 @@ export function setupNavigation(
   if (versionSelect) {
     versionSelect.addEventListener('change', () => {
       const newVersion = versionSelect.value;
-      if (newVersion) {
+      if (newVersion === 'all') {
+        window.location.href = `/${currentAd}/all.html`;
+      } else if (newVersion) {
         window.location.href = `/${currentAd}/${newVersion}.html`;
       } else {
         window.location.href = `/${currentAd}/index.html`;

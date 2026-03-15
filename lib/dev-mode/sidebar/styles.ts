@@ -45,18 +45,17 @@ export const sidebarStyles = `
   }
 
   #dev-settings-tray .sidebar-tab {
-    flex: 1;
-    padding: 15px 12px;
-    background: transparent;
+    flex: 0 0 50%;
+    padding: 17px 12px;
+    background: var(--dev-bg-primary);
     border: none;
-    border-bottom: 2px solid transparent;
     color: var(--dev-text-faint);
     font-size: 12px;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
     transition: all 0.2s;
-    text-align: center;
+    text-align: left;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -81,6 +80,7 @@ export const sidebarStyles = `
 
   #dev-settings-tray .sidebar-tab.active {
     color: var(--dev-text-secondary);
+    background: var(--dev-bg-section);
   }
 
   #dev-settings-tray .sidebar-tab-panel {
@@ -313,7 +313,26 @@ export const sidebarStyles = `
     font-size: 10px;
     font-weight: 600;
   }
-  
+
+  #dev-settings-tray .var-section-view-all {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--dev-text-faint);
+    text-decoration: none;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid var(--dev-border);
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+  }
+
+  #dev-settings-tray .var-section-view-all:hover {
+    border-color: var(--dev-border-hover);
+    color: var(--dev-text-secondary);
+    background: var(--dev-bg-hover);
+  }
+
   #dev-settings-tray .var-section-body {
     /* container for var-list and add button */
     padding: 15px 15px;

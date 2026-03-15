@@ -16,9 +16,14 @@ import type { AdConfig } from '../toolbar/types';
 import { sidebarStyles } from './styles';
 
 const TAB_STORAGE_KEY = 'dev-sidebar-tab';
+const SECTION_STORAGE_PREFIX = 'dev-section-';
 
 function getSavedTab(): string {
   return localStorage.getItem(TAB_STORAGE_KEY) || 'project';
+}
+
+function isSectionCollapsed(sectionId: string): boolean {
+  return localStorage.getItem(SECTION_STORAGE_PREFIX + sectionId) === 'collapsed';
 }
 
 export function createSidebarElement(
@@ -26,7 +31,8 @@ export function createSidebarElement(
   currentAd: string,
   currentVariant: string | null,
 ): HTMLDivElement {
-  const savedTab = getSavedTab();
+  const isAllView = currentAd === 'all' || currentVariant === 'all';
+  const savedTab = isAllView ? 'project' : getSavedTab();
   const projectActive = savedTab === 'project';
 
   const ad = adConfigs.find(a => a.name === currentAd);
@@ -39,11 +45,11 @@ export function createSidebarElement(
     <div class="sidebar-resize-handle"></div>
     <div class="sidebar-tabs">
       <button class="sidebar-tab${projectActive ? ' active' : ''}" data-tab="project">${settingsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} Project</button>
-      <button class="sidebar-tab${!projectActive ? ' active' : ''}" data-tab="variables">${adjustmentsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} Version Variables</button>
+      ${!isAllView ? `<button class="sidebar-tab${!projectActive ? ' active' : ''}" data-tab="variables">${adjustmentsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} Version Variables</button>` : ''}
     </div>
     <div class="sidebar-tab-panel${projectActive ? ' active' : ''}" data-panel="project">
       <div class="tray-content">
-        <div class="var-section" data-project-section="job-details">
+        <div class="var-section${isSectionCollapsed('job-details') ? ' collapsed' : ''}" data-project-section="job-details">
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
@@ -68,7 +74,7 @@ export function createSidebarElement(
             </div>
           </div>
         </div>
-        <div class="var-section" data-project-section="ad-sizes">
+        <div class="var-section${isSectionCollapsed('ad-sizes') ? ' collapsed' : ''}" data-project-section="ad-sizes">
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
@@ -76,6 +82,7 @@ export function createSidebarElement(
               <span class="var-section-title">Ad Sizes</span>
               <span class="var-section-count">(${adConfigs.length})</span>
             </div>
+            <a class="var-section-view-all" href="/all.html" title="View all sizes">View All</a>
           </div>
           <div class="var-section-body">
             <div class="project-list" id="dev-ad-sizes-list">
@@ -89,7 +96,8 @@ export function createSidebarElement(
             <button class="add-var-btn-bottom" id="dev-add-size-btn">${plusIcon} Add Size</button>
           </div>
         </div>
-        <div class="var-section" data-project-section="versions">
+        ${currentAd !== 'all' ? `
+        <div class="var-section${isSectionCollapsed('versions') ? ' collapsed' : ''}" data-project-section="versions">
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
@@ -97,6 +105,7 @@ export function createSidebarElement(
               <span class="var-section-title">${currentAd} Versions</span>
               <span class="var-section-count">(${variants.length + 1})</span>
             </div>
+            <a class="var-section-view-all" href="/${currentAd}/all.html" title="View all versions">View All</a>
           </div>
           <div class="var-section-body">
             <div class="project-list" id="dev-versions-list">
@@ -114,11 +123,12 @@ export function createSidebarElement(
             <button class="add-var-btn-bottom" id="dev-add-version-btn">${plusIcon} Add Version</button>
           </div>
         </div>
+        ` : ''}
       </div>
     </div>
     <div class="sidebar-tab-panel${!projectActive ? ' active' : ''}" data-panel="variables">
       <div class="tray-content">
-        <div class="var-section" data-type="template">
+        <div class="var-section${isSectionCollapsed('template') ? ' collapsed' : ''}" data-type="template">
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
@@ -144,7 +154,7 @@ export function createSidebarElement(
             </div>
           </div>
         </div>
-        <div class="var-section" data-type="css-colors">
+        <div class="var-section${isSectionCollapsed('css-colors') ? ' collapsed' : ''}" data-type="css-colors">
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
@@ -170,7 +180,7 @@ export function createSidebarElement(
             </div>
           </div>
         </div>
-        <div class="var-section" data-type="css-images">
+        <div class="var-section${isSectionCollapsed('css-images') ? ' collapsed' : ''}" data-type="css-images">
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
@@ -207,7 +217,7 @@ export function createSidebarElement(
             </div>
           </div>
         </div>
-        <div class="var-section" data-type="css-typography">
+        <div class="var-section${isSectionCollapsed('css-typography') ? ' collapsed' : ''}" data-type="css-typography">
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}
@@ -233,7 +243,7 @@ export function createSidebarElement(
             </div>
           </div>
         </div>
-        <div class="var-section" data-type="css-other">
+        <div class="var-section${isSectionCollapsed('css-other') ? ' collapsed' : ''}" data-type="css-other">
           <div class="var-section-header">
             <div class="var-section-header-left">
               ${chevronDownIcon.replace('<svg', '<svg class="var-section-chevron"')}

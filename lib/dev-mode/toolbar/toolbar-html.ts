@@ -34,7 +34,7 @@ export function createToolbarElement(
       </select>
     </div>
     
-    ${currentAd !== 'all' && currentVariant !== 'all' ? `
+    ${currentAd !== 'all' ? `
     <div class="toolbar-group">
       <select id="dev-version-select">
         <!-- Options populated dynamically -->

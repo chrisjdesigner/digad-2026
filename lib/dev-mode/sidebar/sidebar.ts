@@ -5,6 +5,7 @@ import type { VariableElements } from './variables';
 
 const STORAGE_KEY = 'dev-sidebar-width';
 const TAB_STORAGE_KEY = 'dev-sidebar-tab';
+const SECTION_STORAGE_PREFIX = 'dev-section-';
 const DEFAULT_WIDTH = 340;
 const MIN_WIDTH = 240;
 const MAX_WIDTH = 600;
@@ -29,6 +30,7 @@ export function setupSidebar(
 ): void {
   const sidebar = document.getElementById('dev-settings-tray') as HTMLDivElement;
   const resizeHandle = sidebar.querySelector('.sidebar-resize-handle') as HTMLDivElement;
+  const isAllView = currentAd === 'all' || currentVariant === 'all';
 
   // Apply saved sidebar width
   const initialWidth = getSavedWidth();
@@ -40,26 +42,42 @@ export function setupSidebar(
     cssVariables: { colors: {}, images: {}, typography: {}, other: {} },
   };
 
-  // Get variable list elements
-  const variableElements: VariableElements = {
-    templateVarsList: document.getElementById('template-vars-list') as HTMLDivElement,
-    cssColorsList: document.getElementById('css-colors-list') as HTMLDivElement,
-    cssImagesList: document.getElementById('css-images-list') as HTMLDivElement,
-    cssTypographyList: document.getElementById('css-typography-list') as HTMLDivElement,
-    cssOtherList: document.getElementById('css-other-list') as HTMLDivElement,
-    spriteImagesList: document.getElementById('sprite-images-list') as HTMLDivElement,
-    spritesCount: document.getElementById('sprites-count') as HTMLSpanElement,
-  };
+  let renderVariables: (() => void) | undefined;
+  let loadSprites: (() => void) | undefined;
+  let addVariable: ((name: string, defaultValue: string, type: 'template' | 'css', category?: 'colors' | 'images' | 'typography' | 'other') => Promise<void>) | undefined;
+  let updateSectionCounts: ((t: number, c: number, i: number, ty: number, o: number) => void) | undefined;
 
-  // Setup variable rendering and CRUD
-  const { renderVariables, loadSprites, addVariable, updateSectionCounts } =
-    setupVariables(variableElements, currentAd, currentVariant, configData);
+  if (!isAllView) {
+    // Get variable list elements
+    const variableElements: VariableElements = {
+      templateVarsList: document.getElementById('template-vars-list') as HTMLDivElement,
+      cssColorsList: document.getElementById('css-colors-list') as HTMLDivElement,
+      cssImagesList: document.getElementById('css-images-list') as HTMLDivElement,
+      cssTypographyList: document.getElementById('css-typography-list') as HTMLDivElement,
+      cssOtherList: document.getElementById('css-other-list') as HTMLDivElement,
+      spriteImagesList: document.getElementById('sprite-images-list') as HTMLDivElement,
+      spritesCount: document.getElementById('sprites-count') as HTMLSpanElement,
+    };
 
-  // Section toggle (collapse/expand)
+    // Setup variable rendering and CRUD
+    const vars = setupVariables(variableElements, currentAd, currentVariant, configData);
+    renderVariables = vars.renderVariables;
+    loadSprites = vars.loadSprites;
+    addVariable = vars.addVariable;
+    updateSectionCounts = vars.updateSectionCounts;
+  }
+
+  // Section toggle (collapse/expand) with persistence
   sidebar.querySelectorAll('.var-section-header').forEach(header => {
-    header.addEventListener('click', () => {
+    header.addEventListener('click', (e) => {
+      // Don't toggle if clicking a View All link
+      if ((e.target as HTMLElement).closest('.var-section-view-all')) return;
       const section = header.closest('.var-section') as HTMLElement;
       section.classList.toggle('collapsed');
+      const key = section.getAttribute('data-project-section') || section.getAttribute('data-type') || '';
+      if (key) {
+        localStorage.setItem(SECTION_STORAGE_PREFIX + key, section.classList.contains('collapsed') ? 'collapsed' : 'open');
+      }
     });
   });
 
@@ -106,15 +124,7 @@ export function setupSidebar(
 
   // Load config from server
   async function loadConfig() {
-    if (currentAd === 'all' || currentVariant === 'all') {
-      variableElements.templateVarsList.innerHTML = '<div class="empty-message">Select a specific ad size and version to edit variables</div>';
-      variableElements.cssColorsList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
-      variableElements.cssImagesList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
-      variableElements.cssTypographyList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
-      variableElements.cssOtherList.innerHTML = '<div class="empty-message">Select a specific version to edit</div>';
-      variableElements.spriteImagesList.innerHTML = '<div class="empty-message">Select a specific ad size</div>';
-      if (variableElements.spritesCount) variableElements.spritesCount.textContent = '(0)';
-      updateSectionCounts(0, 0, 0, 0, 0);
+    if (isAllView || !renderVariables || !updateSectionCounts) {
       return;
     }
 
@@ -126,14 +136,13 @@ export function setupSidebar(
       configData.cssVariables = data.cssVariables;
 
       renderVariables();
-      loadSprites();
+      loadSprites!();
     } catch (error) {
       console.error('Failed to load config:', error);
-      variableElements.templateVarsList.innerHTML = '<div class="empty-message">Failed to load config</div>';
-      variableElements.cssColorsList.innerHTML = '<div class="empty-message">Failed to load config</div>';
-      variableElements.cssImagesList.innerHTML = '<div class="empty-message">Failed to load config</div>';
-      variableElements.cssTypographyList.innerHTML = '<div class="empty-message">Failed to load config</div>';
-      variableElements.cssOtherList.innerHTML = '<div class="empty-message">Failed to load config</div>';
+      ['template-vars-list', 'css-colors-list', 'css-images-list', 'css-typography-list', 'css-other-list'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<div class="empty-message">Failed to load config</div>';
+      });
     }
   }
 
@@ -285,7 +294,9 @@ export function setupSidebar(
   });
 
   // Add variable form handlers
-  setupAddVariableForms(sidebar, currentAd, addVariable);
+  if (!isAllView && addVariable) {
+    setupAddVariableForms(sidebar, currentAd, addVariable);
+  }
 }
 
 // Wire up the "Add Variable" forms in each section
