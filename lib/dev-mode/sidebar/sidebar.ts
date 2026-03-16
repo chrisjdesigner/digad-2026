@@ -9,6 +9,39 @@ const SECTION_STORAGE_PREFIX = 'dev-section-';
 const DEFAULT_WIDTH = 340;
 const MIN_WIDTH = 240;
 const MAX_WIDTH = 600;
+const COMMON_AD_SIZES = [
+  '120x600',
+  '125x125',
+  '160x600',
+  '180x150',
+  '200x200',
+  '240x400',
+  '250x250',
+  '300x50',
+  '300x100',
+  '300x250',
+  '300x600',
+  '320x50',
+  '320x100',
+  '320x480',
+  '336x280',
+  '468x60',
+  '480x320',
+  '728x90',
+  '970x90',
+  '970x250',
+  '970x415',
+  '980x120',
+  '980x240',
+  '980x400',
+  '1080x1080',
+  '1080x1350',
+  '1080x1920',
+  '1200x628',
+  '1200x627',
+  '1200x675',
+  '1600x900',
+];
 
 function getSavedWidth(): number {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -177,37 +210,23 @@ export function setupSidebar(
     addVersionBtn.addEventListener('click', async () => {
       const ad = adConfigs.find(a => a.name === currentAd);
       const variants = ad?.variants || [];
-      const allVersions = ['Base', ...variants];
 
-      // Determine source version
-      let sourceVersion: string;
-      if (allVersions.length === 1) {
-        sourceVersion = 'base';
-      } else {
-        const choices = allVersions.map((v, i) => `${i + 1}. ${v}`).join('\n');
-        const input = prompt(`Which version would you like to duplicate?\n\n${choices}\n\nEnter the number:`);
-        if (!input) return;
-        const index = parseInt(input, 10) - 1;
-        if (isNaN(index) || index < 0 || index >= allVersions.length) {
-          alert('Invalid selection.');
-          return;
-        }
-        sourceVersion = index === 0 ? 'base' : variants[index - 1];
-      }
-
-      // Auto-generate next version name
+      // Auto-generate next version name (v2, v3, ...)
       const existingNumbers = variants
         .map(v => { const m = v.match(/^v(\d+)$/); return m ? parseInt(m[1], 10) : 0; })
         .filter(n => n > 0);
       const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 2;
-      const newName = prompt('Enter a name for the new version:', `v${nextNumber}`);
-      if (!newName) return;
+
+      const modalResult = await showCreateVersionModal(variants, `v${nextNumber}`);
+      if (!modalResult) return;
+
+      const { sourceVersion, newVersionName } = modalResult;
 
       try {
         addVersionBtn.disabled = true;
         addVersionBtn.textContent = 'Creating...';
-        await createVersion(currentAd, newName, sourceVersion);
-        window.location.href = `/${currentAd}/${newName}.html`;
+        await createVersion(currentAd, newVersionName, sourceVersion);
+        window.location.href = `/${currentAd}/${newVersionName}.html`;
       } catch (error) {
         alert(`Failed to create version: ${(error as Error).message}`);
         addVersionBtn.disabled = false;
@@ -222,29 +241,11 @@ export function setupSidebar(
     addSizeBtn.addEventListener('click', async () => {
       const allSizes = adConfigs.map(a => a.name);
 
-      // Determine source size
-      let sourceSize: string;
-      if (allSizes.length === 1) {
-        sourceSize = allSizes[0];
-      } else {
-        const choices = allSizes.map((s, i) => `${i + 1}. ${s}`).join('\n');
-        const input = prompt(`Which size would you like to duplicate?\n\n${choices}\n\nEnter the number:`);
-        if (!input) return;
-        const index = parseInt(input, 10) - 1;
-        if (isNaN(index) || index < 0 || index >= allSizes.length) {
-          alert('Invalid selection.');
-          return;
-        }
-        sourceSize = allSizes[index];
-      }
+      const defaultSource = allSizes.includes(currentAd) ? currentAd : allSizes[0];
+      const modalResult = await showCreateSizeModal(allSizes, defaultSource, COMMON_AD_SIZES);
+      if (!modalResult) return;
 
-      const newName = prompt('Enter the new ad size (e.g. 728x90):');
-      if (!newName) return;
-
-      if (!/^\d+x\d+(-\w+)*$/.test(newName)) {
-        alert('Size name must be in format WIDTHxHEIGHT (e.g. 728x90)');
-        return;
-      }
+      const { sourceSize, newSizeName } = modalResult;
 
       // Show loading overlay
       const overlay = document.createElement('div');
@@ -254,8 +255,8 @@ export function setupSidebar(
       addSizeBtn.disabled = true;
 
       try {
-        await createSize(newName, sourceSize);
-        window.location.href = `/${newName}/index.html`;
+        await createSize(newSizeName, sourceSize);
+        window.location.href = `/${newSizeName}/index.html`;
       } catch (error) {
         overlay.remove();
         alert(`Failed to create size: ${(error as Error).message}`);
@@ -297,6 +298,331 @@ export function setupSidebar(
   if (!isAllView && addVariable) {
     setupAddVariableForms(sidebar, currentAd, addVariable);
   }
+}
+
+function createModalShell(title: string): {
+  backdrop: HTMLDivElement;
+  modal: HTMLDivElement;
+  body: HTMLDivElement;
+  error: HTMLDivElement;
+  confirmBtn: HTMLButtonElement;
+  cancelBtn: HTMLButtonElement;
+  close: () => void;
+} {
+  const backdrop = document.createElement('div');
+  backdrop.className = 'dev-modal-backdrop';
+
+  const modal = document.createElement('div');
+  modal.className = 'dev-modal';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+
+  const header = document.createElement('div');
+  header.className = 'dev-modal-header';
+  header.textContent = title;
+
+  const body = document.createElement('div');
+  body.className = 'dev-modal-body';
+
+  const error = document.createElement('div');
+  error.className = 'dev-modal-error';
+
+  const footer = document.createElement('div');
+  footer.className = 'dev-modal-footer';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'dev-modal-btn';
+  cancelBtn.type = 'button';
+  cancelBtn.textContent = 'Cancel';
+
+  const confirmBtn = document.createElement('button');
+  confirmBtn.className = 'dev-modal-btn dev-modal-btn-primary';
+  confirmBtn.type = 'button';
+  confirmBtn.textContent = 'Create';
+
+  footer.append(cancelBtn, confirmBtn);
+  modal.append(header, body, error, footer);
+  backdrop.appendChild(modal);
+  document.body.appendChild(backdrop);
+
+  const close = () => {
+    backdrop.remove();
+  };
+
+  return { backdrop, modal, body, error, confirmBtn, cancelBtn, close };
+}
+
+function showCreateVersionModal(
+  variants: string[],
+  suggestedName: string,
+): Promise<{ sourceVersion: string; newVersionName: string } | null> {
+  return new Promise((resolve) => {
+    const { backdrop, body, error, confirmBtn, cancelBtn, close } = createModalShell('Create New Version');
+    const allVersions = ['Base', ...variants];
+    let selectedSource = 'base';
+
+    const sourceLabel = document.createElement('div');
+    sourceLabel.className = 'dev-modal-label';
+    sourceLabel.textContent = 'Duplicate from';
+
+    const sourceChoices = document.createElement('div');
+    sourceChoices.className = 'dev-modal-choice-grid';
+
+    allVersions.forEach((label, index) => {
+      const value = index === 0 ? 'base' : variants[index - 1];
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dev-modal-choice-btn';
+      if (value === selectedSource) btn.classList.add('active');
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        selectedSource = value;
+        sourceChoices.querySelectorAll('.dev-modal-choice-btn').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      sourceChoices.appendChild(btn);
+    });
+
+    const nameLabel = document.createElement('div');
+    nameLabel.className = 'dev-modal-label';
+    nameLabel.textContent = 'New version name';
+
+    const nameInput = document.createElement('input');
+    nameInput.className = 'dev-modal-input';
+    nameInput.type = 'text';
+    nameInput.value = suggestedName;
+    nameInput.placeholder = 'v2';
+
+    const sourceGroup = document.createElement('div');
+    sourceGroup.className = 'dev-modal-group';
+    sourceGroup.append(sourceLabel, sourceChoices);
+
+    const nameGroup = document.createElement('div');
+    nameGroup.className = 'dev-modal-group';
+    nameGroup.append(nameLabel, nameInput);
+
+    body.append(sourceGroup, nameGroup);
+
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        finish(null);
+      }
+    };
+
+    const finish = (result: { sourceVersion: string; newVersionName: string } | null) => {
+      document.removeEventListener('keydown', onEsc);
+      close();
+      resolve(result);
+    };
+
+    cancelBtn.addEventListener('click', () => finish(null));
+    document.addEventListener('keydown', onEsc);
+
+    confirmBtn.addEventListener('click', () => {
+      const newVersionName = nameInput.value.trim();
+      if (!newVersionName) {
+        error.textContent = 'Please enter a version name.';
+        nameInput.focus();
+        return;
+      }
+      if (!/^[a-zA-Z0-9-]+$/.test(newVersionName)) {
+        error.textContent = 'Version name must contain only letters, numbers, and hyphens.';
+        nameInput.focus();
+        return;
+      }
+      finish({ sourceVersion: selectedSource, newVersionName });
+    });
+
+    nameInput.focus();
+    nameInput.select();
+  });
+}
+
+function showCreateSizeModal(
+  allSizes: string[],
+  defaultSourceSize: string,
+  suggestions: string[],
+): Promise<{ sourceSize: string; newSizeName: string } | null> {
+  return new Promise((resolve) => {
+    const { backdrop, modal, body, error, confirmBtn, cancelBtn, close } = createModalShell('Create New Ad Size');
+    let selectedSource = defaultSourceSize;
+    let highlightedSuggestion = -1;
+
+    const sourceLabel = document.createElement('div');
+    sourceLabel.className = 'dev-modal-label';
+    sourceLabel.textContent = 'Duplicate from';
+
+    const sourceChoices = document.createElement('div');
+    sourceChoices.className = 'dev-modal-choice-grid';
+
+    allSizes.forEach((size) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dev-modal-choice-btn';
+      if (size === selectedSource) btn.classList.add('active');
+      btn.textContent = size;
+      btn.addEventListener('click', () => {
+        selectedSource = size;
+        sourceChoices.querySelectorAll('.dev-modal-choice-btn').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      sourceChoices.appendChild(btn);
+    });
+
+    const nameLabel = document.createElement('div');
+    nameLabel.className = 'dev-modal-label';
+    nameLabel.textContent = 'New ad size';
+
+    const nameInput = document.createElement('input');
+    nameInput.className = 'dev-modal-input dev-modal-size-input';
+    nameInput.type = 'text';
+    nameInput.placeholder = 'e.g. 728x90';
+
+    const sizeField = document.createElement('div');
+    sizeField.className = 'dev-modal-size-field';
+    const suggestionList = document.createElement('div');
+    suggestionList.className = 'dev-modal-size-suggestions';
+    sizeField.append(nameInput, suggestionList);
+
+    const sourceGroup = document.createElement('div');
+    sourceGroup.className = 'dev-modal-group';
+    sourceGroup.append(sourceLabel, sourceChoices);
+
+    const nameGroup = document.createElement('div');
+    nameGroup.className = 'dev-modal-group';
+    nameGroup.append(nameLabel, sizeField);
+
+    body.append(sourceGroup, nameGroup);
+
+    const getFilteredSuggestions = () => {
+      const value = nameInput.value.trim().toLowerCase();
+      if (!value) return [];
+      return suggestions.filter(size => size.toLowerCase().includes(value));
+    };
+
+    const closeSuggestions = () => {
+      sizeField.classList.remove('open');
+      highlightedSuggestion = -1;
+    };
+
+    const openSuggestions = () => {
+      const filtered = getFilteredSuggestions();
+      if (filtered.length === 0) {
+        closeSuggestions();
+        return;
+      }
+      sizeField.classList.add('open');
+    };
+
+    const renderSuggestions = () => {
+      const filtered = getFilteredSuggestions();
+      suggestionList.innerHTML = '';
+      highlightedSuggestion = Math.min(highlightedSuggestion, filtered.length - 1);
+
+      filtered.forEach((size, index) => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'dev-modal-size-suggestion';
+        if (index === highlightedSuggestion) item.classList.add('active');
+        item.textContent = size;
+        item.addEventListener('click', () => {
+          nameInput.value = size;
+          closeSuggestions();
+          nameInput.focus();
+        });
+        suggestionList.appendChild(item);
+      });
+
+      if (filtered.length > 0) {
+        openSuggestions();
+        const activeItem = suggestionList.querySelector('.dev-modal-size-suggestion.active') as HTMLButtonElement | null;
+        if (activeItem) {
+          activeItem.scrollIntoView({ block: 'nearest' });
+        }
+      } else {
+        closeSuggestions();
+      }
+    };
+
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        finish(null);
+      }
+    };
+
+    const finish = (result: { sourceSize: string; newSizeName: string } | null) => {
+      document.removeEventListener('keydown', onEsc);
+      document.removeEventListener('mousedown', onOutsideClick);
+      close();
+      resolve(result);
+    };
+
+    const onOutsideClick = (e: MouseEvent) => {
+      if (!sizeField.contains(e.target as Node)) {
+        closeSuggestions();
+      }
+    };
+
+    cancelBtn.addEventListener('click', () => finish(null));
+    document.addEventListener('keydown', onEsc);
+    document.addEventListener('mousedown', onOutsideClick);
+
+    nameInput.addEventListener('focus', () => {
+      closeSuggestions();
+    });
+
+    nameInput.addEventListener('input', () => {
+      renderSuggestions();
+    });
+
+    nameInput.addEventListener('keydown', (e) => {
+      const filtered = getFilteredSuggestions();
+      if (filtered.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        highlightedSuggestion = Math.min(highlightedSuggestion + 1, filtered.length - 1);
+        renderSuggestions();
+        return;
+      }
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        highlightedSuggestion = Math.max(highlightedSuggestion - 1, 0);
+        renderSuggestions();
+        return;
+      }
+
+      if (e.key === 'Enter' && sizeField.classList.contains('open') && highlightedSuggestion >= 0) {
+        e.preventDefault();
+        nameInput.value = filtered[highlightedSuggestion];
+        closeSuggestions();
+      }
+    });
+
+    modal.addEventListener('click', () => {
+      if (document.activeElement !== nameInput) {
+        closeSuggestions();
+      }
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      const newSizeName = nameInput.value.trim();
+      if (!newSizeName) {
+        error.textContent = 'Please enter a size name.';
+        nameInput.focus();
+        return;
+      }
+      if (!/^\d+x\d+(-\w+)*$/.test(newSizeName)) {
+        error.textContent = 'Size name must be in format WIDTHxHEIGHT (e.g. 728x90).';
+        nameInput.focus();
+        return;
+      }
+      finish({ sourceSize: selectedSource, newSizeName });
+    });
+
+    nameInput.focus();
+  });
 }
 
 // Wire up the "Add Variable" forms in each section
