@@ -17,8 +17,7 @@
     "preview:300x250": "tsc && vite build",
     "package": "pnpm run preview && node lib/scripts/package",
     "postpreview": "node --no-warnings=ExperimentalWarning lib/scripts/postpreview",
-    "prettier:fix": "prettier --write \"{,!(build|node_modules|preview|templates)/**}/*.{js,ts,css,scss,html}\"",
-    "preview:728x90": "tsc && vite build"
+    "prettier:fix": "prettier --write \"{,!(build|node_modules|preview|templates)/**}/*.{js,ts,css,scss,html}\""
   },
   "devDependencies": {
     "archiver": "^7.0.1",
