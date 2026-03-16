@@ -268,10 +268,19 @@ export const sidebarStyles = `
     border-bottom: 1px solid var(--dev-border);
     cursor: pointer;
     user-select: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
   }
   
   #dev-settings-tray .var-section-header:hover {
     background: var(--dev-bg-hover);
+  }
+
+  #dev-settings-tray .var-section-header:hover .var-section-title,
+  #dev-settings-tray .var-section-header:hover .var-section-count,
+  #dev-settings-tray .var-section-header:hover .var-section-icon,
+  #dev-settings-tray .var-section-header:hover .var-section-chevron {
+    color: var(--dev-text-secondary);
+    stroke: var(--dev-text-secondary);
   }
   
   #dev-settings-tray .var-section-header-left {
@@ -286,14 +295,15 @@ export const sidebarStyles = `
     stroke: var(--dev-text-dimmed);
     color: var(--dev-text-dimmed);
     flex-shrink: 0;
+    transition: color 0.2s ease, stroke 0.2s ease;
   }
   
   #dev-settings-tray .var-section-chevron {
     width: 12px;
     height: 12px;
     stroke: var(--dev-text-faint);
-    transition: transform 0.2s;
     flex-shrink: 0;
+    transition: transform 0.2s ease, stroke 0.2s ease;
   }
   
   #dev-settings-tray .var-section.collapsed .var-section-chevron {
@@ -306,12 +316,14 @@ export const sidebarStyles = `
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    transition: color 0.2s ease;
   }
   
   #dev-settings-tray .var-section-count {
     color: var(--dev-text-faint);
     font-size: 10px;
     font-weight: 600;
+    transition: color 0.2s ease;
   }
 
   #dev-settings-tray .var-section-view-all {

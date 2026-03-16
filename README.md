@@ -9,6 +9,7 @@ _All commands should be run at the root-level of this project, not within an ind
 - `lib/scripts/install.sh` - Install and fix permissions.
 - `pnpm i` - Install dependencies.
 - `pnpm run dev` - Run during development on a specified port.
+- `pnpm run ts-lint` - Run TypeScript checks in watch mode.
 - `pnpm run preview` - Compiles all ad sizes/variants into a `preview` directory. This is used for demo purposes, such as on the Stage server.
 - `pnpm run package` - Packages and zips all ad/sizes variants into a `build` directory.
 
@@ -37,7 +38,7 @@ In dev mode, a toolbar appears at the top of each ad with:
 
 Screenshots are named using the format `{jobNumber}-{jobName}-{adSize}-{version}-static.jpg` (e.g., `123456-client-campaign-300x250-v1-static.jpg`). Base versions are named `v1`.
 
-**Note:** Configure job settings in `JOB-SETTINGS.yaml` at the project root. This information will be appended to file names on export and when taking screenshots:
+**Note:** Configure job settings in `job-settings.yaml` at the project root. This information will be appended to file names on export and when taking screenshots:
 ```yaml
 jobNumber: "123456"
 jobName: "client-campaign"

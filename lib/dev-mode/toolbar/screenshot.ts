@@ -1,6 +1,42 @@
 import html2canvas from 'html2canvas-pro';
 import { cameraIcon, checkIcon } from './icons';
 
+function findAdContainer(currentAd: string): HTMLElement | null {
+  const adContent = document.getElementById('dev-ad-content');
+  if (!adContent) return null;
+
+  const commonSelector = [
+    '#banner',
+    '#ad',
+    '.ad',
+    'main',
+    '[class*="banner"]',
+    '[id*="banner"]',
+  ].join(', ');
+
+  const explicit = adContent.querySelector(commonSelector) as HTMLElement | null;
+  if (explicit) return explicit;
+
+  const sizeMatch = currentAd.match(/^(\d+)x(\d+)/);
+  if (sizeMatch) {
+    const expectedWidth = parseInt(sizeMatch[1], 10);
+    const expectedHeight = parseInt(sizeMatch[2], 10);
+    const allElements = Array.from(adContent.querySelectorAll('*')) as HTMLElement[];
+    const byDimensions = allElements.find((el) => {
+      const rect = el.getBoundingClientRect();
+      return Math.round(rect.width) === expectedWidth && Math.round(rect.height) === expectedHeight;
+    });
+    if (byDimensions) return byDimensions;
+  }
+
+  const firstChild = Array.from(adContent.children).find((el) => {
+    const tag = el.tagName;
+    return tag !== 'SCRIPT' && tag !== 'STYLE';
+  }) as HTMLElement | undefined;
+
+  return firstChild || null;
+}
+
 export function setupScreenshot(
   currentAd: string,
   currentVariant: string | null,
@@ -15,11 +51,8 @@ export function setupScreenshot(
     screenshotBtn.innerHTML = '<div class="spinner"></div> Take a Screenshot';
 
     try {
-      // Find the ad container - typically the first element after the toolbar
-      const adContainer = document.querySelector('.ad, #ad, main, [class*="banner"], [id*="banner"]') as HTMLElement
-        || document.body.children[1] as HTMLElement;
-
-      if (!adContainer || adContainer.id === 'dev-toolbar') {
+      const adContainer = findAdContainer(currentAd);
+      if (!adContainer) {
         throw new Error('Could not find ad container');
       }
 
@@ -41,7 +74,7 @@ export function setupScreenshot(
       ctx.drawImage(hiResCanvas, 0, 0, canvas.width, canvas.height);
 
       // Convert to JPEG
-      const imageData = canvas.toDataURL('image/jpeg', 0.8);
+      const imageData = canvas.toDataURL('image/jpeg', 0.98);
 
       // Send to server
       const response = await fetch('/api/save-screenshot', {

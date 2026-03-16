@@ -35,6 +35,9 @@ function createToolbar() {
   // Build layout structure
   const wrapper = document.createElement('div');
   wrapper.id = 'dev-layout-wrapper';
+  if (isAllView) {
+    wrapper.classList.add('is-all-view');
+  }
   const main = document.createElement('div');
   main.id = 'dev-layout-main';
   const adContent = document.createElement('div');

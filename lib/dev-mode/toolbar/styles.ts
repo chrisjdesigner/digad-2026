@@ -23,6 +23,11 @@ export const layoutStyles = `
     position: relative;
   }
 
+  #dev-layout-wrapper.is-all-view #dev-ad-content {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
   /* Contain GSDevTools bar within the main area, not spanning the sidebar */
   .gs-dev-tools {
     width: calc(100% - var(--sidebar-width, 340px)) !important;
