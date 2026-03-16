@@ -28,7 +28,6 @@ During development, a unique URL will be assigned to you for viewing changes. On
 1. Run `pnpm run dev`
 2. This will give you URLs for each of your ad sizes/variants
 3. As you make changes, the URLs will automatically reload
-4. Run pnpm run `pnpm run ts-lint` for automatic checks for if you make mistakes.
 
 #### Dev Toolbar
 

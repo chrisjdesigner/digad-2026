@@ -23,9 +23,9 @@ export const themeStyles = `
     --dev-text-faint: #696E71;
     --dev-shadow: rgba(0, 0, 0, 0.3);
     --dev-ad-content-bg: #1B1C1D;
-    --dev-accent: #F47723;
-    --dev-accent-hover: #C7520A;
-    --dev-danger: #FF7070;
+    --dev-accent: #909090;
+    --dev-accent-hover: #f0f0f0;
+    --dev-danger: #B90000;
     --dev-resize-active: rgba(184, 184, 184, 1);
     --dev-spinner-track: #2B2C2E;
     --dev-overlay: rgba(0, 0, 0, 0.7);
@@ -49,8 +49,8 @@ export const themeStyles = `
     --dev-text-faint: #ADB0B3;
     --dev-shadow: rgba(0, 0, 0, 0.06);
     --dev-ad-content-bg: #EAEBEB;
-    --dev-accent: #F47723;
-    --dev-accent-hover: #C7520A;
+    --dev-accent: #afafaf;
+    --dev-accent-hover: #c5c5c4;
     --dev-danger: #B90000;
     --dev-resize-active: rgb(209, 209, 209);
     --dev-spinner-track: #DCDEDE;

@@ -1,5 +1,5 @@
-import type { AdConfig } from './types';
-import { createVersion } from './config-api';
+import type { AdConfig } from '../models/types';
+import { createVersion } from '../api/config-api';
 
 export function setupNewVersion(
   adConfigs: AdConfig[],

@@ -1,4 +1,4 @@
-import type { AdConfig } from './types';
+import type { AdConfig } from '../models/types';
 
 export function setupNavigation(
   adConfigs: AdConfig[],

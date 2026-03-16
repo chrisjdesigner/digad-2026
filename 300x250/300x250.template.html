@@ -1,68 +1,52 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="ad.size" content="width={{width}},height={{height}}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{job}} - {{width}}x{{height}}</title>
+  <head>
+    <!-- Meta tags, title, etc. -->
+    {{> ad-head-meta.partial }}
 
-  <!-- External CSS (Google Fonts, etc.) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" />
+    <!-- External CSS (Google Fonts, etc.) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" />
 
-  <!-- Click Tag (populated by ad server) -->
-  <script type="text/javascript">
-    var clickTag = "";
-  </script>
-
-  <!-- CSS Variables (populated from YAML config) -->
-  <style>
-    :root {
-      /* Width and height auto-generated */
-      --ad-width: {{width}}px;
-      --ad-height: {{height}}px;
-
-      /* Automatically generated CSS variables from YAML config */
-      {{#each css-variables}}
-      {{#each this}}
-      --{{@../key}}-{{@key}}: {{this}};
-      {{/each}}
-      {{/each}}
-    }
-  </style>
-</head>
-
-<body>
-  <div id="banner" class="container">
-    <a href="javascript:window.open(window.clickTag)">
-
-      <!-- Begin Your Ad Markup -->
-      <div class="background">
-        <div class="photo"></div>
-      </div>
-      <div class="main-content">
-        <div class="headline">{{headline}}</div>
-      </div>
-      <div class="footer">
-        <div class="logo"></div>
-        <div class="button">
-          <div class="cta-text">{{cta}}</div>
-        </div>
-      </div>
-      <!-- End Ad Markup -->
-
-    </a>
-  </div>
-
-  <!-- Scripts -->
-  <script type="module" src="./src/main.ts"></script>
-  {{#if devMode}}
-    <script>
-      window.__DEV_AD_CONFIGS__ = {{{__devAdConfigs}}};
-      window.__DEV_CURRENT_AD__ = "{{__devCurrentAd}}";
-      window.__DEV_CURRENT_VARIANT__ = "{{__devCurrentVariant}}";
+    <!-- Click Tag (populated by ad server) -->
+    <script type="text/javascript">
+      var clickTag = "";
     </script>
-    <script type="module" src="../lib/dev-mode/toolbar.ts"></script>
-    <script type="module" src="../lib/dev-mode/index.ts"></script>
-  {{/if}}
-</body>
+
+    <!-- CSS Variables (populated from YAML config) -->
+    {{> ad-css-variables.partial }}
+  </head>
+
+  <body>
+    <div id="banner" class="container">
+      <a href="javascript:window.open(window.clickTag)">
+
+        <!-- Any Background Images -->
+        <div class="background">
+          <div class="photo"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="headline">
+            {{headline-1}}
+          </div>
+        </div>
+
+        <!-- Footer with Logo and CTA Button -->
+        <div class="footer">
+          <div class="logo"></div>
+          <div class="button">
+            <div class="cta-text">
+              {{cta}}
+            </div>
+          </div>
+        </div>
+        <!-- End Ad Markup -->
+
+      </a>
+    </div>
+
+    <!-- Scripts -->
+    {{> ad-scripts.partial }}
+  </body>
 </html>

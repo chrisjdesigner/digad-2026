@@ -60,6 +60,8 @@ export const sidebarStyles = `
     align-items: center;
     justify-content: center;
     gap: 6px;
+    min-width: 0;
+    white-space: nowrap;
   }
 
   #dev-settings-tray .sidebar-tab:first-of-type {
@@ -71,6 +73,13 @@ export const sidebarStyles = `
     height: 14px;
     fill: currentColor;
     flex-shrink: 0;
+  }
+
+  #dev-settings-tray .sidebar-tab .sidebar-tab-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   #dev-settings-tray .sidebar-tab:hover {
@@ -359,10 +368,73 @@ export const sidebarStyles = `
   
   #dev-settings-tray .var-item {
     display: flex;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  #dev-settings-tray .var-item.dragging {
+    opacity: 0.55;
+  }
+
+  #dev-settings-tray .var-item.drop-before::before,
+  #dev-settings-tray .var-item.drop-after::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--dev-resize-active);
+    pointer-events: none;
+  }
+
+  #dev-settings-tray .var-item.drop-before::before {
+    top: -6px;
+  }
+
+  #dev-settings-tray .var-item.drop-after::after {
+    bottom: -6px;
+  }
+
+  #dev-settings-tray .var-main {
+    flex: 1;
+    display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
+  }
+
+  #dev-settings-tray .var-drag-handle {
+    background: transparent;
+    border: none;
+    color: var(--dev-text-dimmed);
+    width: 14px;
+    height: 29px;
+    padding: 0;
+    cursor: grab;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: flex-end;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  #dev-settings-tray .var-drag-handle:active {
+    cursor: grabbing;
+  }
+
+  #dev-settings-tray .var-drag-handle:hover {
+    color: var(--dev-text-secondary);
+    border-color: var(--dev-border-hover);
+  }
+
+  #dev-settings-tray .var-drag-handle svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
   }
   
   #dev-settings-tray .var-item:last-child {
@@ -416,6 +488,33 @@ export const sidebarStyles = `
   #dev-settings-tray .var-color-input::-webkit-color-swatch {
     border: none;
     border-radius: 2px;
+  }
+
+  #dev-settings-tray .var-image-select {
+    flex: 1;
+    background: var(--dev-bg-input);
+    border: 1px solid var(--dev-border-input);
+    border-radius: 4px;
+    color: var(--dev-text-primary);
+    padding: 6px 8px;
+    font-size: 12px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  #dev-settings-tray .var-image-select:hover {
+    border-color: var(--dev-border-hover);
+  }
+
+  #dev-settings-tray .var-image-select:focus {
+    outline: none;
+    border-color: var(--dev-accent);
+  }
+
+  #dev-settings-tray .var-image-select option {
+    background: var(--dev-bg-primary);
+    color: var(--dev-text-primary);
   }
   
   #dev-settings-tray .var-action-btn {
@@ -559,8 +658,7 @@ export const sidebarStyles = `
   #dev-settings-tray .add-var-form {
     display: none;
     flex-direction: column;
-    padding: 12px 20px;
-    background: var(--dev-bg-tertiary);
+    padding: 0 20px;
     gap: 8px;
   }
   
@@ -625,10 +723,10 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .add-var-submit {
-    background: var(--dev-accent);
-    border: 1px solid var(--dev-accent) !important;
+    background: transparent;
+    border: 1px solid var(--dev-border-input);
     border-radius: 9999px;
-    color: #fff;
+    color: var(--dev-text-dimmed);
     padding: 6px 15px;
     font-size: 11px;
     font-weight: 600;
@@ -637,8 +735,9 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .add-var-submit:hover {
-    background: var(--dev-accent-hover);
-    border-color: var(--dev-accent-hover) !important;
+    border-color: var(--dev-border-hover);
+    color: var(--dev-text-secondary);
+    background: var(--dev-bg-hover);
   }
   
   #dev-settings-tray .add-var-cancel {
@@ -672,7 +771,7 @@ export const sidebarStyles = `
   }
   
   #dev-settings-tray .empty-message {
-    color: var(--dev-text-faint);
+    color: var(--dev-text-muted);
     font-size: 12px;
     font-style: italic;
     padding: 4px 0;

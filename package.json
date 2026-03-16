@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "ts-lint": "tsc --noEmit --incremental --watch",
+    "ts-lint": "tsc --noEmit",
     "ts-lint:watch": "tsc --noEmit --watch --preserveWatchOutput",
     "prepreview": "node -e \"const fs=require('fs');if(fs.existsSync('preview')){fs.rmSync('preview',{recursive:true,force:true});}fs.mkdirSync('preview');\"",
     "preview": "concurrently pnpm:preview:*",

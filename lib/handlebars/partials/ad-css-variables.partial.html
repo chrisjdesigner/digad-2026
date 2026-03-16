@@ -1,0 +1,14 @@
+  <style>
+    :root {
+      /* Width and height auto-generated */
+      --ad-width: {{width}}px;
+      --ad-height: {{height}}px;
+
+      /* Automatically generated CSS variables from YAML config */
+      {{#each css-variables}}
+      {{#each this}}
+      --{{@../key}}-{{@key}}: {{this}};
+      {{/each}}
+      {{/each}}
+    }
+  </style>

@@ -4,16 +4,16 @@
  * This code is only loaded in dev mode and never included in builds.
  */
 
-import type { AdConfig } from './types';
-import { layoutStyles } from './styles';
+import type { AdConfig } from './models/types';
+import { layoutStyles } from './ui/styles';
 import { themeStyles } from '../theme';
-import { createToolbarElement } from './toolbar-html';
-import { createSidebarElement } from '../sidebar/sidebar-html';
-import { setupJobSettings } from './job-settings';
-import { setupNavigation } from './navigation';
-import { setupScreenshot } from './screenshot';
+import { createToolbarElement } from './ui/toolbar-html';
+import { createSidebarElement } from '../sidebar/ui/sidebar-html';
+import { setupJobSettings } from './features/job-settings';
+import { setupNavigation } from './features/navigation';
+import { setupScreenshot } from './features/screenshot';
 import { setupSidebar } from '../sidebar/sidebar';
-import { fetchJobSettings } from './config-api';
+import { fetchJobSettings } from './api/config-api';
 
 function createToolbar() {
   // Skip toolbar if ?notoolbar=1 is in the URL (used for iframe previews)

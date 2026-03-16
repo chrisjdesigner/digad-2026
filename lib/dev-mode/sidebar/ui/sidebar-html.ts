@@ -11,8 +11,8 @@ import {
   squaresIcon,
   layersIcon,
   trashIcon,
-} from '../toolbar/icons';
-import type { AdConfig } from '../toolbar/types';
+} from '../../toolbar/ui/icons';
+import type { AdConfig } from '../../toolbar/models/types';
 import { sidebarStyles } from './styles';
 
 const TAB_STORAGE_KEY = 'dev-sidebar-tab';
@@ -26,12 +26,19 @@ function isSectionCollapsed(sectionId: string): boolean {
   return localStorage.getItem(SECTION_STORAGE_PREFIX + sectionId) === 'collapsed';
 }
 
+function toInitialCap(value: string): string {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 export function createSidebarElement(
   adConfigs: AdConfig[],
   currentAd: string,
   currentVariant: string | null,
 ): HTMLDivElement {
   const isAllView = currentAd === 'all' || currentVariant === 'all';
+  const versionLabel = currentVariant && currentVariant !== '' ? toInitialCap(currentVariant) : 'Base';
+  const variablesTabLabel = `${versionLabel} Variables`;
   const savedTab = isAllView ? 'project' : getSavedTab();
   const projectActive = savedTab === 'project';
 
@@ -45,7 +52,7 @@ export function createSidebarElement(
     <div class="sidebar-resize-handle"></div>
     <div class="sidebar-tabs">
       <button class="sidebar-tab${projectActive ? ' active' : ''}" data-tab="project">${settingsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} Project</button>
-      ${!isAllView ? `<button class="sidebar-tab${!projectActive ? ' active' : ''}" data-tab="variables">${adjustmentsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} Version Variables</button>` : ''}
+      ${!isAllView ? `<button class="sidebar-tab${!projectActive ? ' active' : ''}" data-tab="variables" title="${variablesTabLabel}">${adjustmentsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} <span class="sidebar-tab-label">${variablesTabLabel}</span></button>` : ''}
     </div>
     <div class="sidebar-tab-panel${projectActive ? ' active' : ''}" data-panel="project">
       <div class="tray-content">
@@ -139,7 +146,7 @@ export function createSidebarElement(
           </div>
           <div class="var-section-body">
             <div class="var-list" id="template-vars-list">
-              <div class="empty-message">No template variables defined</div>
+              <div class="empty-message">No variables have been defined</div>
             </div>
             <button class="add-var-btn-bottom" data-section="template">${plusIcon} Add Template Variable</button>
             <div class="add-var-form">
@@ -165,7 +172,7 @@ export function createSidebarElement(
           </div>
           <div class="var-section-body">
             <div class="var-list" id="css-colors-list">
-              <div class="empty-message">No color variables defined</div>
+              <div class="empty-message">No variables have been defined</div>
             </div>
             <button class="add-var-btn-bottom" data-section="css-colors">${plusIcon} Add Color Variable</button>
             <div class="add-var-form" data-use-color-picker="true">
@@ -191,7 +198,7 @@ export function createSidebarElement(
           </div>
           <div class="var-section-body">
             <div class="var-list" id="css-images-list">
-              <div class="empty-message">No image variables defined</div>
+              <div class="empty-message">No variables have been defined</div>
             </div>
             <button class="add-var-btn-bottom" data-section="css-images">${plusIcon} Add Image Variable</button>
             <div class="add-var-form" data-use-image-picker="true">
@@ -228,7 +235,7 @@ export function createSidebarElement(
           </div>
           <div class="var-section-body">
             <div class="var-list" id="css-typography-list">
-              <div class="empty-message">No typography variables defined</div>
+              <div class="empty-message">No variables have been defined</div>
             </div>
             <button class="add-var-btn-bottom" data-section="css-typography">${plusIcon} Add Typography Variable</button>
             <div class="add-var-form">
@@ -254,7 +261,7 @@ export function createSidebarElement(
           </div>
           <div class="var-section-body">
             <div class="var-list" id="css-other-list">
-              <div class="empty-message">No other CSS variables defined</div>
+              <div class="empty-message">No variables have been defined</div>
             </div>
             <button class="add-var-btn-bottom" data-section="css-other">${plusIcon} Add CSS Variable</button>
             <div class="add-var-form">

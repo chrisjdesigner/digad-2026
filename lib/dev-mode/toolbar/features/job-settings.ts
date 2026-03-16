@@ -1,4 +1,4 @@
-import { fetchJobSettings, saveJobSettings } from './config-api';
+import { fetchJobSettings, saveJobSettings } from '../api/config-api';
 
 export function setupJobSettings(): void {
   const jobNumberInput = document.getElementById('dev-job-number') as HTMLInputElement;

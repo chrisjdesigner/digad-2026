@@ -1,7 +1,7 @@
-import type { AdConfig, ConfigData } from '../toolbar/types';
-import { fetchConfig, fetchImages, createVersion, deleteVersion, createSize, deleteSize } from '../toolbar/config-api';
-import { setupVariables } from './variables';
-import type { VariableElements } from './variables';
+import type { AdConfig, ConfigData } from '../toolbar/models/types';
+import { fetchConfig, fetchImages, createVersion, deleteVersion, createSize, deleteSize } from '../toolbar/api/config-api';
+import { setupVariables } from './features/variables';
+import type { VariableElements } from './features/variables';
 
 const STORAGE_KEY = 'dev-sidebar-width';
 const TAB_STORAGE_KEY = 'dev-sidebar-tab';

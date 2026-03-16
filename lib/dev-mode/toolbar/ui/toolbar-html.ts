@@ -1,4 +1,4 @@
-import type { AdConfig } from './types';
+import type { AdConfig } from '../models/types';
 import { cameraIcon, srLogoIcon, sunIcon, moonIcon } from './icons';
 import { toolbarStyles } from './styles';
 

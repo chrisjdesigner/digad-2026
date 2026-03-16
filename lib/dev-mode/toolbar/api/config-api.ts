@@ -1,4 +1,4 @@
-import type { ConfigData, SpriteInfo, ImageInfo } from './types';
+import type { ConfigData, SpriteInfo, ImageInfo } from '../models/types';
 
 export async function fetchJobSettings(): Promise<{ jobNumber: string; jobName: string }> {
   const res = await fetch('/api/job-settings');
@@ -66,6 +66,30 @@ export async function syncVariable(
   const result = await response.json();
   if (!result.success) {
     throw new Error(result.error || `Failed to ${action} variable`);
+  }
+}
+
+export async function syncVariableOrder(
+  adSize: string,
+  variableType: 'template' | 'css',
+  variableOrder: string[],
+  category?: 'colors' | 'images' | 'typography' | 'other',
+): Promise<void> {
+  const response = await fetch('/api/ad-config/sync-variable', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      adSize,
+      variableType,
+      action: 'reorder',
+      variableOrder,
+      category: variableType === 'css' ? category : undefined,
+    }),
+  });
+
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to reorder variables');
   }
 }
 

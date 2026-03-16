@@ -1,5 +1,5 @@
 import html2canvas from 'html2canvas-pro';
-import { cameraIcon, checkIcon } from './icons';
+import { cameraIcon, checkIcon } from '../ui/icons';
 
 function findAdContainer(currentAd: string): HTMLElement | null {
   const adContent = document.getElementById('dev-ad-content');

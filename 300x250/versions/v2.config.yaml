@@ -9,5 +9,3 @@ css-variables:
   typography:
     headline-1-font-size: 30px
   other: {}
-sprites:
-  - name: sprite
