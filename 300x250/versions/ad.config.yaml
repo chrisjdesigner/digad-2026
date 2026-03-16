@@ -2,8 +2,8 @@ headline-1: Base Ad
 cta: Learn More
 css-variables:
   colors:
-    border-color: grey
     white: "#fff"
+    border-color: grey
   images:
     photo-url: url(./src/img/photo-v1.jpg)
   typography:

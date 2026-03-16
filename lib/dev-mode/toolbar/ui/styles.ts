@@ -30,7 +30,7 @@ export const layoutStyles = `
 
   /* Contain GSDevTools bar within the main area, not spanning the sidebar */
   .gs-dev-tools {
-    width: calc(100% - var(--sidebar-width, 340px)) !important;
+    width: calc(100% - max(var(--sidebar-width, 370px), 370px)) !important;
   }
 
   #dev-layout-wrapper.no-sidebar .gs-dev-tools {
@@ -296,6 +296,10 @@ export const toolbarStyles = `
   #dev-toolbar button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  #dev-toolbar button.success svg {
+    stroke: #22c55e;
   }
   
   #dev-toolbar .spinner {

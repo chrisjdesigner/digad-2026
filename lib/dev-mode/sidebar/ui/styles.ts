@@ -534,10 +534,15 @@ export const sidebarStyles = `
     justify-content: center;
     opacity: 0.3;
     transition: opacity 0.2s;
+    -webkit-appearance: none;
   }
   
   #dev-settings-tray .var-action-btn:hover {
     opacity: 1;
+  }
+
+  #dev-settings-tray .var-action-btn:focus-visible {
+    outline: none;
   }
   
   #dev-settings-tray .var-action-btn svg {
@@ -664,9 +669,14 @@ export const sidebarStyles = `
   
   #dev-settings-tray .add-var-form {
     display: none;
-    flex-direction: column;
-    padding: 0 20px;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px solid var(--dev-border);
+    border-radius: 10px;
+    background: var(--dev-bg-section);
     gap: 8px;
+    flex-wrap: wrap;
   }
   
   #dev-settings-tray .add-var-form.active {
@@ -675,19 +685,23 @@ export const sidebarStyles = `
   
   #dev-settings-tray .add-var-form-inputs {
     display: flex;
+    flex: 1;
+    align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
+    min-width: 210px;
   }
   
   #dev-settings-tray .add-var-form-actions {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    flex-shrink: 0;
     gap: 8px;
   }
   
   #dev-settings-tray .add-var-input {
     flex: 1;
-    min-width: 100px;
+    min-width: 0;
     background: var(--dev-bg-input);
     border: 1px solid var(--dev-border-input);
     border-radius: 4px;
@@ -706,7 +720,7 @@ export const sidebarStyles = `
     appearance: none;
     -webkit-appearance: none;
     flex: 1;
-    min-width: 120px;
+    min-width: 0;
     background: var(--dev-bg-input);
     border: 1px solid var(--dev-border-input);
     border-radius: 4px;
@@ -748,27 +762,8 @@ export const sidebarStyles = `
     cursor: pointer;
   }
   
-  #dev-settings-tray .add-var-submit {
-    order: 2;
-    background: transparent;
-    border: 1px solid var(--dev-border-input);
-    border-radius: 9999px;
-    color: var(--dev-text-dimmed);
-    padding: 6px 15px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  #dev-settings-tray .add-var-submit:hover {
-    border-color: var(--dev-border-hover);
-    color: var(--dev-text-secondary);
-    background: var(--dev-bg-hover);
-  }
-  
   #dev-settings-tray .add-var-cancel {
-    order: 1;
+    display: none;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 9999px;
@@ -783,6 +778,59 @@ export const sidebarStyles = `
   #dev-settings-tray .add-var-cancel:hover {
     color: var(--dev-text-secondary);
     text-decoration: underline;
+  }
+
+  #dev-settings-tray .add-var-color-input-wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    background: var(--dev-bg-input);
+    border: 1px solid var(--dev-border-input);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  #dev-settings-tray .add-var-color-picker {
+    width: 40px;
+    height: 32px;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  #dev-settings-tray .add-var-color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  #dev-settings-tray .add-var-color-picker::-webkit-color-swatch {
+    border: none;
+  }
+
+  #dev-settings-tray .add-var-color-input-wrapper .add-var-input {
+    flex: 1;
+    border: none;
+    border-radius: 0;
+    padding: 6px 10px;
+    background: transparent;
+    min-width: 0;
+  }
+
+  #dev-settings-tray .add-var-error {
+    width: 100%;
+    color: var(--dev-danger);
+    font-size: 11px;
+    line-height: 1.25;
+    min-height: 0;
+  }
+
+  #dev-settings-tray .add-var-error:empty {
+    display: none;
   }
   
   #dev-settings-tray .sync-notice {
@@ -814,6 +862,7 @@ export const sidebarStyles = `
     justify-content: center;
     z-index: 1000000;
     padding: 20px;
+    backdrop-filter: blur(10px);
   }
 
   .dev-modal {
@@ -1013,6 +1062,27 @@ export const sidebarStyles = `
     border-color: var(--dev-border-hover);
     background: var(--dev-bg-hover);
     text-decoration: none;
+  }
+
+  .dev-modal-btn-danger {
+    border-color: #dc2626;
+    color: #dc2626;
+  }
+
+  .dev-modal-btn-danger:hover {
+    border-color: #991b1b;
+    color: #fff;
+    background: #dc2626;
+    text-decoration: none;
+  }
+
+  .dev-modal-btn:focus-visible {
+    outline: 1px solid var(--dev-border-input);
+    outline-offset: 2px;
+  }
+
+  .dev-modal-btn-danger:focus-visible {
+    outline-color: #dc2626;
   }
 
   /* Loading overlay */

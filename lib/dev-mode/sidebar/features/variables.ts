@@ -2,6 +2,7 @@ import type { ConfigData } from '../../toolbar/models/types';
 import { escapeHtml, toHexColor } from '../../toolbar/shared/utils';
 import { copyIcon, trashIcon, checkIcon } from '../../toolbar/ui/icons';
 import { postConfig, syncVariable, syncVariableOrder, fetchSprites, fetchImages } from '../../toolbar/api/config-api';
+import { showDeleteConfirmModal } from '../sidebar';
 
 const dragHandleIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="9" y1="6" x2="9" y2="6"/><line x1="9" y1="12" x2="9" y2="12"/><line x1="9" y1="18" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="15" y1="12" x2="15" y2="12"/><line x1="15" y1="18" x2="15" y2="18"/></svg>';
 
@@ -361,8 +362,11 @@ export function setupVariables(
         input.value = originalValue;
       });
 
+      input.addEventListener('input', (e) => {
+        e.stopPropagation();
+      });
+
       input.addEventListener('keydown', (e) => {
-        // Stop propagation so GSDevTools and other listeners don't interfere
         e.stopPropagation();
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -390,8 +394,9 @@ export function setupVariables(
         });
       }
 
-      deleteBtn.addEventListener('click', () => {
-        if (confirm(`Remove "${name}" from all versions?`)) {
+      deleteBtn.addEventListener('click', async () => {
+        const confirmed = await showDeleteConfirmModal(name, 'Variable');
+        if (confirmed) {
           deleteVariable(name, 'template');
         }
       });
@@ -422,8 +427,11 @@ export function setupVariables(
           }
         });
 
+        input.addEventListener('input', (e) => {
+          e.stopPropagation();
+        });
+
         input.addEventListener('keydown', (e) => {
-          // Stop propagation so GSDevTools and other listeners don't interfere
           e.stopPropagation();
           if (e.key === 'Enter') {
             e.preventDefault();
@@ -445,7 +453,8 @@ export function setupVariables(
 
         // Color picker handler
         if (colorInput) {
-          colorInput.addEventListener('input', () => {
+          colorInput.addEventListener('input', (e) => {
+            e.stopPropagation();
             input.value = colorInput.value;
             if (category && configData.cssVariables[category]) {
               configData.cssVariables[category][name] = colorInput.value;
@@ -469,8 +478,9 @@ export function setupVariables(
         }
 
         // Delete button handler
-        deleteBtn.addEventListener('click', () => {
-          if (confirm(`Remove "${name}" from all versions?`)) {
+        deleteBtn.addEventListener('click', async () => {
+          const confirmed = await showDeleteConfirmModal(name, 'Variable');
+          if (confirmed) {
             deleteVariable(name, 'css', category);
           }
         });
@@ -513,8 +523,9 @@ export function setupVariables(
         });
       }
 
-      deleteBtn.addEventListener('click', () => {
-        if (confirm(`Remove "${name}" from all versions?`)) {
+      deleteBtn.addEventListener('click', async () => {
+        const confirmed = await showDeleteConfirmModal(name, 'Variable');
+        if (confirmed) {
           deleteVariable(name, 'css', 'images');
         }
       });

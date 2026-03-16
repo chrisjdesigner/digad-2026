@@ -93,8 +93,11 @@ export function setupScreenshot(
 
       if (result.success) {
         screenshotBtn.innerHTML = `${checkIcon} Take a Screenshot`;
+        screenshotBtn.classList.add('success');
+        screenshotBtn.querySelector('svg')!.style.stroke = '#22c55e';
         setTimeout(() => {
           screenshotBtn.innerHTML = defaultBtnContent;
+          screenshotBtn.classList.remove('success');
           screenshotBtn.disabled = false;
         }, 2000);
       } else {
@@ -103,8 +106,10 @@ export function setupScreenshot(
     } catch (error) {
       console.error('Screenshot error:', error);
       screenshotBtn.innerHTML = '✗ Take a Screenshot';
+      screenshotBtn.style.color = '#ef4444';
       setTimeout(() => {
         screenshotBtn.innerHTML = defaultBtnContent;
+        screenshotBtn.style.color = '';
         screenshotBtn.disabled = false;
       }, 2000);
     }

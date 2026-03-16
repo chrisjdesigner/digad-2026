@@ -53,7 +53,8 @@ function getSavedWidth(): number {
 }
 
 function applySidebarWidth(width: number) {
-  document.documentElement.style.setProperty('--sidebar-width', `${width}px`);
+  const clamped = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, width));
+  document.documentElement.style.setProperty('--sidebar-width', `${clamped}px`);
 }
 
 export function setupSidebar(
@@ -188,7 +189,8 @@ export function setupSidebar(
       e.preventDefault();
       e.stopPropagation();
       const versionName = (btn as HTMLElement).getAttribute('data-version')!;
-      if (!confirm(`Delete version "${versionName}"? This cannot be undone.`)) return;
+      const confirmed = await showDeleteConfirmModal(versionName, 'Version');
+      if (!confirmed) return;
 
       try {
         await deleteVersion(currentAd, versionName);
@@ -277,7 +279,8 @@ export function setupSidebar(
         return;
       }
 
-      if (!confirm(`Delete size "${sizeName}" and all its versions? This cannot be undone.`)) return;
+      const confirmed = await showDeleteConfirmModal(sizeName, 'Size');
+      if (!confirmed) return;
 
       try {
         await deleteSize(sizeName);
@@ -625,6 +628,50 @@ function showCreateSizeModal(
   });
 }
 
+// Delete confirmation modal - reusable for variable deletion
+export function showDeleteConfirmModal(itemName: string, itemType: string = 'variable'): Promise<boolean> {
+  return new Promise((resolve) => {
+    const { body, confirmBtn, cancelBtn, close } = createModalShell(`Delete ${itemType === 'variable' ? 'Variable' : itemType}`);
+
+    const message = document.createElement('div');
+    message.style.color = 'var(--dev-text-secondary)';
+    message.style.fontSize = '14px';
+    message.style.lineHeight = '1.5';
+    message.style.marginBottom = '4px';
+    message.textContent = `Remove "${itemName}" from all versions?`;
+
+    const warning = document.createElement('div');
+    warning.style.color = 'var(--dev-text-muted)';
+    warning.style.fontSize = '12px';
+    warning.style.marginTop = '8px';
+    warning.textContent = 'This cannot be undone.';
+
+    body.append(message, warning);
+
+    confirmBtn.textContent = 'Delete';
+    confirmBtn.className = 'dev-modal-btn dev-modal-btn-danger';
+
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        finish(false);
+      }
+    };
+
+    const finish = (result: boolean) => {
+      document.removeEventListener('keydown', onEsc);
+      close();
+      resolve(result);
+    };
+
+    cancelBtn.addEventListener('click', () => finish(false));
+    confirmBtn.addEventListener('click', () => finish(true));
+    document.addEventListener('keydown', onEsc);
+    
+    // Focus delete button after modal is in DOM
+    confirmBtn.focus();
+  });
+}
+
 // Wire up the "Add Variable" forms in each section
 function setupAddVariableForms(
   sidebar: HTMLDivElement,
@@ -651,10 +698,39 @@ function setupAddVariableForms(
     const nameInput = form.querySelector('.var-name-input') as HTMLInputElement;
     const valueInput = form.querySelector('.var-value-input') as HTMLInputElement | HTMLElement;
     const imageSelect = form.querySelector('.var-image-select') as HTMLSelectElement | null;
-    const submitBtn = form.querySelector('.add-var-submit') as HTMLButtonElement;
+    const colorPicker = form.querySelector('.add-var-color-picker') as HTMLInputElement | null;
     const cancelBtn = form.querySelector('.add-var-cancel') as HTMLButtonElement;
     const isColorPicker = form.getAttribute('data-use-color-picker') === 'true';
     const isImagePicker = form.getAttribute('data-use-image-picker') === 'true';
+
+    const errorEl = document.createElement('div');
+    errorEl.className = 'add-var-error';
+    form.appendChild(errorEl);
+
+    const clearError = () => {
+      errorEl.textContent = '';
+    };
+
+    const setError = (message: string) => {
+      errorEl.textContent = message;
+    };
+
+    const resetInputs = () => {
+      nameInput.value = '';
+      if (valueInput instanceof HTMLInputElement) {
+        valueInput.value = isColorPicker ? '#ffffff' : '';
+      }
+      if (imageSelect) {
+        imageSelect.selectedIndex = 0;
+      }
+      clearError();
+    };
+
+    const variableExistsInSection = (name: string): boolean => {
+      const target = name.toLowerCase();
+      return Array.from(section.querySelectorAll('.var-list .var-item[data-name]'))
+        .some(item => ((item as HTMLElement).getAttribute('data-name') || '').toLowerCase() === target);
+    };
 
     // Auto-convert spaces to hyphens and enforce lowercase
     nameInput.addEventListener('input', () => {
@@ -668,6 +744,7 @@ function setupAddVariableForms(
       e.stopPropagation();
       form.classList.add('active');
       addBtn.style.display = 'none';
+      clearError();
 
       // Load images for image picker
       if (isImagePicker && imageSelect) {
@@ -693,16 +770,10 @@ function setupAddVariableForms(
     cancelBtn.addEventListener('click', () => {
       form.classList.remove('active');
       addBtn.style.display = '';
-      nameInput.value = '';
-      if (valueInput instanceof HTMLInputElement) {
-        valueInput.value = isColorPicker ? '#ffffff' : '';
-      }
-      if (imageSelect) {
-        imageSelect.selectedIndex = 0;
-      }
+      resetInputs();
     });
 
-    submitBtn.addEventListener('click', () => {
+    const handleSubmit = async () => {
       const name = nameInput.value.trim();
       let value = '';
       if (isImagePicker && imageSelect) {
@@ -712,49 +783,97 @@ function setupAddVariableForms(
       }
 
       if (!name) {
+        setError('Please enter a variable name.');
         nameInput.focus();
         return;
       }
 
       if (isImagePicker && !value) {
+        setError('Please choose an image value.');
         imageSelect?.focus();
         return;
       }
 
       // Validate name format (lowercase, hyphens, alphanumeric)
       if (!/^[a-z][a-z0-9-]*$/.test(name)) {
-        alert('Variable names must start with a letter and contain only lowercase letters, numbers, and hyphens');
+        setError('Use lowercase letters, numbers, and hyphens (must start with a letter).');
         nameInput.focus();
         return;
       }
 
-      addVariable(name, value, apiType, cssCategory);
+      if (variableExistsInSection(name)) {
+        setError(`"${name}" already exists in this section.`);
+        nameInput.focus();
+        nameInput.select();
+        return;
+      }
+
+      clearError();
+
+      await addVariable(name, value, apiType, cssCategory);
+
+      // Close form after successful add
       form.classList.remove('active');
       addBtn.style.display = '';
-      nameInput.value = '';
-      if (valueInput instanceof HTMLInputElement) {
-        valueInput.value = isColorPicker ? '#ffffff' : '';
-      }
-      if (imageSelect) {
-        imageSelect.selectedIndex = 0;
-      }
-    });
+      resetInputs();
+    };
 
     // Handle Enter key in form
     nameInput.addEventListener('keydown', (e) => {
+      e.stopPropagation();
       if (e.key === 'Enter') {
         e.preventDefault();
-        if (valueInput instanceof HTMLInputElement) valueInput.focus();
+        if (valueInput instanceof HTMLInputElement && valueInput.type !== 'color') {
+          valueInput.focus();
+        } else {
+          handleSubmit();
+        }
       } else if (e.key === 'Escape') {
         cancelBtn.click();
       }
     });
 
-    if (valueInput instanceof HTMLInputElement && valueInput.type !== 'color') {
+    if (valueInput instanceof HTMLInputElement) {
       valueInput.addEventListener('keydown', (e) => {
+        e.stopPropagation();
         if (e.key === 'Enter') {
           e.preventDefault();
-          submitBtn.click();
+          handleSubmit();
+        } else if (e.key === 'Escape') {
+          cancelBtn.click();
+        }
+      });
+
+      valueInput.addEventListener('input', (e) => {
+        e.stopPropagation();
+        if (colorPicker && isColorPicker) {
+          colorPicker.value = (valueInput as HTMLInputElement).value || '#ffffff';
+        }
+      });
+    }
+
+    if (colorPicker) {
+      colorPicker.addEventListener('input', (e) => {
+        e.stopPropagation();
+        if (valueInput instanceof HTMLInputElement) {
+          valueInput.value = colorPicker.value;
+        }
+      });
+    }
+
+    if (imageSelect) {
+      imageSelect.addEventListener('change', (e) => {
+        e.stopPropagation();
+        if (imageSelect.value) {
+          handleSubmit();
+        }
+      });
+
+      imageSelect.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSubmit();
         } else if (e.key === 'Escape') {
           cancelBtn.click();
         }

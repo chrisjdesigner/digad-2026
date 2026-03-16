@@ -155,7 +155,6 @@ export function createSidebarElement(
                 <input type="text" class="add-var-input var-value-input" placeholder="Default value" />
               </div>
               <div class="add-var-form-actions">
-                <button class="add-var-submit">Add to All Versions</button>
                 <button class="add-var-cancel">Cancel</button>
               </div>
             </div>
@@ -178,10 +177,12 @@ export function createSidebarElement(
             <div class="add-var-form" data-use-color-picker="true">
               <div class="add-var-form-inputs">
                 <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., bg-color)" />
-                <input type="color" class="add-var-color var-value-input" value="#ffffff" />
+                <div class="add-var-color-input-wrapper">
+                  <input type="color" class="add-var-color-picker" value="#ffffff" />
+                  <input type="text" class="add-var-input var-value-input" placeholder="#ffffff" />
+                </div>
               </div>
               <div class="add-var-form-actions">
-                <button class="add-var-submit">Add to All Versions</button>
                 <button class="add-var-cancel">Cancel</button>
               </div>
             </div>
@@ -209,7 +210,6 @@ export function createSidebarElement(
                 </select>
               </div>
               <div class="add-var-form-actions">
-                <button class="add-var-submit">Add to All Versions</button>
                 <button class="add-var-cancel">Cancel</button>
               </div>
             </div>
@@ -244,7 +244,6 @@ export function createSidebarElement(
                 <input type="text" class="add-var-input var-value-input" placeholder="Default value (e.g., 24px)" />
               </div>
               <div class="add-var-form-actions">
-                <button class="add-var-submit">Add to All Versions</button>
                 <button class="add-var-cancel">Cancel</button>
               </div>
             </div>
@@ -270,7 +269,6 @@ export function createSidebarElement(
                 <input type="text" class="add-var-input var-value-input" placeholder="Default value" />
               </div>
               <div class="add-var-form-actions">
-                <button class="add-var-submit">Add to All Versions</button>
                 <button class="add-var-cancel">Cancel</button>
               </div>
             </div>
