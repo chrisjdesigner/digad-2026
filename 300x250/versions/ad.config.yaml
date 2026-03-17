@@ -11,3 +11,4 @@ css-variables:
   other: {}
 sprites:
   - name: sprite
+delayedHover: false

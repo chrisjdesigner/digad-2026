@@ -78,6 +78,17 @@ export function createSidebarElement(
                   <input type="text" class="project-field-input" id="dev-job-name" placeholder="job-name" />
                 </div>
               </div>
+              <div class="project-field project-toggle-field">
+                <div class="project-toggle-row">
+                  <label class="project-field-label project-toggle-label" for="dev-delay-hover-toggle">Delay Hover Until Animation Ends</label>
+                  <label class="theme-switch" for="dev-delay-hover-toggle" title="Delay hover animation until intro animation completes">
+                    <input type="checkbox" id="dev-delay-hover-toggle" />
+                    <span class="theme-switch-track">
+                      <span class="theme-switch-thumb"></span>
+                    </span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         </div>

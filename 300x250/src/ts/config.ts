@@ -15,12 +15,25 @@ export const adContainer = document.getElementById('banner');
  * Set to true if you want hover animations to wait until the main intro timeline completes.
  * Useful for preventing interaction during critical intro moments.
  */
-export const requireMainTimelineCompleteForHover = false;
+declare global {
+  interface Window {
+    __delayedHover?: boolean;
+  }
+}
+
+export let delayedHover = !!window.__delayedHover;
 
 // Track whether hover animations are allowed (mutable)
 export const hoverState = {
-  canRun: !requireMainTimelineCompleteForHover,
+  canRun: !delayedHover,
 };
+
+window.addEventListener('dev:hover-gate-setting-changed', (event: Event) => {
+  const customEvent = event as CustomEvent<{ delayedHover: boolean }>;
+  const nextDelayedHover = !!customEvent.detail?.delayedHover;
+  delayedHover = nextDelayedHover;
+  hoverState.canRun = !nextDelayedHover;
+});
 
 // Get ad dimensions from CSS variables (--ad-width and --ad-height)
 export const adWidth = getComputedStyle(document.documentElement).getPropertyValue('--ad-width').trim();

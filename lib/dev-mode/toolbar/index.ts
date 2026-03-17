@@ -62,7 +62,7 @@ function createToolbar() {
   document.body.appendChild(wrapper);
 
   // Wire up behaviors
-  setupJobSettings();
+  setupJobSettings(currentAd, currentVariant);
   setupNavigation(adConfigs, currentAd, currentVariant);
   setupScreenshot(currentAd, currentVariant);
   setupSidebar(adConfigs, currentAd, currentVariant);

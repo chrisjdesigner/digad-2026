@@ -119,6 +119,28 @@ export const sidebarStyles = `
     padding: 0;
   }
 
+  #dev-settings-tray .project-toggle-field {
+    margin-top: 2px;
+  }
+
+  #dev-settings-tray .project-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  #dev-settings-tray .project-toggle-label {
+    margin-bottom: 0;
+    flex: 1;
+    line-height: 1.3;
+    cursor: pointer;
+  }
+
+  #dev-settings-tray .project-toggle-row .theme-switch {
+    flex-shrink: 0;
+  }
+
   #dev-settings-tray .project-field-label {
     display: block;
     color: var(--dev-text-dimmed);

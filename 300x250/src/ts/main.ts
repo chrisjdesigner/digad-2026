@@ -1,7 +1,7 @@
 import '../sass/style.scss';
 import {
   adContainer,
-  requireMainTimelineCompleteForHover,
+  delayedHover,
   timelineSceneOne,
   timelineAdHover,
   hoverState,
@@ -80,7 +80,7 @@ function adAnimation() {
   // })
 
   // If hover should wait for intro to finish, unlock it when timeline completes
-  if (requireMainTimelineCompleteForHover) {
+  if (delayedHover) {
     timelineSceneOne.eventCallback('onComplete', () => {
       hoverState.canRun = true;
     });

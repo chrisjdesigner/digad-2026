@@ -1,16 +1,29 @@
 import type { ConfigData, SpriteInfo, ImageInfo } from '../models/types';
 
-export async function fetchJobSettings(): Promise<{ jobNumber: string; jobName: string }> {
+export async function fetchJobSettings(): Promise<{ jobNumber: string; jobName: string; delayedHover: boolean }> {
   const res = await fetch('/api/job-settings');
   return res.json();
 }
 
-export async function saveJobSettings(jobNumber: string, jobName: string): Promise<void> {
+export async function saveJobSettings(jobNumber: string, jobName: string, delayedHover: boolean): Promise<void> {
   await fetch('/api/job-settings', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jobNumber, jobName }),
+    body: JSON.stringify({ jobNumber, jobName, delayedHover }),
   });
+}
+
+export async function saveHoverGateSetting(adSize: string, delayedHover: boolean): Promise<void> {
+  const response = await fetch('/api/ad-config/hover-gate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adSize, delayedHover }),
+  });
+
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to update hover-gate setting');
+  }
 }
 
 export async function fetchConfig(currentAd: string, currentVariant: string | null): Promise<ConfigData> {
