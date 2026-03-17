@@ -523,7 +523,7 @@ function showCreateVersionModal(
     cancelBtn.addEventListener('click', () => finish(null));
     document.addEventListener('keydown', onEsc);
 
-    confirmBtn.addEventListener('click', () => {
+    const submitCreate = () => {
       const newVersionName = nameInput.value.trim();
       if (!newVersionName) {
         error.textContent = 'Please enter a version name.';
@@ -536,7 +536,15 @@ function showCreateVersionModal(
         return;
       }
       finish({ sourceVersion: selectedSource, newVersionName });
+    };
+
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      submitCreate();
     });
+
+    confirmBtn.addEventListener('click', submitCreate);
 
     nameInput.focus();
     nameInput.select();

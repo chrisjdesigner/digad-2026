@@ -249,6 +249,13 @@ export const sidebarStyles = `
     color: var(--dev-text-primary);
   }
 
+  #dev-settings-tray .project-list-item-link:focus-visible {
+    outline: 2px solid var(--dev-accent);
+    outline-offset: 2px;
+    color: var(--dev-text-primary);
+    background: var(--dev-bg-hover);
+  }
+
   #dev-settings-tray .project-list-item-action {
     background: transparent;
     border: none;
@@ -264,6 +271,13 @@ export const sidebarStyles = `
 
   #dev-settings-tray .project-list-item-action:hover {
     opacity: 1;
+  }
+
+  #dev-settings-tray .project-list-item-action:focus-visible {
+    outline: 2px solid var(--dev-accent);
+    outline-offset: 2px;
+    opacity: 1;
+    border-radius: 8px;
   }
 
   #dev-settings-tray .project-list-item-action:disabled {

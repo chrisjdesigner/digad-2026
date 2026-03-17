@@ -47,6 +47,10 @@
         text-transform: uppercase;
         text-align: center;
         color: var(--colors-white);
+
+        .red {
+          color: red;
+        }
       }
     }
 

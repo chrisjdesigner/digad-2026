@@ -27,22 +27,33 @@
 
         <!-- Main Content -->
         <div class="main-content">
-          <div class="headline">
-            {{headline-1}}
-          </div>
+
+          <!-- Insert This Div Only If headline-1 Var Exists -->
+          <!-- (HTML markup is supported in the var) -->
+          {{#if headline-1}}
+            <div class="headline">
+              {{{headline-1}}}
+            </div>
+          {{/if}}
+
         </div>
 
         <!-- Footer with Logo and CTA Button -->
         <div class="footer">
           <div class="logo"></div>
-          <div class="button">
-            <div class="cta-text">
-              {{cta}}
+
+          <!-- Insert This Div Only If cta Var Exists -->
+          <!-- (HTML markup is supported in the var) -->
+          {{#if cta}}
+            <div class="button">
+              <div class="cta-text">
+                {{cta}}
+              </div>
             </div>
-          </div>
+          {{/if}}
+
         </div>
         <!-- End Ad Markup -->
-
       </a>
     </div>
 

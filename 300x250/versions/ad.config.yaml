@@ -1,4 +1,4 @@
-headline-1: Base Ad
+headline-1: Base <span class="red">Test</span>
 cta: Learn More
 css-variables:
   colors:
