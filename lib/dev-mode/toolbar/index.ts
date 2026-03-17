@@ -15,6 +15,14 @@ import { setupScreenshot } from './features/screenshot';
 import { setupSidebar } from '../sidebar/sidebar';
 import { fetchJobSettings } from './api/config-api';
 
+function setDocumentTitle(jobNumber: string, jobName: string, currentAd: string) {
+  const num = jobNumber || '000000';
+  const name = jobName || 'job-name';
+  const parts = [num, name];
+  parts.push(currentAd && currentAd !== 'all' ? currentAd : 'All Ads');
+  document.title = parts.join(' - ');
+}
+
 function createToolbar() {
   // Skip toolbar if ?notoolbar=1 is in the URL (used for iframe previews)
   if (new URLSearchParams(window.location.search).get('notoolbar') === '1') {
@@ -67,14 +75,16 @@ function createToolbar() {
   setupScreenshot(currentAd, currentVariant);
   setupSidebar(adConfigs, currentAd, currentVariant);
 
+  window.addEventListener('dev:job-settings-changed', (event: Event) => {
+    const detail = (event as CustomEvent<{ jobNumber: string; jobName: string }>).detail;
+    if (!detail) return;
+    setDocumentTitle(detail.jobNumber, detail.jobName, currentAd);
+  });
+
   // Set page title to job info + current ad size
   fetchJobSettings()
     .then(({ jobNumber, jobName }) => {
-      const num = jobNumber || '000000';
-      const name = jobName || 'job-name';
-      const parts = [num, name];
-      parts.push(currentAd && currentAd !== 'all' ? currentAd : 'All Ads');
-      document.title = parts.join(' - ');
+      setDocumentTitle(jobNumber, jobName, currentAd);
     })
     .catch(() => {});
 }

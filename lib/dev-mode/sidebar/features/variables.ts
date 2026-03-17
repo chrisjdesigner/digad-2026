@@ -376,6 +376,10 @@ export function setupVariables(
             // Template variables are server-rendered, reload to apply
             window.location.reload();
           });
+        } else if (e.key === 'Tab') {
+          originalValue = input.value;
+          configData.templateVariables[name] = input.value;
+          saveConfig();
         } else if (e.key === 'Escape') {
           input.value = originalValue;
           input.blur();
@@ -418,7 +422,7 @@ export function setupVariables(
           originalValue = input.value;
         });
 
-        // Text input handlers - revert on blur, save only on Enter
+        // Text input handlers - revert on blur, save on Enter/Tab
         input.addEventListener('blur', () => {
           input.value = originalValue;
           document.documentElement.style.setProperty(`--${category}-${name}`, originalValue);
@@ -445,6 +449,16 @@ export function setupVariables(
               colorInput.value = toHexColor(input.value);
             }
             input.blur();
+          } else if (e.key === 'Tab') {
+            originalValue = input.value;
+            if (category && configData.cssVariables[category]) {
+              configData.cssVariables[category][name] = input.value;
+            }
+            document.documentElement.style.setProperty(`--${category}-${name}`, input.value);
+            saveConfig();
+            if (colorInput) {
+              colorInput.value = toHexColor(input.value);
+            }
           } else if (e.key === 'Escape') {
             input.value = originalValue;
             input.blur();

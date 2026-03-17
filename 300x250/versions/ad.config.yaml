@@ -5,7 +5,7 @@ css-variables:
     white: "#fff"
     border-color: grey
   images:
-    photo-url: url(./src/img/photo-v1.jpg)
+    image-url: url(./src/img/background-v1.jpg)
   typography:
     headline-1-font-size: 30px
   other: {}

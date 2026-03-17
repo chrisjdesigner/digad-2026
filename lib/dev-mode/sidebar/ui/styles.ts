@@ -141,6 +141,12 @@ export const sidebarStyles = `
     flex-shrink: 0;
   }
 
+  #dev-settings-tray .project-toggle-row .theme-switch input:focus-visible ~ .theme-switch-track {
+    outline: 2px solid var(--dev-accent);
+    outline-offset: 2px;
+    border-color: var(--dev-accent);
+  }
+
   #dev-settings-tray .project-field-label {
     display: block;
     color: var(--dev-text-dimmed);

@@ -1,12 +1,34 @@
+import { gsap, SplitText } from 'gsap/all';
+
+// Register the SplitText plugin for advanced text animations
+gsap.registerPlugin(SplitText);
+
 import '../sass/style.scss';
 import {
   adContainer,
   delayedHover,
-  timelineSceneOne,
-  timelineAdHover,
   hoverState,
+  adWidth,
+  adHeight,
 } from './config';
 import { waitForFonts } from './utils';
+
+/** --------------------------
+ * GSAP TIMELINES
+ * -------------------------- */
+
+// Main intro/scene animation timeline
+// Paused by default; will be played in adAnimation()
+export const timelineSceneOne = gsap.timeline({
+  id: 'timelineSceneOne',
+  paused: true,
+});
+
+// Hover interaction timeline
+// Plays on mouseenter, reverses on mouseleave
+export const timelineAdHover = gsap.timeline({
+  paused: true,
+});
 
 /** --------------------------
  * AD INITIALIZATION & ORCHESTRATION

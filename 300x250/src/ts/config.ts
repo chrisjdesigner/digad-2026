@@ -1,8 +1,3 @@
-import { gsap, SplitText } from 'gsap/all';
-
-// Register the SplitText plugin for advanced text animations
-gsap.registerPlugin(SplitText);
-
 /** --------------------------
  * CONFIGURATION & SETUP
  * -------------------------- */
@@ -38,20 +33,3 @@ window.addEventListener('dev:hover-gate-setting-changed', (event: Event) => {
 // Get ad dimensions from CSS variables (--ad-width and --ad-height)
 export const adWidth = getComputedStyle(document.documentElement).getPropertyValue('--ad-width').trim();
 export const adHeight = getComputedStyle(document.documentElement).getPropertyValue('--ad-height').trim();
-
-/** --------------------------
- * GSAP TIMELINES
- * -------------------------- */
-
-// Main intro/scene animation timeline
-// Paused by default; will be played in adAnimation()
-export const timelineSceneOne = gsap.timeline({
-  id: 'timelineSceneOne',
-  paused: true,
-});
-
-// Hover interaction timeline
-// Plays on mouseenter, reverses on mouseleave
-export const timelineAdHover = gsap.timeline({
-  paused: true,
-});

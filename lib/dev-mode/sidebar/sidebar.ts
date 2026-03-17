@@ -57,6 +57,106 @@ function applySidebarWidth(width: number) {
   document.documentElement.style.setProperty('--sidebar-width', `${clamped}px`);
 }
 
+function setupVariablesTabLoop(sidebar: HTMLDivElement) {
+  const panel = sidebar.querySelector('.sidebar-tab-panel[data-panel="variables"]') as HTMLDivElement | null;
+  if (!panel) return;
+
+  const getTabFields = (): Array<HTMLInputElement | HTMLSelectElement> => {
+    const candidates = Array.from(panel.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+      '.var-item .var-input, .var-item .var-color-input, .var-item .var-image-select, .add-var-form.active .var-name-input, .add-var-form.active .var-value-input, .add-var-form.active .var-image-select, .add-var-form.active .add-var-color-picker',
+    ));
+
+    return candidates.filter((field) => {
+      if (field.disabled) return false;
+      if (field instanceof HTMLInputElement && field.type === 'hidden') return false;
+      if (!field.isConnected) return false;
+      const style = window.getComputedStyle(field);
+      if (style.display === 'none' || style.visibility === 'hidden') return false;
+      return field.offsetParent !== null || style.position === 'fixed';
+    });
+  };
+
+  panel.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (event.key !== 'Tab') return;
+
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) return;
+
+    const fields = getTabFields();
+    if (fields.length === 0) return;
+
+    const currentIndex = fields.indexOf(target);
+    if (currentIndex === -1) return;
+
+    event.preventDefault();
+    const direction = event.shiftKey ? -1 : 1;
+    const nextIndex = (currentIndex + direction + fields.length) % fields.length;
+    const nextField = fields[nextIndex];
+    nextField.focus();
+
+    if (nextField instanceof HTMLInputElement && nextField.type !== 'color') {
+      nextField.select();
+    }
+  }, true);
+}
+
+function setupProjectTabLoop(sidebar: HTMLDivElement) {
+  const panel = sidebar.querySelector('.sidebar-tab-panel[data-panel="project"]') as HTMLDivElement | null;
+  if (!panel) return;
+
+  const isFocusable = (el: HTMLElement | null): el is HTMLElement => {
+    if (!el) return false;
+    if (el instanceof HTMLInputElement && el.disabled) return false;
+    if (el instanceof HTMLButtonElement && el.disabled) return false;
+    if (!el.isConnected) return false;
+    const style = window.getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden') return false;
+    return el.offsetParent !== null || style.position === 'fixed';
+  };
+
+  const getTabTargets = (): HTMLElement[] => {
+    const targets: HTMLElement[] = [];
+
+    const jobNumber = panel.querySelector('#dev-job-number') as HTMLInputElement | null;
+    const jobName = panel.querySelector('#dev-job-name') as HTMLInputElement | null;
+    const delayToggle = panel.querySelector('#dev-delay-hover-toggle') as HTMLInputElement | null;
+    const firstAdSize = panel.querySelector('#dev-ad-sizes-list .project-list-item-link') as HTMLAnchorElement | null;
+    const firstVersion = panel.querySelector('#dev-versions-list .project-list-item-link') as HTMLAnchorElement | null;
+
+    [jobNumber, jobName, delayToggle, firstAdSize, firstVersion].forEach((el) => {
+      if (isFocusable(el)) {
+        targets.push(el);
+      }
+    });
+
+    return targets;
+  };
+
+  panel.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (event.key !== 'Tab') return;
+
+    const targets = getTabTargets();
+    if (targets.length === 0) return;
+
+    const active = document.activeElement as HTMLElement | null;
+    const currentIndex = active ? targets.indexOf(active) : -1;
+
+    event.preventDefault();
+    const direction = event.shiftKey ? -1 : 1;
+    const fallbackIndex = event.shiftKey ? targets.length - 1 : 0;
+    const nextIndex = currentIndex === -1
+      ? fallbackIndex
+      : (currentIndex + direction + targets.length) % targets.length;
+
+    const nextTarget = targets[nextIndex];
+    nextTarget.focus();
+
+    if (nextTarget instanceof HTMLInputElement && nextTarget.type !== 'checkbox') {
+      nextTarget.select();
+    }
+  }, true);
+}
+
 export function setupSidebar(
   adConfigs: AdConfig[],
   currentAd: string,
@@ -69,6 +169,7 @@ export function setupSidebar(
   // Apply saved sidebar width
   const initialWidth = getSavedWidth();
   applySidebarWidth(initialWidth);
+  setupProjectTabLoop(sidebar);
 
   // Shared config state (mutated by reference in both this module and variables)
   const configData: ConfigData = {
@@ -99,6 +200,7 @@ export function setupSidebar(
     loadSprites = vars.loadSprites;
     addVariable = vars.addVariable;
     updateSectionCounts = vars.updateSectionCounts;
+    setupVariablesTabLoop(sidebar);
   }
 
   // Section toggle (collapse/expand) with persistence
@@ -580,9 +682,9 @@ function showCreateSizeModal(
 
     nameInput.addEventListener('keydown', (e) => {
       const filtered = getFilteredSuggestions();
-      if (filtered.length === 0) return;
 
       if (e.key === 'ArrowDown') {
+        if (filtered.length === 0) return;
         e.preventDefault();
         highlightedSuggestion = Math.min(highlightedSuggestion + 1, filtered.length - 1);
         renderSuggestions();
@@ -590,16 +692,20 @@ function showCreateSizeModal(
       }
 
       if (e.key === 'ArrowUp') {
+        if (filtered.length === 0) return;
         e.preventDefault();
         highlightedSuggestion = Math.max(highlightedSuggestion - 1, 0);
         renderSuggestions();
         return;
       }
 
-      if (e.key === 'Enter' && sizeField.classList.contains('open') && highlightedSuggestion >= 0) {
+      if (e.key === 'Enter') {
         e.preventDefault();
-        nameInput.value = filtered[highlightedSuggestion];
-        closeSuggestions();
+        if (sizeField.classList.contains('open') && highlightedSuggestion >= 0 && filtered.length > 0) {
+          nameInput.value = filtered[highlightedSuggestion];
+          closeSuggestions();
+        }
+        submitCreate();
       }
     });
 
@@ -609,7 +715,7 @@ function showCreateSizeModal(
       }
     });
 
-    confirmBtn.addEventListener('click', () => {
+    const submitCreate = () => {
       const newSizeName = nameInput.value.trim();
       if (!newSizeName) {
         error.textContent = 'Please enter a size name.';
@@ -622,7 +728,9 @@ function showCreateSizeModal(
         return;
       }
       finish({ sourceSize: selectedSource, newSizeName });
-    });
+    };
+
+    confirmBtn.addEventListener('click', submitCreate);
 
     nameInput.focus();
   });
