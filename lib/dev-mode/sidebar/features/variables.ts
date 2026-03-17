@@ -48,14 +48,10 @@ export function setupVariables(
     if (typographyCount) typographyCount.textContent = `(${typography})`;
     if (otherCount) otherCount.textContent = `(${other})`;
 
-    // Disable empty sections visually
+    // Disable empty sections visually (ad dimension vars don't count)
     const otherSection = cssOtherList.closest('.var-section');
     if (otherSection) {
-      if (other === 0) {
-        otherSection.classList.add('disabled');
-      } else {
-        otherSection.classList.remove('disabled');
-      }
+      otherSection.classList.remove('disabled');
     }
   }
 
@@ -157,21 +153,41 @@ export function setupVariables(
       `).join('');
     }
 
-    // Render other variables
-    if (otherVars.length === 0) {
-      cssOtherList.innerHTML = '<div class="empty-message">No variables have been defined</div>';
-    } else {
-      cssOtherList.innerHTML = otherVars.map(([name, value]) => `
-        <div class="var-item" data-name="${name}" data-category="other">
-          <button class="var-drag-handle" type="button" title="Drag to reorder" aria-label="Drag to reorder">${dragHandleIcon}</button>
-          <div class="var-main">
-            <span class="var-name">${name}</span>
-            <input type="text" class="var-input" value="${escapeHtml(String(value))}" />
-            <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
-            <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
-          </div>
+    // Read-only ad dimension variables (always shown in Other)
+    const rootStyles = getComputedStyle(document.documentElement);
+    const adDimensionVars: [string, string][] = [
+      ['ad-width', rootStyles.getPropertyValue('--ad-width').trim()],
+      ['ad-height', rootStyles.getPropertyValue('--ad-height').trim()],
+    ].filter(([, v]) => v) as [string, string][];
+
+    const adDimensionHtml = adDimensionVars.map(([name, value]) => `
+      <div class="var-item readonly" data-name="${name}" data-css-var="--${name}">
+        <button class="var-drag-handle" type="button" title="Drag to reorder" aria-label="Drag to reorder">${dragHandleIcon}</button>
+        <div class="var-main">
+          <span class="var-name">${name}</span>
+          <input type="text" class="var-input" value="${escapeHtml(value)}" disabled />
+          <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
+          <button class="var-action-btn var-delete" disabled title="Cannot delete ad dimension">${trashIcon}</button>
         </div>
-      `).join('');
+      </div>
+    `).join('');
+
+    // Render other variables
+    const otherItemsHtml = otherVars.map(([name, value]) => `
+      <div class="var-item" data-name="${name}" data-category="other">
+        <button class="var-drag-handle" type="button" title="Drag to reorder" aria-label="Drag to reorder">${dragHandleIcon}</button>
+        <div class="var-main">
+          <span class="var-name">${name}</span>
+          <input type="text" class="var-input" value="${escapeHtml(String(value))}" />
+          <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
+          <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
+        </div>
+      </div>
+    `).join('');
+
+    cssOtherList.innerHTML = adDimensionHtml + otherItemsHtml;
+    if (!adDimensionVars.length && otherVars.length === 0) {
+      cssOtherList.innerHTML = '<div class="empty-message">No variables have been defined</div>';
     }
 
     // Attach event listeners to inputs
@@ -406,9 +422,25 @@ export function setupVariables(
       });
     });
 
+    // Read-only ad dimension copy buttons
+    cssOtherList.querySelectorAll('.var-item.readonly').forEach(item => {
+      const cssVarName = item.getAttribute('data-css-var')!;
+      const copyBtn = item.querySelector('.var-copy') as HTMLButtonElement;
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(`var(${cssVarName})`);
+            showCopyFeedback(copyBtn);
+          } catch (err) {
+            console.error('Failed to copy:', err);
+          }
+        });
+      }
+    });
+
     // CSS variable inputs (all categories)
     [cssColorsList, cssTypographyList, cssOtherList].forEach(list => {
-      list.querySelectorAll('.var-item').forEach(item => {
+      list.querySelectorAll('.var-item:not(.readonly)').forEach(item => {
         const name = item.getAttribute('data-name')!;
         const input = item.querySelector('.var-input') as HTMLInputElement;
         const colorInput = item.querySelector('.var-color-input') as HTMLInputElement;

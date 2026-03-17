@@ -596,6 +596,18 @@ export const sidebarStyles = `
   #dev-settings-tray .var-action-btn.var-delete:hover svg {
     fill: var(--dev-danger);
   }
+
+  /* Read-only variable items (e.g. ad-width, ad-height) */
+  #dev-settings-tray .var-item.readonly .var-input {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  #dev-settings-tray .var-item.readonly .var-delete {
+    opacity: 0.15;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
   
   #dev-settings-tray .var-action-btn.var-copy:hover svg {
     fill: var(--dev-text-primary);

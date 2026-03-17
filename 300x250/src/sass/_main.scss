@@ -9,8 +9,8 @@
     font-family: 'Montserrat', sans-serif;
 
     .background {
-      height: 100%;
-      width: 100%;
+      height: var(--ad-height);
+      width: var(--ad-width);
       background: linear-gradient(rgb(0, 51, 76), rgb(6, 20, 36));
       top: 0;
       left: 0;
