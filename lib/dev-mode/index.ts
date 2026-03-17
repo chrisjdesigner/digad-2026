@@ -9,6 +9,7 @@ if (new URLSearchParams(window.location.search).get('notoolbar') !== '1') {
       animation: 'timelineSceneOne',
       hideGlobalTimeline: true,
       paused: false,
+      persist: true,
     });
   }, 1);
 }

@@ -13,19 +13,18 @@ import {
 } from './config';
 import { waitForFonts } from './utils';
 
+
 /** --------------------------
  * GSAP TIMELINES
  * -------------------------- */
 
 // Main intro/scene animation timeline
-// Paused by default; will be played in adAnimation()
 export const timelineSceneOne = gsap.timeline({
   id: 'timelineSceneOne',
   paused: true,
 });
 
 // Hover interaction timeline
-// Plays on mouseenter, reverses on mouseleave
 export const timelineAdHover = gsap.timeline({
   paused: true,
 });
@@ -73,13 +72,11 @@ async function startAd() {
 startAd();
 
 /** --------------------------
- * ANIMATION DEFINITIONS
- * Define all timelines and sequences here.
- * Designers: customize duration, easing, targets, and stagger below.
+ * TIMELINE ANIMATION
  * -------------------------- */
 
 function adAnimation() {
-  // ========== MAIN INTRO ANIMATION ==========
+  // ========== MAIN ANIMATION ==========
   timelineSceneOne
     .to('.container', { duration: 0.5, opacity: 1, delay: 0.2 })
     .from('.headline', {
@@ -91,7 +88,6 @@ function adAnimation() {
 
   // ========== ADVANCED: SplitText Starter ==========
   // For advanced text animations (letters, lines, words), uncomment and customize.
-  // Note: SplitText is already imported and registered in config.ts
   // const headlineSplitText = new SplitText('.headline', { type: 'lines' });
   // .from(headlineSplitText.lines, {
   //   duration: 0.75,

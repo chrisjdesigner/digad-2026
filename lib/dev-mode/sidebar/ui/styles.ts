@@ -1061,7 +1061,6 @@ export const sidebarStyles = `
 
   .dev-modal-error {
     min-height: 0;
-    margin-top: 8px;
     color: var(--dev-danger);
     font-size: 11px;
   }
@@ -1073,7 +1072,7 @@ export const sidebarStyles = `
   .dev-modal-footer {
     display: flex;
     justify-content: flex-end;
-    padding-top: 12px;
+    padding-top: 20px;
     gap: 8px;
     border-top: 1px solid var(--dev-border);
   }

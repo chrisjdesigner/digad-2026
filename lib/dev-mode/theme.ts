@@ -25,7 +25,7 @@ export const themeStyles = `
     --dev-ad-content-bg: #1B1C1D;
     --dev-accent: #909090;
     --dev-accent-hover: #f0f0f0;
-    --dev-danger: #B90000;
+    --dev-danger: #e33e3e;
     --dev-resize-active: rgba(184, 184, 184, 1);
     --dev-spinner-track: #2B2C2E;
     --dev-overlay: rgba(0, 0, 0, 0.7);

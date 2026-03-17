@@ -446,7 +446,7 @@ function createModalShell(title: string): {
   confirmBtn.textContent = 'Create';
 
   footer.append(cancelBtn, confirmBtn);
-  modal.append(header, body, error, footer);
+  modal.append(header, body, footer);
   backdrop.appendChild(modal);
   document.body.appendChild(backdrop);
 
@@ -506,7 +506,7 @@ function showCreateVersionModal(
     nameGroup.className = 'dev-modal-group';
     nameGroup.append(nameLabel, nameInput);
 
-    body.append(sourceGroup, nameGroup);
+    body.append(sourceGroup, nameGroup, error);
 
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -605,7 +605,7 @@ function showCreateSizeModal(
     nameGroup.className = 'dev-modal-group';
     nameGroup.append(nameLabel, sizeField);
 
-    body.append(sourceGroup, nameGroup);
+    body.append(sourceGroup, nameGroup, error);
 
     const getFilteredSuggestions = () => {
       const value = nameInput.value.trim().toLowerCase();
