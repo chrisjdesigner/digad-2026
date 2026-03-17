@@ -1,35 +1,35 @@
-import { fetchConfig, fetchJobSettings, saveHoverGateSetting, saveJobSettings } from '../api/config-api';
+import { fetchJobSettings, saveJobSettings } from '../api/config-api';
 
-export function setupJobSettings(currentAd: string, currentVariant: string | null): void {
+export function setupJobSettings(currentAd: string): void {
   const jobNumberInput = document.getElementById('dev-job-number') as HTMLInputElement;
   const jobNameInput = document.getElementById('dev-job-name') as HTMLInputElement;
   const delayHoverToggle = document.getElementById('dev-delay-hover-toggle') as HTMLInputElement | null;
+  let delayedHoverValue = false;
 
   // Load job settings and populate inputs
   fetchJobSettings()
     .then(data => {
       jobNumberInput.value = data.jobNumber || '';
       jobNameInput.value = data.jobName || '';
+      delayedHoverValue = !!data.delayedHover;
+      if (delayHoverToggle) {
+        delayHoverToggle.checked = delayedHoverValue;
+      }
     })
     .catch(err => console.error('Failed to load job settings:', err));
 
-  if (delayHoverToggle && currentAd !== 'all') {
-    fetchConfig(currentAd, currentVariant)
-      .then(data => {
-        delayHoverToggle.checked = !!(data.templateVariables?.delayedHover ?? data.templateVariables?.requireMainTimelineCompleteForHover);
-      })
-      .catch(err => console.error('Failed to load hover-gate setting from config:', err));
-  }
-
   if (delayHoverToggle && currentAd === 'all') {
     delayHoverToggle.disabled = true;
-    delayHoverToggle.checked = false;
   }
 
   // Save job settings on blur
   const save = () => {
     const jobNumber = jobNumberInput.value || '000000';
-    const delayedHover = !!delayHoverToggle?.checked;
+    const delayedHover = delayHoverToggle && !delayHoverToggle.disabled
+      ? !!delayHoverToggle.checked
+      : delayedHoverValue;
+    delayedHoverValue = delayedHover;
+
     saveJobSettings(jobNumber, jobNameInput.value || 'job-name', delayedHover)
       .catch(err => console.error('Failed to save job settings:', err));
   };
@@ -47,12 +47,13 @@ export function setupJobSettings(currentAd: string, currentVariant: string | nul
   jobNumberInput.addEventListener('keydown', (e) => handleEnterKey(e, jobNumberInput));
   jobNameInput.addEventListener('keydown', (e) => handleEnterKey(e, jobNameInput));
 
-  if (delayHoverToggle && currentAd !== 'all') {
+  if (delayHoverToggle) {
     delayHoverToggle.addEventListener('change', async () => {
       const delayedHover = !!delayHoverToggle.checked;
+      delayedHoverValue = delayedHover;
 
       try {
-        await saveHoverGateSetting(currentAd, delayedHover);
+        save();
         window.dispatchEvent(new CustomEvent('dev:hover-gate-setting-changed', {
           detail: { delayedHover },
         }));

@@ -13,19 +13,6 @@ export async function saveJobSettings(jobNumber: string, jobName: string, delaye
   });
 }
 
-export async function saveHoverGateSetting(adSize: string, delayedHover: boolean): Promise<void> {
-  const response = await fetch('/api/ad-config/hover-gate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ adSize, delayedHover }),
-  });
-
-  const result = await response.json();
-  if (!result.success) {
-    throw new Error(result.error || 'Failed to update hover-gate setting');
-  }
-}
-
 export async function fetchConfig(currentAd: string, currentVariant: string | null): Promise<ConfigData> {
   const version = currentVariant || 'base';
   const response = await fetch(`/api/ad-config?adSize=${encodeURIComponent(currentAd)}&version=${encodeURIComponent(version)}`);
