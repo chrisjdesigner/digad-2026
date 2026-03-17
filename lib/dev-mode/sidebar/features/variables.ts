@@ -109,7 +109,7 @@ export function setupVariables(
           <button class="var-drag-handle" type="button" title="Drag to reorder" aria-label="Drag to reorder">${dragHandleIcon}</button>
           <div class="var-main">
             <span class="var-name">${name}</span>
-            <input type="color" class="var-color-input" value="${toHexColor(String(value))}" data-original="${escapeHtml(String(value))}" />
+            <input type="color" class="var-color-input" tabindex="-1" value="${toHexColor(String(value))}" data-original="${escapeHtml(String(value))}" />
             <input type="text" class="var-input" value="${escapeHtml(String(value))}" />
             <button class="var-action-btn var-copy" title="Copy as CSS variable">${copyIcon}</button>
             <button class="var-action-btn var-delete" title="Remove from all versions">${trashIcon}</button>
@@ -388,7 +388,7 @@ export function setupVariables(
 
       if (copyBtn) {
         copyBtn.addEventListener('click', async () => {
-          const templateVar = `{{${name}}}`;
+          const templateVar = `{{{${name}}}}`;
           try {
             await navigator.clipboard.writeText(templateVar);
             showCopyFeedback(copyBtn);
@@ -613,12 +613,29 @@ export function setupVariables(
     });
   }
 
-  // Save config to server
+  // Save config to server – serialised to prevent concurrent request races.
+  // If a save is already in flight, queue one more attempt so the final state
+  // is always persisted even if edits arrive while a request is pending.
+  let _saveInFlight = false;
+  let _savePending = false;
+
   async function saveConfig() {
+    if (_saveInFlight) {
+      _savePending = true;
+      return;
+    }
+    _saveInFlight = true;
+    _savePending = false;
     try {
       await postConfig(currentAd, currentVariant, configData);
     } catch (error) {
       console.error('Failed to save config:', error);
+    } finally {
+      _saveInFlight = false;
+      if (_savePending) {
+        // A write arrived while we were in flight – persist it now.
+        void saveConfig();
+      }
     }
   }
 

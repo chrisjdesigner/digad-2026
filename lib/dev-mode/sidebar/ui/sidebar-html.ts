@@ -189,7 +189,7 @@ export function createSidebarElement(
               <div class="add-var-form-inputs">
                 <input type="text" class="add-var-input var-name-input" placeholder="Variable name (e.g., bg-color)" />
                 <div class="add-var-color-input-wrapper">
-                  <input type="color" class="add-var-color-picker" value="#ffffff" />
+                  <input type="color" class="add-var-color-picker" tabindex="-1" value="#ffffff" />
                   <input type="text" class="add-var-input var-value-input" placeholder="#ffffff" />
                 </div>
               </div>

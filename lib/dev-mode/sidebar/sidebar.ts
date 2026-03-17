@@ -63,7 +63,7 @@ function setupVariablesTabLoop(sidebar: HTMLDivElement) {
 
   const getTabFields = (): Array<HTMLInputElement | HTMLSelectElement> => {
     const candidates = Array.from(panel.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
-      '.var-item .var-input, .var-item .var-color-input, .var-item .var-image-select, .add-var-form.active .var-name-input, .add-var-form.active .var-value-input, .add-var-form.active .var-image-select, .add-var-form.active .add-var-color-picker',
+      '.var-item .var-input, .var-item .var-image-select, .add-var-form.active .var-name-input, .add-var-form.active .var-value-input, .add-var-form.active .var-image-select',
     ));
 
     return candidates.filter((field) => {
