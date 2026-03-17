@@ -33,6 +33,7 @@ export function setupVariables(
   } = elements;
 
   type CssCategory = 'colors' | 'images' | 'typography' | 'other';
+  let templateReloadRequested = false;
 
   // Update section item counts
   function updateSectionCounts(template: number, colors: number, images: number, typography: number, other: number) {
@@ -361,6 +362,28 @@ export function setupVariables(
 
   // Attach listeners to variable inputs and delete buttons
   function attachVariableListeners() {
+    const focusNextVariableInput = (currentInput: HTMLInputElement, direction: 1 | -1 = 1) => {
+      const variablesPanel = document.querySelector('.sidebar-tab-panel[data-panel="variables"]') as HTMLDivElement | null;
+      if (!variablesPanel) {
+        currentInput.blur();
+        return;
+      }
+
+      const editableInputs = Array.from(
+        variablesPanel.querySelectorAll<HTMLInputElement>('.var-item:not(.readonly) .var-input'),
+      );
+      const currentIndex = editableInputs.indexOf(currentInput);
+
+      if (editableInputs.length === 0 || currentIndex === -1) {
+        currentInput.blur();
+        return;
+      }
+
+      // Keep focus looped inside Variables tab fields.
+      const nextIndex = (currentIndex + direction + editableInputs.length) % editableInputs.length;
+      editableInputs[nextIndex].focus();
+    };
+
     // Template variable inputs
     templateVarsList.querySelectorAll('.var-item').forEach(item => {
       const name = item.getAttribute('data-name')!;
@@ -369,12 +392,17 @@ export function setupVariables(
       const deleteBtn = item.querySelector('.var-delete') as HTMLButtonElement;
 
       let originalValue = input.value;
+      let skipNextBlurRevert = false;
 
       input.addEventListener('focus', () => {
         originalValue = input.value;
       });
 
       input.addEventListener('blur', () => {
+        if (skipNextBlurRevert) {
+          skipNextBlurRevert = false;
+          return;
+        }
         input.value = originalValue;
       });
 
@@ -387,15 +415,16 @@ export function setupVariables(
         if (e.key === 'Enter') {
           e.preventDefault();
           originalValue = input.value;
+          skipNextBlurRevert = true;
           configData.templateVariables[name] = input.value;
-          saveConfig().then(() => {
-            // Template variables are server-rendered, reload to apply
-            window.location.reload();
-          });
+          void saveConfigAndReloadTemplateOnce();
         } else if (e.key === 'Tab') {
+          e.preventDefault();
           originalValue = input.value;
+          skipNextBlurRevert = true;
           configData.templateVariables[name] = input.value;
-          saveConfig();
+          void saveConfigAndReloadTemplateOnce();
+          focusNextVariableInput(input, e.shiftKey ? -1 : 1);
         } else if (e.key === 'Escape') {
           input.value = originalValue;
           input.blur();
@@ -449,6 +478,7 @@ export function setupVariables(
         const category = item.getAttribute('data-category') as 'colors' | 'images' | 'typography' | 'other';
 
         let originalValue = input.value;
+        let skipNextBlurRevert = false;
 
         input.addEventListener('focus', () => {
           originalValue = input.value;
@@ -456,6 +486,10 @@ export function setupVariables(
 
         // Text input handlers - revert on blur, save on Enter/Tab
         input.addEventListener('blur', () => {
+          if (skipNextBlurRevert) {
+            skipNextBlurRevert = false;
+            return;
+          }
           input.value = originalValue;
           document.documentElement.style.setProperty(`--${category}-${name}`, originalValue);
           if (colorInput) {
@@ -472,6 +506,7 @@ export function setupVariables(
           if (e.key === 'Enter') {
             e.preventDefault();
             originalValue = input.value;
+            skipNextBlurRevert = true;
             if (category && configData.cssVariables[category]) {
               configData.cssVariables[category][name] = input.value;
             }
@@ -482,7 +517,9 @@ export function setupVariables(
             }
             input.blur();
           } else if (e.key === 'Tab') {
+            e.preventDefault();
             originalValue = input.value;
+            skipNextBlurRevert = true;
             if (category && configData.cssVariables[category]) {
               configData.cssVariables[category][name] = input.value;
             }
@@ -491,6 +528,7 @@ export function setupVariables(
             if (colorInput) {
               colorInput.value = toHexColor(input.value);
             }
+            focusNextVariableInput(input, e.shiftKey ? -1 : 1);
           } else if (e.key === 'Escape') {
             input.value = originalValue;
             input.blur();
@@ -645,30 +683,28 @@ export function setupVariables(
     });
   }
 
-  // Save config to server – serialised to prevent concurrent request races.
-  // If a save is already in flight, queue one more attempt so the final state
-  // is always persisted even if edits arrive while a request is pending.
-  let _saveInFlight = false;
-  let _savePending = false;
+  // Save config to server – serialized to prevent request races.
+  // Each call is chained so awaiting saveConfig() guarantees the latest write
+  // in sequence has completed before continuing.
+  let _saveChain: Promise<void> = Promise.resolve();
 
   async function saveConfig() {
-    if (_saveInFlight) {
-      _savePending = true;
-      return;
-    }
-    _saveInFlight = true;
-    _savePending = false;
-    try {
-      await postConfig(currentAd, currentVariant, configData);
-    } catch (error) {
-      console.error('Failed to save config:', error);
-    } finally {
-      _saveInFlight = false;
-      if (_savePending) {
-        // A write arrived while we were in flight – persist it now.
-        void saveConfig();
-      }
-    }
+    _saveChain = _saveChain
+      .then(async () => {
+        await postConfig(currentAd, currentVariant, configData);
+      })
+      .catch((error) => {
+        console.error('Failed to save config:', error);
+      });
+
+    await _saveChain;
+  }
+
+  async function saveConfigAndReloadTemplateOnce() {
+    await saveConfig();
+    if (templateReloadRequested) return;
+    templateReloadRequested = true;
+    window.location.reload();
   }
 
   // Add variable to all versions

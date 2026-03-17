@@ -18,10 +18,15 @@ const COMMON_AD_SIZES = [
   '240x400',
   '250x250',
   '300x50',
+  '320x488',
   '300x100',
   '300x250',
   '300x600',
+  '600x500',
+  '640x1000',
   '320x50',
+  '812x457',
+  '970x66',
   '320x100',
   '320x480',
   '336x280',
@@ -81,6 +86,11 @@ function setupVariablesTabLoop(sidebar: HTMLDivElement) {
 
     const target = event.target;
     if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) return;
+
+    // Variable list fields handle Tab themselves (commit + controlled focus move).
+    // Do not intercept those here in capture phase or their blur handlers can run
+    // before commit logic executes.
+    if (target.closest('.var-item')) return;
 
     const fields = getTabFields();
     if (fields.length === 0) return;
