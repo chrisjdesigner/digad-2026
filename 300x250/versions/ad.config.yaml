@@ -1,4 +1,4 @@
-headline-1: Base <span class="red">Test</span>
+headline-1: Base <span class="red">Ad</span>
 cta: Learn More
 css-variables:
   colors:
@@ -7,7 +7,8 @@ css-variables:
   images:
     image-1-url: url(./src/img/background.jpg)
   typography:
-    headline-1-font-size: 30px
+    headline-1-font-size: 50px
+    headlne-1-line-height: 30px
   other: {}
 sprites:
   - name: sprite

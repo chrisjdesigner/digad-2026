@@ -13,8 +13,7 @@
     "ts-lint": "tsc --noEmit",
     "ts-lint:watch": "tsc --noEmit --watch --preserveWatchOutput",
     "prepreview": "node -e \"const fs=require('fs');if(fs.existsSync('preview')){fs.rmSync('preview',{recursive:true,force:true});}fs.mkdirSync('preview');\"",
-    "preview": "concurrently pnpm:preview:*",
-    "preview:300x250": "tsc && vite build",
+    "preview": "node lib/scripts/preview",
     "package": "pnpm run preview && node lib/scripts/package",
     "postpreview": "node --no-warnings=ExperimentalWarning lib/scripts/postpreview",
     "prettier:fix": "prettier --write \"{,!(build|node_modules|preview|templates)/**}/*.{js,ts,css,scss,html}\""
