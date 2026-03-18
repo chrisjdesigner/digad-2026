@@ -1,4 +1,5 @@
-import { gsap, SplitText } from 'gsap/all';
+import { gsap } from 'gsap';
+import { SplitText } from 'gsap/SplitText';
 
 // Register the SplitText plugin for advanced text animations
 gsap.registerPlugin(SplitText);
@@ -28,6 +29,10 @@ export const timelineSceneOne = gsap.timeline({
 export const timelineAdHover = gsap.timeline({
   paused: true,
 });
+
+// SplitText Variables (uncomment if using SplitText animations)
+// const headlineSplitText = new SplitText('.headline', { type: 'lines' });
+
 
 /** --------------------------
  * AD INITIALIZATION & ORCHESTRATION
@@ -71,6 +76,7 @@ async function startAd() {
 // Start ad when the module loads
 startAd();
 
+
 /** --------------------------
  * TIMELINE ANIMATION
  * -------------------------- */
@@ -84,18 +90,15 @@ function adAnimation() {
       autoAlpha: 0,
       ease: 'power2.out',
     })
+    // Example of animating headline lines with SplitText (uncomment if using SplitText)
+    // .from(headlineSplitText.lines, {
+    //   duration: 0.75,
+    //   y: 6,
+    //   autoAlpha: 0,
+    //   stagger: 0.25,
+    //   ease: 'power4.out',
+    // })
   ;
-
-  // ========== ADVANCED: SplitText Starter ==========
-  // For advanced text animations (letters, lines, words), uncomment and customize.
-  // const headlineSplitText = new SplitText('.headline', { type: 'lines' });
-  // .from(headlineSplitText.lines, {
-  //   duration: 0.75,
-  //   y: 6,
-  //   autoAlpha: 0,
-  //   stagger: 0.25,
-  //   ease: 'power4.out',
-  // })
 
   // If hover should wait for intro to finish, unlock it when timeline completes
   if (delayedHover) {
