@@ -26,17 +26,16 @@
     "fast-glob": "^3.3.3",
     "html2canvas-pro": "^2.0.2",
     "prettier": "^3.8.1",
-    "sass": "^1.97.3",
+    "sass": "^1.98.0",
     "sharp": "^0.34.5",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1",
+    "vite": "^8.0.0",
     "vite-plugin-handlebars": "^2.0.0",
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-imagemin": "^0.6.1",
     "vite-plugin-restart": "^2.0.0",
-    "vite-plugin-singlefile": "^2.3.0",
-    "vite-plugin-spritesmith": "github:fishpondstudio/vite-plugin-spritesmith#a933c5fbda1b7288100781618078cc322071f1d4",
-    "vite-tsconfig-paths": "^6.1.1"
+    "vite-plugin-singlefile": "^2.3.2",
+    "vite-plugin-spritesmith": "github:fishpondstudio/vite-plugin-spritesmith#a933c5fbda1b7288100781618078cc322071f1d4"
   },
   "dependencies": {
     "gsap": "^3.14.2",

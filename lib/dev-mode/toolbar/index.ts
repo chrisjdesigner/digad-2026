@@ -6,6 +6,7 @@
 
 import type { AdConfig } from './models/types';
 import { layoutStyles } from './ui/styles';
+import { gsDevToolsStyles } from '../gsdevtools/ui/styles';
 import { themeStyles } from '../theme';
 import { createToolbarElement } from './ui/toolbar-html';
 import { createSidebarElement } from '../sidebar/ui/sidebar-html';
@@ -35,7 +36,7 @@ function createToolbar() {
 
   // Inject layout styles
   const layoutStyleEl = document.createElement('style');
-  layoutStyleEl.textContent = themeStyles + layoutStyles;
+  layoutStyleEl.textContent = themeStyles + layoutStyles + gsDevToolsStyles;
   document.head.appendChild(layoutStyleEl);
 
   const isAllView = currentAd === 'all' || currentVariant === 'all';

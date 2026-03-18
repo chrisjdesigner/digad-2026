@@ -30,6 +30,18 @@ export const themeStyles = `
     --dev-resize-active: rgba(184, 184, 184, 1);
     --dev-spinner-track: #2B2C2E;
     --dev-overlay: rgba(0, 0, 0, 0.7);
+    /* GSDevTools colors */
+    --gsdt-bg-primary: #181819;
+    --gsdt-bg-secondary: rgba(24, 24, 25, 0.95);
+    --gsdt-bg-track: #2B2C2E;
+    --gsdt-text-primary: var(--dev-text-dimmed);
+    --gsdt-text-secondary: var(--dev-text-faint);
+    --gsdt-icon-primary: var(--dev-text-dimmed);
+    --gsdt-icon-muted: color-mix(in srgb, var(--dev-text-faint) 85%, white 15%);
+    --gsdt-icon-subtle: rgba(173, 176, 179, 0.15);
+    --gsdt-border: #2B2C2E;
+    --gsdt-accent-play: var(--dev-text-dimmed);
+    --gsdt-accent-marker: var(--dev-text-faint);
   }
 
   /* Light theme — SR palette, softened */
@@ -57,5 +69,17 @@ export const themeStyles = `
     --dev-resize-active: rgb(209, 209, 209);
     --dev-spinner-track: #DCDEDE;
     --dev-overlay: rgba(255, 255, 255, 0.7);
+    /* GSDevTools colors (light theme) */
+    --gsdt-bg-primary: #f0f0f0;
+    --gsdt-bg-secondary: rgba(240, 240, 240, 0.95);
+    --gsdt-bg-track: #ccc;
+    --gsdt-text-primary: var(--dev-text-dimmed);
+    --gsdt-text-secondary: var(--dev-text-faint);
+    --gsdt-icon-primary: var(--dev-text-dimmed);
+    --gsdt-icon-muted: color-mix(in srgb, var(--dev-text-faint) 50%, white 50%);
+    --gsdt-icon-subtle: rgba(0, 0, 0, 0.15);
+    --gsdt-border: #ddd;
+    --gsdt-accent-play: color-mix(in srgb, var(--dev-text-dimmed) 60%, white 40%);
+    --gsdt-accent-marker: color-mix(in srgb, var(--dev-text-muted) 60%, white 40%);
   }
 `;
