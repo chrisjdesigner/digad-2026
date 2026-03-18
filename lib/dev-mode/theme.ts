@@ -26,6 +26,7 @@ export const themeStyles = `
     --dev-accent: #909090;
     --dev-accent-hover: #f0f0f0;
     --dev-danger: #e33e3e;
+    --dev-primary-action: #F47723;
     --dev-resize-active: rgba(184, 184, 184, 1);
     --dev-spinner-track: #2B2C2E;
     --dev-overlay: rgba(0, 0, 0, 0.7);
@@ -52,6 +53,7 @@ export const themeStyles = `
     --dev-accent: #afafaf;
     --dev-accent-hover: #c5c5c4;
     --dev-danger: #B90000;
+    --dev-primary-action: #F47723;
     --dev-resize-active: rgb(209, 209, 209);
     --dev-spinner-track: #DCDEDE;
     --dev-overlay: rgba(255, 255, 255, 0.7);

@@ -10,6 +10,7 @@ if (new URLSearchParams(window.location.search).get('notoolbar') !== '1') {
       hideGlobalTimeline: true,
       paused: false,
       persist: true,
+      keyboard: false,
     });
   }, 1);
 }

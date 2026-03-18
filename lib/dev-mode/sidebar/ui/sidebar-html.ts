@@ -14,6 +14,7 @@ import {
 } from '../../toolbar/ui/icons';
 import type { AdConfig } from '../../toolbar/models/types';
 import { sidebarStyles } from './styles';
+import { modalStyles } from '../../modals';
 
 const TAB_STORAGE_KEY = 'dev-sidebar-tab';
 const SECTION_STORAGE_PREFIX = 'dev-section-';
@@ -48,7 +49,7 @@ export function createSidebarElement(
   const sidebar = document.createElement('div');
   sidebar.id = 'dev-settings-tray';
   sidebar.innerHTML = `
-    <style>${sidebarStyles}</style>
+    <style>${sidebarStyles}${modalStyles}</style>
     <div class="sidebar-resize-handle"></div>
     <div class="sidebar-tabs">
       <button class="sidebar-tab${projectActive ? ' active' : ''}" data-tab="project">${settingsIcon.replace('<svg', '<svg class="sidebar-tab-icon"')} Project</button>
