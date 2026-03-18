@@ -362,26 +362,32 @@ export function setupVariables(
 
   // Attach listeners to variable inputs and delete buttons
   function attachVariableListeners() {
-    const focusNextVariableInput = (currentInput: HTMLInputElement, direction: 1 | -1 = 1) => {
+    const focusNextVariableField = (currentField: HTMLInputElement | HTMLSelectElement, direction: 1 | -1 = 1) => {
       const variablesPanel = document.querySelector('.sidebar-tab-panel[data-panel="variables"]') as HTMLDivElement | null;
       if (!variablesPanel) {
-        currentInput.blur();
+        currentField.blur();
         return;
       }
 
-      const editableInputs = Array.from(
-        variablesPanel.querySelectorAll<HTMLInputElement>('.var-item:not(.readonly) .var-input'),
+      const editableFields = Array.from(
+        variablesPanel.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+          '.var-item:not(.readonly) .var-input, .var-item:not(.readonly) .var-image-select',
+        ),
       );
-      const currentIndex = editableInputs.indexOf(currentInput);
+      const currentIndex = editableFields.indexOf(currentField);
 
-      if (editableInputs.length === 0 || currentIndex === -1) {
-        currentInput.blur();
+      if (editableFields.length === 0 || currentIndex === -1) {
+        currentField.blur();
         return;
       }
 
       // Keep focus looped inside Variables tab fields.
-      const nextIndex = (currentIndex + direction + editableInputs.length) % editableInputs.length;
-      editableInputs[nextIndex].focus();
+      const nextIndex = (currentIndex + direction + editableFields.length) % editableFields.length;
+      const nextField = editableFields[nextIndex];
+      nextField.focus();
+      if (nextField instanceof HTMLInputElement && nextField.type !== 'color') {
+        nextField.select();
+      }
     };
 
     // Template variable inputs
@@ -424,7 +430,7 @@ export function setupVariables(
           skipNextBlurRevert = true;
           configData.templateVariables[name] = input.value;
           void saveConfigAndReloadTemplateOnce();
-          focusNextVariableInput(input, e.shiftKey ? -1 : 1);
+          focusNextVariableField(input, e.shiftKey ? -1 : 1);
         } else if (e.key === 'Escape') {
           input.value = originalValue;
           input.blur();
@@ -528,7 +534,7 @@ export function setupVariables(
             if (colorInput) {
               colorInput.value = toHexColor(input.value);
             }
-            focusNextVariableInput(input, e.shiftKey ? -1 : 1);
+            focusNextVariableField(input, e.shiftKey ? -1 : 1);
           } else if (e.key === 'Escape') {
             input.value = originalValue;
             input.blur();
@@ -586,6 +592,16 @@ export function setupVariables(
             configData.cssVariables.images[name] = newValue;
             document.documentElement.style.setProperty('--images-' + name, newValue);
             saveConfig();
+          }
+        });
+
+        select.addEventListener('keydown', (e) => {
+          e.stopPropagation();
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            focusNextVariableField(select, e.shiftKey ? -1 : 1);
+          } else if (e.key === 'Escape') {
+            select.blur();
           }
         });
 

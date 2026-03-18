@@ -130,10 +130,10 @@ function setupProjectTabLoop(sidebar: HTMLDivElement) {
     const jobNumber = panel.querySelector('#dev-job-number') as HTMLInputElement | null;
     const jobName = panel.querySelector('#dev-job-name') as HTMLInputElement | null;
     const delayToggle = panel.querySelector('#dev-delay-hover-toggle') as HTMLInputElement | null;
-    const firstAdSize = panel.querySelector('#dev-ad-sizes-list .project-list-item-link') as HTMLAnchorElement | null;
-    const firstVersion = panel.querySelector('#dev-versions-list .project-list-item-link') as HTMLAnchorElement | null;
+    const adSizeLinks = Array.from(panel.querySelectorAll('#dev-ad-sizes-list .project-list-item-link')) as HTMLAnchorElement[];
+    const versionLinks = Array.from(panel.querySelectorAll('#dev-versions-list .project-list-item-link')) as HTMLAnchorElement[];
 
-    [jobNumber, jobName, delayToggle, firstAdSize, firstVersion].forEach((el) => {
+    [jobNumber, jobName, delayToggle, ...adSizeLinks, ...versionLinks].forEach((el) => {
       if (isFocusable(el)) {
         targets.push(el);
       }
