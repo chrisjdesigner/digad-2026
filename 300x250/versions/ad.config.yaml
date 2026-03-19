@@ -3,12 +3,12 @@ cta: Learn More
 css-variables:
   colors:
     border-color: grey
-    white: "#fff"
+    white: "#ffffff"
   images:
     image-1-url: url(./src/img/background.jpg)
   typography:
     headline-1-font-size: 50px
-    headlne-1-line-height: 30px
+    headline-1-line-height: 110%
   other: {}
 sprites:
   - name: sprite

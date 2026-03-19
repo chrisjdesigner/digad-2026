@@ -413,7 +413,11 @@ export function setupVariables(
           skipNextBlurRevert = false;
           return;
         }
-        input.value = originalValue;
+        if (input.value !== originalValue) {
+          originalValue = input.value;
+          configData.templateVariables[name] = input.value;
+          void saveConfigAndReloadTemplateOnce();
+        }
       });
 
       input.addEventListener('input', (e) => {
@@ -494,16 +498,22 @@ export function setupVariables(
           originalValue = input.value;
         });
 
-        // Text input handlers - revert on blur, save on Enter/Tab
+        // Text input handlers - save on blur if changed, save on Enter/Tab
         input.addEventListener('blur', () => {
           if (skipNextBlurRevert) {
             skipNextBlurRevert = false;
             return;
           }
-          input.value = originalValue;
-          document.documentElement.style.setProperty(`--${category}-${name}`, originalValue);
-          if (colorInput) {
-            colorInput.value = toHexColor(originalValue);
+          if (input.value !== originalValue) {
+            originalValue = input.value;
+            if (category && configData.cssVariables[category]) {
+              configData.cssVariables[category][name] = input.value;
+            }
+            document.documentElement.style.setProperty(`--${category}-${name}`, input.value);
+            saveConfig();
+            if (colorInput) {
+              colorInput.value = toHexColor(input.value);
+            }
           }
         });
 
