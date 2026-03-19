@@ -18,6 +18,11 @@ export const wrapTemplateVariablesForHandlebars = (
       continue;
     }
 
+    if (value === '') {
+      wrappedContext[key] = null;
+      continue;
+    }
+
     wrappedContext[key] = {
       toHTML() {
         return value;

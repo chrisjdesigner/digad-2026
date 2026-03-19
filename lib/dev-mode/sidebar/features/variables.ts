@@ -439,7 +439,7 @@ export function setupVariables(
 
       if (copyBtn) {
         copyBtn.addEventListener('click', async () => {
-          const templateVar = `{{{${name}}}}`;
+          const templateVar = `{{#if ${name}}}\n  {{{${name}}}}\n{{/if}}`;
           try {
             await navigator.clipboard.writeText(templateVar);
             showCopyFeedback(copyBtn);
