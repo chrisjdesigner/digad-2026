@@ -9,12 +9,46 @@ import { layoutStyles } from './ui/styles';
 import { gsDevToolsStyles } from '../gsdevtools/ui/styles';
 import { themeStyles } from '../theme';
 import { createToolbarElement } from './ui/toolbar-html';
+import { replayIcon } from './ui/icons';
 import { createSidebarElement } from '../sidebar/ui/sidebar-html';
 import { setupJobSettings } from './features/job-settings';
 import { setupNavigation } from './features/navigation';
 import { setupScreenshot } from './features/screenshot';
 import { setupSidebar } from '../sidebar/sidebar';
 import { fetchJobSettings } from './api/config-api';
+
+function appendReplayToken(href: string) {
+  const nextUrl = new URL(href, window.location.href);
+  nextUrl.searchParams.set('_replay', Date.now().toString());
+  return nextUrl.toString();
+}
+
+function createPreviewReplayStage() {
+  const stage = document.createElement('div');
+  stage.className = 'dev-preview-stage';
+
+  const adShell = document.createElement('div');
+  adShell.className = 'dev-preview-ad-shell';
+
+  const actions = document.createElement('div');
+  actions.className = 'dev-preview-actions';
+
+  const replayButton = document.createElement('button');
+  replayButton.type = 'button';
+  replayButton.className = 'dev-preview-replay-btn';
+  replayButton.setAttribute('aria-label', 'Replay ad');
+  replayButton.setAttribute('title', 'Replay ad');
+  replayButton.innerHTML = replayIcon;
+  replayButton.addEventListener('click', () => {
+    window.location.href = appendReplayToken(window.location.href);
+  });
+
+  actions.appendChild(replayButton);
+  stage.appendChild(actions);
+  stage.appendChild(adShell);
+
+  return { stage, adShell };
+}
 
 function releasePendingLayout() {
   document.documentElement.classList.remove('dev-layout-pending');
@@ -35,6 +69,7 @@ function createToolbar() {
     return;
   }
 
+  const isPreviewMode = window.__DEV_PREVIEW_MODE__ === true;
   const adConfigs: AdConfig[] = window.__DEV_AD_CONFIGS__ || [];
   const currentAd: string = window.__DEV_CURRENT_AD__ || '';
   const currentVariant: string | null = window.__DEV_CURRENT_VARIANT__ || null;
@@ -58,41 +93,60 @@ function createToolbar() {
   adContent.id = 'dev-ad-content';
 
   // Create toolbar and place inside main
-  const toolbar = createToolbarElement(adConfigs, currentAd, currentVariant);
+  const toolbar = createToolbarElement(adConfigs, currentAd, currentVariant, {
+    previewMode: isPreviewMode,
+  });
   main.appendChild(toolbar);
+
+  let previewAdShell: HTMLDivElement | null = null;
+  if (isPreviewMode && !isAllView) {
+    const { stage, adShell } = createPreviewReplayStage();
+    previewAdShell = adShell;
+    adContent.appendChild(stage);
+  }
 
   // Move all existing body children into the ad content area
   while (document.body.firstChild) {
-    adContent.appendChild(document.body.firstChild);
+    const nextChild = document.body.firstChild;
+    if (previewAdShell) {
+      previewAdShell.appendChild(nextChild);
+      continue;
+    }
+
+    adContent.appendChild(nextChild);
   }
   main.appendChild(adContent);
 
   wrapper.appendChild(main);
 
-  // Create sidebar
-  const sidebar = createSidebarElement(adConfigs, currentAd, currentVariant);
-  wrapper.appendChild(sidebar);
+  if (!isPreviewMode) {
+    const sidebar = createSidebarElement(adConfigs, currentAd, currentVariant);
+    wrapper.appendChild(sidebar);
+  }
 
   document.body.appendChild(wrapper);
 
   // Wire up behaviors
-  setupJobSettings(currentAd);
   setupNavigation(adConfigs, currentAd, currentVariant);
-  setupScreenshot(currentAd, currentVariant);
-  setupSidebar(adConfigs, currentAd, currentVariant);
+  if (!isPreviewMode) {
+    setupJobSettings(currentAd);
+    setupScreenshot(currentAd, currentVariant);
+    setupSidebar(adConfigs, currentAd, currentVariant);
+  }
 
-  window.addEventListener('dev:job-settings-changed', (event: Event) => {
-    const detail = (event as CustomEvent<{ jobNumber: string; jobName: string }>).detail;
-    if (!detail) return;
-    setDocumentTitle(detail.jobNumber, detail.jobName, currentAd);
-  });
+  if (!isPreviewMode) {
+    window.addEventListener('dev:job-settings-changed', (event: Event) => {
+      const detail = (event as CustomEvent<{ jobNumber: string; jobName: string }>).detail;
+      if (!detail) return;
+      setDocumentTitle(detail.jobNumber, detail.jobName, currentAd);
+    });
 
-  // Set page title to job info + current ad size
-  fetchJobSettings()
-    .then(({ jobNumber, jobName }) => {
-      setDocumentTitle(jobNumber, jobName, currentAd);
-    })
-    .catch(() => {});
+    fetchJobSettings()
+      .then(({ jobNumber, jobName }) => {
+        setDocumentTitle(jobNumber, jobName, currentAd);
+      })
+      .catch(() => {});
+  }
 
   releasePendingLayout();
 }

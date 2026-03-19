@@ -28,5 +28,6 @@ declare global {
     __DEV_AD_CONFIGS__: AdConfig[];
     __DEV_CURRENT_AD__: string;
     __DEV_CURRENT_VARIANT__: string | null;
+    __DEV_PREVIEW_MODE__?: boolean;
   }
 }

@@ -7,6 +7,47 @@ export function setupNavigation(
 ): void {
   const sizeSelect = document.getElementById('dev-size-select') as HTMLSelectElement;
   const versionSelect = document.getElementById('dev-version-select') as HTMLSelectElement | null;
+  const isPreviewMode = window.__DEV_PREVIEW_MODE__ === true;
+
+  function getSizeHref(newSize: string) {
+    if (!isPreviewMode) {
+      if (newSize === 'all') {
+        return '/all.html';
+      }
+
+      return `/${newSize}/index.html`;
+    }
+
+    if (newSize === 'all') {
+      return '../all.html';
+    }
+
+    return `../${newSize}/all.html`;
+  }
+
+  function getVersionHref(newVersion: string) {
+    if (!isPreviewMode) {
+      if (newVersion === 'all') {
+        return `/${currentAd}/all.html`;
+      }
+
+      if (newVersion) {
+        return `/${currentAd}/${newVersion}.html`;
+      }
+
+      return `/${currentAd}/index.html`;
+    }
+
+    if (newVersion === 'all') {
+      return './all.html';
+    }
+
+    if (newVersion) {
+      return `./${newVersion}.html`;
+    }
+
+    return './index.html';
+  }
 
   // Populate version options based on current ad
   function updateVersionOptions(adName: string) {
@@ -37,25 +78,14 @@ export function setupNavigation(
   // Handle size change
   sizeSelect.addEventListener('change', () => {
     const newSize = sizeSelect.value;
-    if (newSize === 'all') {
-      window.location.href = '/all.html';
-    } else {
-      // Navigate to base version of new size
-      window.location.href = `/${newSize}/index.html`;
-    }
+    window.location.href = getSizeHref(newSize);
   });
 
   // Handle version change
   if (versionSelect) {
     versionSelect.addEventListener('change', () => {
       const newVersion = versionSelect.value;
-      if (newVersion === 'all') {
-        window.location.href = `/${currentAd}/all.html`;
-      } else if (newVersion) {
-        window.location.href = `/${currentAd}/${newVersion}.html`;
-      } else {
-        window.location.href = `/${currentAd}/index.html`;
-      }
+      window.location.href = getVersionHref(newVersion);
     });
   }
 }

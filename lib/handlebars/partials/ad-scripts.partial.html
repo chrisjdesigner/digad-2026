@@ -1,5 +1,11 @@
   <script type="module" src="./src/ts/main.ts"></script>
   {{#if devMode}}
+    {{#if previewMode}}
+    <script>
+      window.__DEV_PREVIEW_MODE__ = true;
+    </script>
+    <script type="module" src="../lib/dev-mode/toolbar.ts"></script>
+    {{else}}
     <script>
       window.__DEV_AD_CONFIGS__ = {{{__devAdConfigs}}};
       window.__DEV_CURRENT_AD__ = "{{__devCurrentAd}}";
@@ -7,4 +13,5 @@
     </script>
     <script type="module" src="../lib/dev-mode/toolbar.ts"></script>
     <script type="module" src="../lib/dev-mode/index.ts"></script>
+    {{/if}}
   {{/if}}

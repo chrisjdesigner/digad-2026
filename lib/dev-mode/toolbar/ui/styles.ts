@@ -27,6 +27,75 @@ export const layoutStyles = `
     align-items: flex-start;
     justify-content: flex-start;
   }
+
+  .dev-preview-stage {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 10px;
+    max-width: 100%;
+    padding: 24px;
+  }
+
+  .dev-preview-ad-shell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    position: relative;
+  }
+
+  .dev-preview-ad-shell > * {
+    max-width: 100%;
+  }
+
+  .dev-preview-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .dev-preview-replay-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid var(--dev-border);
+    border-radius: 9999px;
+    background: var(--dev-bg-secondary);
+    color: var(--dev-text-muted);
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .dev-preview-replay-btn svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+
+  .dev-preview-replay-btn:hover {
+    color: var(--dev-text-primary);
+    background: var(--dev-bg-hover);
+    border-color: var(--dev-border-hover);
+  }
+
+  .dev-preview-replay-btn:focus-visible {
+    outline: 2px solid var(--dev-accent);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 720px) {
+    .dev-preview-stage {
+      padding: 16px;
+    }
+  }
 `;
 
 export const toolbarStyles = `

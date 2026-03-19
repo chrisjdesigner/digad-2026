@@ -9,6 +9,7 @@ import plusIcon from '../../icons/plus.svg?raw';
 import trashIcon from '../../icons/trash.svg?raw';
 import copyIcon from '../../icons/copy.svg?raw';
 import codeBracketIcon from '../../icons/code-bracket.svg?raw';
+import replayIcon from '../../icons/replay.svg?raw';
 import swatchIcon from '../../icons/swatch.svg?raw';
 import photoIcon from '../../icons/photo.svg?raw';
 import typographyIcon from '../../icons/typography.svg?raw';
@@ -32,6 +33,7 @@ export {
   trashIcon,
   copyIcon,
   codeBracketIcon,
+  replayIcon,
   swatchIcon,
   photoIcon,
   typographyIcon,

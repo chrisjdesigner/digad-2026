@@ -14,7 +14,10 @@ gsap.registerPlugin(GSDevTools);
  */
 export function initGSDevTools(): void {
   // Skip GSDevTools in iframe/notoolbar mode
-  if (new URLSearchParams(window.location.search).get('notoolbar') === '1') {
+  if (
+    new URLSearchParams(window.location.search).get('notoolbar') === '1' ||
+    window.__DEV_PREVIEW_MODE__ === true
+  ) {
     return;
   }
 

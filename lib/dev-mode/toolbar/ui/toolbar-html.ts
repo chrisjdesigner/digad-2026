@@ -12,7 +12,9 @@ export function createToolbarElement(
   adConfigs: AdConfig[],
   currentAd: string,
   currentVariant: string | null,
+  options: { previewMode?: boolean } = {},
 ): HTMLDivElement {
+  const { previewMode = false } = options;
   const savedTheme = getSavedTheme();
   const isDark = savedTheme === 'dark';
 
@@ -56,7 +58,7 @@ export function createToolbarElement(
       </label>
     </div>
     
-    ${currentAd !== 'all' && currentVariant !== 'all' ? `
+    ${!previewMode && currentAd !== 'all' && currentVariant !== 'all' ? `
     <div class="toolbar-group">
       <button id="dev-screenshot-btn" title="Save screenshot to statics folder">${cameraIcon} Take a Screenshot</button>
     </div>
