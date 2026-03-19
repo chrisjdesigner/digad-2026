@@ -16,6 +16,10 @@ import { setupScreenshot } from './features/screenshot';
 import { setupSidebar } from '../sidebar/sidebar';
 import { fetchJobSettings } from './api/config-api';
 
+function releasePendingLayout() {
+  document.documentElement.classList.remove('dev-layout-pending');
+}
+
 function setDocumentTitle(jobNumber: string, jobName: string, currentAd: string) {
   const num = jobNumber || '000000';
   const name = jobName || 'job-name';
@@ -27,6 +31,7 @@ function setDocumentTitle(jobNumber: string, jobName: string, currentAd: string)
 function createToolbar() {
   // Skip toolbar if ?notoolbar=1 is in the URL (used for iframe previews)
   if (new URLSearchParams(window.location.search).get('notoolbar') === '1') {
+    releasePendingLayout();
     return;
   }
 
@@ -88,6 +93,8 @@ function createToolbar() {
       setDocumentTitle(jobNumber, jobName, currentAd);
     })
     .catch(() => {});
+
+  releasePendingLayout();
 }
 
 // Initialize toolbar when DOM is ready

@@ -103,6 +103,22 @@ export const sidebarStyles = `
     display: flex;
   }
 
+  #dev-settings-tray .sidebar-vars-loading {
+    display: none;
+    flex: 1;
+    background: var(--dev-bg-section);
+    min-height: 100%;
+  }
+
+  #dev-settings-tray.vars-loading .sidebar-tab-panel[data-panel="variables"] .tray-content,
+  #dev-settings-tray.vars-loading .sidebar-tab-panel[data-panel="variables"] .sync-notice {
+    visibility: hidden;
+  }
+
+  #dev-settings-tray.vars-loading .sidebar-tab-panel[data-panel="variables"].active .sidebar-vars-loading {
+    display: flex;
+  }
+
   /* Project tab */
   #dev-settings-tray .project-fields {
     display: flex;

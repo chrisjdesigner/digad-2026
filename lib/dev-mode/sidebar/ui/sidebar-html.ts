@@ -146,6 +146,7 @@ export function createSidebarElement(
       </div>
     </div>
     <div class="sidebar-tab-panel${!projectActive ? ' active' : ''}" data-panel="variables">
+      <div class="sidebar-vars-loading" aria-hidden="true"></div>
       <div class="tray-content">
         <div class="var-section${isSectionCollapsed('template') ? ' collapsed' : ''}" data-type="template">
           <div class="var-section-header">

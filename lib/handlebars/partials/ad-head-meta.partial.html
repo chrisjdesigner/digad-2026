@@ -2,3 +2,16 @@
   <meta name="ad.size" content="width={{width}},height={{height}}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{job}} - {{width}}x{{height}}</title>
+  {{#if devMode}}
+  <style>
+    html.dev-layout-pending body {
+      opacity: 0;
+    }
+  </style>
+  <script>
+    document.documentElement.classList.add('dev-layout-pending');
+    window.setTimeout(() => {
+      document.documentElement.classList.remove('dev-layout-pending');
+    }, 2500);
+  </script>
+  {{/if}}

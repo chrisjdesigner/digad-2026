@@ -69,7 +69,9 @@ export function setupVariables(
   }
 
   // Render variable lists
-  function renderVariables() {
+  async function renderVariables() {
+    let imageLoadPromise: Promise<void> = Promise.resolve();
+
     // Render template variables
     const templateVars = Object.entries(configData.templateVariables);
     if (templateVars.length === 0) {
@@ -134,7 +136,7 @@ export function setupVariables(
       `).join('');
       
       // Load images for all dropdowns after rendering
-      loadImageSelects();
+      imageLoadPromise = loadImageSelects();
     }
 
     // Render typography variables
@@ -194,6 +196,8 @@ export function setupVariables(
     // Attach event listeners to inputs
     attachVariableListeners();
     attachReorderListeners();
+
+    await imageLoadPromise;
   }
 
   function reorderRecordByDomOrder(listEl: HTMLDivElement, source: Record<string, string>): Record<string, string> {
@@ -736,7 +740,7 @@ export function setupVariables(
         document.documentElement.style.setProperty(`--${category}-${name}`, defaultValue);
       }
 
-      renderVariables();
+      void renderVariables();
     } catch (error) {
       console.error('Failed to add variable:', error);
     }
@@ -755,7 +759,7 @@ export function setupVariables(
         document.documentElement.style.removeProperty(`--${category}-${name}`);
       }
 
-      renderVariables();
+      void renderVariables();
     } catch (error) {
       console.error('Failed to delete variable:', error);
     }

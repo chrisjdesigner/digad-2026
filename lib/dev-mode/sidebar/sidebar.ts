@@ -188,12 +188,14 @@ export function setupSidebar(
     cssVariables: { colors: {}, images: {}, typography: {}, other: {} },
   };
 
-  let renderVariables: (() => void) | undefined;
-  let loadSprites: (() => void) | undefined;
+  let renderVariables: (() => Promise<void>) | undefined;
+  let loadSprites: (() => Promise<void>) | undefined;
   let addVariable: ((name: string, defaultValue: string, type: 'template' | 'css', category?: 'colors' | 'images' | 'typography' | 'other') => Promise<void>) | undefined;
   let updateSectionCounts: ((t: number, c: number, i: number, ty: number, o: number) => void) | undefined;
 
   if (!isAllView) {
+    sidebar.classList.add('vars-loading');
+
     // Get variable list elements
     const variableElements: VariableElements = {
       templateVarsList: document.getElementById('template-vars-list') as HTMLDivElement,
@@ -282,14 +284,16 @@ export function setupSidebar(
       configData.templateVariables = data.templateVariables;
       configData.cssVariables = data.cssVariables;
 
-      renderVariables();
-      loadSprites!();
+      await renderVariables();
+      await loadSprites!();
     } catch (error) {
       console.error('Failed to load config:', error);
       ['template-vars-list', 'css-colors-list', 'css-images-list', 'css-typography-list', 'css-other-list'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = '<div class="empty-message">Failed to load config</div>';
       });
+    } finally {
+      sidebar.classList.remove('vars-loading');
     }
   }
 
