@@ -468,6 +468,12 @@ function setupAddVariableForms(
       if (valueInput instanceof HTMLInputElement) {
         valueInput.value = isColorPicker ? '#ffffff' : '';
       }
+      if (colorPicker && isColorPicker) {
+        const nextColor = valueInput instanceof HTMLInputElement && valueInput.value
+          ? valueInput.value
+          : '#ffffff';
+        colorPicker.value = nextColor;
+      }
       if (imageSelect) {
         imageSelect.selectedIndex = 0;
       }
@@ -510,6 +516,13 @@ function setupAddVariableForms(
         } catch {
           imageSelect.innerHTML = '<option value="">Error loading images</option>';
         }
+      }
+
+      if (colorPicker && isColorPicker) {
+        const currentColor = valueInput instanceof HTMLInputElement && valueInput.value
+          ? valueInput.value
+          : '#ffffff';
+        colorPicker.value = currentColor;
       }
 
       nameInput.focus();
@@ -605,6 +618,13 @@ function setupAddVariableForms(
         e.stopPropagation();
         if (valueInput instanceof HTMLInputElement) {
           valueInput.value = colorPicker.value;
+        }
+      });
+
+      colorPicker.addEventListener('change', (e) => {
+        e.stopPropagation();
+        if (form.classList.contains('active')) {
+          void handleSubmit();
         }
       });
     }
