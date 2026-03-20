@@ -8,7 +8,7 @@ export const sidebarStyles = `
     flex-shrink: 0;
     background: var(--dev-bg-primary);
     border-left: 1px solid var(--dev-border);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--dev-ui-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-size: 13px;
     display: flex;
     flex-direction: column;
@@ -946,7 +946,7 @@ export const sidebarStyles = `
 
   #dev-loading-overlay .spinner-label {
     color: var(--dev-text-secondary);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--dev-ui-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-size: 13px;
   }
 

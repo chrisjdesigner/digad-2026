@@ -5,8 +5,8 @@ import { defineAdConfig as defineBuildAdConfig } from './lib/vite/vite.config.bu
 // Check what the npm lifecycle event is.
 const npmLifecycleEvent = process.env.npm_lifecycle_event;
 
-// If the lifecycle isn't set, or it's not `dev` or `preview:WIDTHxHEIGHT`, throw an error.
-if (!npmLifecycleEvent || (!npmLifecycleEvent.startsWith('dev') && !npmLifecycleEvent.startsWith('preview:'))) {
+// If the lifecycle isn't set, or it's not `dev`, `preview:WIDTHxHEIGHT`, or `build:WIDTHxHEIGHT`, throw an error.
+if (!npmLifecycleEvent || (!npmLifecycleEvent.startsWith('dev') && !npmLifecycleEvent.startsWith('preview:') && !npmLifecycleEvent.startsWith('build:'))) {
   throw new Error('You must run `npm run dev` or `npm run preview:WIDTHxHEIGHT`.');
 }
 

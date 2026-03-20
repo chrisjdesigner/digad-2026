@@ -4,7 +4,52 @@
  * Uses the SR brand color palette for grays, accent, and danger.
  */
 
+const DEV_UI_FONT_FAMILY = `'Proxima Vara', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+
+function getUiFontUrl() {
+  if (typeof window === 'undefined') {
+    return '';
+  }
+
+  const previewToken = '/preview/';
+  const { pathname } = window.location;
+  const previewIndex = pathname.lastIndexOf(previewToken);
+
+  if (previewIndex === -1) {
+    return '/lib/dev-mode/fonts/proxima-vara/proxima_vara.woff2';
+  }
+
+  const previewRemainder = pathname.slice(previewIndex + previewToken.length);
+  const depth = Math.max(previewRemainder.split('/').filter(Boolean).length, 1);
+  return `${'../'.repeat(depth)}lib/dev-mode/fonts/proxima-vara/proxima_vara.woff2`;
+}
+
+export function getThemeStyles() {
+  const fontUrl = getUiFontUrl();
+  const fontFaceStyles = fontUrl
+    ? `
+      @font-face {
+        font-family: 'Proxima Vara';
+        src: url('${fontUrl}') format('woff2');
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+      }
+    `
+    : '';
+
+  return fontFaceStyles + themeStyles;
+}
+
 export const themeStyles = `
+  :root {
+    --dev-ui-font-family: ${DEV_UI_FONT_FAMILY};
+  }
+
+  html, body, button, input, select, textarea {
+    font-family: var(--dev-ui-font-family, ${DEV_UI_FONT_FAMILY});
+  }
+
   /* Dark theme (default) — SR palette, darkened ~60% */
   :root, [data-dev-theme="dark"] {
     --dev-bg-primary: #111213;

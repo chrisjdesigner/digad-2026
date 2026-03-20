@@ -7,7 +7,7 @@
 import type { AdConfig } from './models/types';
 import { layoutStyles } from './ui/styles';
 import { gsDevToolsStyles } from '../gsdevtools/ui/styles';
-import { themeStyles } from '../theme';
+import { getThemeStyles } from '../theme';
 import { createToolbarElement } from './ui/toolbar-html';
 import { replayIcon } from './ui/icons';
 import { createSidebarElement } from '../sidebar/ui/sidebar-html';
@@ -23,12 +23,38 @@ function appendReplayToken(href: string) {
   return nextUrl.toString();
 }
 
+function bindPreviewLoader(adShell: HTMLDivElement) {
+  const revealPreview = () => {
+    if (adShell.dataset.previewReady === '1') {
+      return;
+    }
+
+    adShell.dataset.previewReady = '1';
+    window.setTimeout(() => {
+      adShell.classList.add('is-ready');
+    }, 140);
+  };
+
+  if (document.readyState === 'complete') {
+    requestAnimationFrame(revealPreview);
+    return;
+  }
+
+  window.addEventListener('load', () => {
+    requestAnimationFrame(revealPreview);
+  }, { once: true });
+}
+
 function createPreviewReplayStage() {
   const stage = document.createElement('div');
   stage.className = 'dev-preview-stage';
 
   const adShell = document.createElement('div');
   adShell.className = 'dev-preview-ad-shell';
+
+  const loader = document.createElement('div');
+  loader.className = 'dev-preview-loading';
+  loader.innerHTML = '<div class="spinner"></div>';
 
   const actions = document.createElement('div');
   actions.className = 'dev-preview-actions';
@@ -45,7 +71,10 @@ function createPreviewReplayStage() {
 
   actions.appendChild(replayButton);
   stage.appendChild(actions);
+  adShell.appendChild(loader);
   stage.appendChild(adShell);
+
+  bindPreviewLoader(adShell);
 
   return { stage, adShell };
 }
@@ -76,7 +105,7 @@ function createToolbar() {
 
   // Inject layout styles
   const layoutStyleEl = document.createElement('style');
-  layoutStyleEl.textContent = themeStyles + layoutStyles + gsDevToolsStyles;
+  layoutStyleEl.textContent = getThemeStyles() + layoutStyles + gsDevToolsStyles;
   document.head.appendChild(layoutStyleEl);
 
   const isAllView = currentAd === 'all' || currentVariant === 'all';

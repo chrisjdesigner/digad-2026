@@ -44,10 +44,20 @@ export const layoutStyles = `
     justify-content: center;
     max-width: 100%;
     position: relative;
+    background: var(--dev-bg-secondary, #181819);
+    box-shadow: 0 4px 12px var(--dev-shadow, rgba(0, 0, 0, 0.3));
   }
 
-  .dev-preview-ad-shell > * {
+  .dev-preview-ad-shell > :not(.dev-preview-loading) {
     max-width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.22s ease;
+  }
+
+  .dev-preview-ad-shell.is-ready > :not(.dev-preview-loading) {
+    opacity: 1;
+    visibility: visible;
   }
 
   .dev-preview-actions {
@@ -55,6 +65,36 @@ export const layoutStyles = `
     align-items: center;
     justify-content: flex-end;
     width: 100%;
+  }
+
+  .dev-preview-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dev-bg-secondary, #181819);
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+  }
+
+  .dev-preview-ad-shell.is-ready .dev-preview-loading {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .dev-preview-loading .spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--dev-spinner-track, #2B2C2E);
+    border-top-color: var(--dev-accent, #909090);
+    border-radius: 50%;
+    animation: preview-spin 0.7s linear infinite;
+  }
+
+  @keyframes preview-spin {
+    to { transform: rotate(360deg); }
   }
 
   .dev-preview-replay-btn {
@@ -78,12 +118,18 @@ export const layoutStyles = `
     width: 14px;
     height: 14px;
     display: block;
+    transform-origin: center;
+    transition: transform 0.45s ease;
   }
 
   .dev-preview-replay-btn:hover {
     color: var(--dev-text-primary);
     background: var(--dev-bg-hover);
     border-color: var(--dev-border-hover);
+  }
+
+  .dev-preview-replay-btn:hover svg {
+    transform: rotate(360deg);
   }
 
   .dev-preview-replay-btn:focus-visible {
@@ -110,7 +156,7 @@ export const toolbarStyles = `
     padding: 0 18px;
     gap: 10px;
     z-index: 999999;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--dev-ui-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-size: 13px;
     flex-shrink: 0;
     border-bottom: 1px solid var(--dev-border);
@@ -215,6 +261,13 @@ export const toolbarStyles = `
     display: inline-flex;
     align-items: center;
     color: var(--dev-text-primary);
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.15s ease;
+  }
+
+  #dev-toolbar .toolbar-brand-logo:hover {
+    opacity: 1;
   }
 
   #dev-toolbar .toolbar-brand-logo svg {

@@ -24,7 +24,7 @@ export function createToolbarElement(
     <style>${toolbarStyles}</style>
 
     <div class="toolbar-group toolbar-brand" aria-label="SR logo">
-      <span class="toolbar-brand-logo">${srLogoIcon}</span>
+      <a class="toolbar-brand-logo" href="${previewMode ? '../all.html' : '/all.html'}" title="View all ads">${srLogoIcon}</a>
     </div>
     
     <div class="toolbar-group">

@@ -7,7 +7,7 @@ export const gsDevToolsStyles = `
   /* Contain GSDevTools bar within the main area, not spanning the sidebar */
   .gs-dev-tools {
     width: calc(100% - max(var(--sidebar-width, 370px), 370px)) !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: var(--dev-ui-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif) !important;
   }
 
   #dev-layout-wrapper.no-sidebar .gs-dev-tools {

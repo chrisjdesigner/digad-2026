@@ -26,7 +26,9 @@ export function resizeInput(input: HTMLInputElement): void {
   span.style.visibility = 'hidden';
   span.style.position = 'absolute';
   span.style.whiteSpace = 'pre';
-  span.style.font = '700 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  span.style.fontWeight = '700';
+  span.style.fontSize = '12px';
+  span.style.fontFamily = 'var(--dev-ui-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)';
   span.textContent = value;
   document.body.appendChild(span);
   input.style.width = `${Math.max(span.offsetWidth + 20, 50)}px`;

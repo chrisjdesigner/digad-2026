@@ -22,7 +22,7 @@ export const modalStyles = `
     display: flex;
     flex-direction: column;
     gap: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--dev-ui-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   }
 
   .dev-modal-header {
