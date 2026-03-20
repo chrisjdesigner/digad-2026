@@ -18,29 +18,29 @@ body {
   background-image: linear-gradient(#444444, #333333);
 
   /* --------------------------
-    * BANNER
-    * -------------------------- */
+   * BANNER
+   * -------------------------- */
 
   .container {
     position: relative;
     width: var(--ad-width);
     height: var(--ad-height);
-    background-color: var(--colors-white);
     border: 1px solid var(--colors-border-color);
-    opacity: 0;
+    background-color: var(--colors-white);
     overflow: hidden;
+    opacity: 0;
 
     a {
       display: block;
       width: var(--ad-width);
       height: var(--ad-height);
       color: inherit;
-      text-decoration: none;
       cursor: pointer;
+      text-decoration: none;
 
       div {
-        display: block;
         position: absolute;
+        display: block;
       }
     }
   }

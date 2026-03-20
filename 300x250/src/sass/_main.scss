@@ -11,21 +11,20 @@
     /** --------------------------
      * BACKGROUND
      * -------------------------- */
-
     .background {
-      height: var(--ad-height);
-      width: var(--ad-width);
       top: 0;
       left: 0;
+      width: var(--ad-width);
+      height: var(--ad-height);
 
       .bg {
-        display: block;
         position: relative;
+        display: block;
         width: 100%;
         height: 100%;
+        overflow: hidden;
         background: var(--images-image-1-url) no-repeat center center;
         background-size: cover;
-        overflow: hidden;
       }
     }
 
@@ -33,35 +32,35 @@
      * CONTENT
      * -------------------------- */
     .content {
-      width: var(--ad-width); 
-      height: calc(var(--ad-height) - 56px); 
-      padding: 15px 20px; 
       display: flex;
       flex-direction: column;
-      gap: 10px; 
       justify-content: center;
+      width: var(--ad-width);
+      height: calc(var(--ad-height) - 56px);
+      padding: 15px 20px;
+      gap: 10px;
       align-content: center;
 
       .headline {
         position: relative;
-        color: var(--colors-white);
-        text-align: center;
         font-family: Arial;
-        font-size: var(--typography-headline-1-font-size);
         font-style: normal;
+        font-size: var(--typography-headline-1-font-size);
         font-weight: 700;
         line-height: var(--typography-headline-1-line-height);
+        color: var(--colors-white);
+        text-align: center;
       }
 
       .subhead {
         position: relative;
-        color: var(--colors-white);
-        text-align: center;
         font-family: Arial;
-        font-size: var(--typography-subhead-1-font-size);
         font-style: normal;
+        font-size: var(--typography-subhead-1-font-size);
         font-weight: 500;
         line-height: var(--typography-subhead-1-line-height);
+        color: var(--colors-white);
+        text-align: center;
       }
     }
 
@@ -70,12 +69,12 @@
      * -------------------------- */
     .footer {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 20px;
+      justify-content: space-between;
       width: var(--ad-width);
-      bottom: 0px; 
       padding: 15px 20px;
+      gap: 20px;
+      bottom: 0;
 
       div {
         position: relative;
@@ -86,18 +85,18 @@
       }
 
       .button {
-        flex: 1;
-        padding: 7px 15px; 
-        background-color: var(--colors-white);
-        display: flex; 
+        display: flex;
         align-items: center;
         justify-content: center;
+        flex: 1;
+        padding: 7px 15px;
+        background-color: var(--colors-white);
 
         .cta {
           font-family: Arial, Helvetica, sans-serif;
           font-size: var(--typography-cta-font-size);
+          color: var(--colors-black);
           text-transform: uppercase;
-          color: var(--colors-black); 
         }
       }
     }
