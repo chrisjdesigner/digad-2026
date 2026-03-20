@@ -1,6 +1,4 @@
-# Digad Template 1.0.0
-
-Job Number: []
+# AdForge 1.0.0
 
 ## Commands
 
@@ -26,8 +24,8 @@ _All commands should be run at the root-level of this project, not within an ind
 During development, a unique URL will be assigned to you for viewing changes. Once you stop your `pnpm run dev` task, this URL won't work!
 
 1. Run `pnpm run dev`
-2. This will give you URLs for each of your ad sizes/variants
-3. As you make changes, the URLs will automatically reload
+2. The terminal will display a prominent **All Ads** URL — open it to see all of your ad sizes and variants in one view
+3. As you make changes, the browser will automatically reload
 
 #### Dev Toolbar
 
@@ -38,7 +36,7 @@ In dev mode, a toolbar appears at the top of each ad with:
 
 Screenshots are named using the format `{jobNumber}-{jobName}-{adSize}-{version}-static.jpg` (e.g., `123456-client-campaign-300x250-v1-static.jpg`). Base versions are named `v1`.
 
-**Note:** Configure job settings in `job-settings.yaml` at the project root. This information will be appended to file names on export and when taking screenshots:
+**Note:** Configure job settings in `job-settings.yaml` at the project root (Or use the interface). This information will be appended to file names on export and when taking screenshots:
 ```yaml
 jobNumber: "123456"
 jobName: "client-campaign"
@@ -49,39 +47,41 @@ jobName: "client-campaign"
 When you're ready to show other people your work, you're ready to "preview" it and get it up on Stage.
 
 1. Run `pnpm run preview`
-2. This will compile all your assets and place them in the `preview` folder. This will then give you URLs for each of your ad sizes/variants
-3. Confirm the ads look good
+2. This will compile all your assets and place them in the `preview` folder. Build output is kept quiet — only errors are shown. Each ad size prints a completion line with its file count and total size
+3. When finished you'll see: **"You're good to go. Ads are ready in staging."**
 4. Commit/Push, and view on Stage
 
 ### Packaging
 
 When you're done with your ads, it's time to package them
 
-1. Run the instructions from the above _Previewing_ section
-2. Run `pnpm run package`
-3. This will generate zip files for each of your ad sizes/variants in the `build` directory
+1. Run `pnpm run package`
+2. This will generate zip files and place statics for each of your ad sizes/variants in the `build` directory
+
+Build output is kept quiet — only errors are shown. Each ad size prints a completion line with its file count and total size. When all builds are done, a summary shows:
+- A **platform size limits** reference table (CM360 / Google Ads)
+- The **actual ZIP file sizes**, color-coded: green = within limits, yellow = approaching 150 KB, red = over 250 KB
+- A final message: **"All set. Your ads are packaged and ready to go."**
 
 Zip files are named using the format `{jobNumber}-{jobName}-{adSize}-{version}-html.zip` (e.g., `123456-client-campaign-300x250-v1-html.zip`), matching the screenshot naming convention.
 
 **Note:** If you've captured screenshots using the dev toolbar, they will be copied to the `build` directory as separate JPG files (not inside the zips).
 
-## Creating a New Ad Size
+## Creating a New Ad Size (This can be done in the interface)
 
-1. Copy existing ad size folder
-   - This new folder should be named `[WIDTH]x[HEIGHT]-[OPTIONAL-SUFFIX]` (e.g., `300x250`, `300x250-rework`)
-2. Modify `package.json` and add a new build task under `scripts`:
-   - `"preview:[YOUR-FOLDER-NAME]": "tsc && vite build"`
+1. Copy an existing ad size folder
+   - The new folder must be named `[WIDTH]x[HEIGHT]` or `[WIDTH]x[HEIGHT]-[OPTIONAL-SUFFIX]` (e.g., `300x250`, `300x250-rework`)
+2. That's it — the dev, preview, and package scripts automatically detect any folder matching that naming pattern
 
-## Configuring an Ad
+## Configuring an Ad (This can be done in the interface)
 
 1. Ad dimensions are inferred from the folder name of the ad and passed as variables to CSS and the template
 2. Define your ad configuration inside YAML config files within each ad size folder
 
-### Config File Structure
+### Config File Structure (This can be done in the interface)
 
-Config files can be placed in either location:
-- Directly in the ad folder: `300x250/ad.config.yaml`
-- In a `versions/` subfolder: `300x250/versions/ad.config.yaml` (recommended for cleaner organization)
+Config files can be placed:
+- In a `versions/` subfolder: `300x250/versions/ad.config.yaml`
 
 Each ad size can have:
 - `ad.config.yaml` - Base configuration for the main ad
@@ -91,53 +91,50 @@ Each ad size can have:
 
 > **Note:** JSON files (`.json`) are also supported for backwards compatibility, but YAML is recommended for better readability and comment support.
 
-### CSS Variables from Config
+### CSS Variables from Config (These can be set in the interface)
 
-Any values under `css-variables` in your config are automatically injected as CSS custom properties:
+Any values under `css-variables` in your config are automatically injected as CSS custom properties. Variables are organized into categories (`colors`, `images`, `typography`, `other`) for readability — the categories themselves are not part of the variable name:
 
 ```yaml
 css-variables:
-  primary-color: "#ff6600"
-  headline-size: 24px
+  colors:
+    brand-color: "#ff6600"
+  typography:
+    headline-font-size: 24px
+  images:
+    photo-url: url(./src/img/photo.jpg)
+  other: {}
 ```
 
 These become available in your CSS/SCSS as:
 ```css
 .headline {
-  color: var(--primary-color);
-  font-size: var(--headline-size);
+  color: var(--brand-color);
+  font-size: var(--headline-font-size);
+  background-image: var(--photo-url);
 }
 ```
 
 ### Example: Base Config (`300x250/versions/ad.config.yaml`)
 
 ```yaml
-# ================================
-# Base Ad Configuration
-# ================================
-# Edit the values below for this ad size.
-# This file uses YAML format - comments start with #
-
-# ------ Copy / Headlines ------
-headline: We Make Belief
+headline-1: Attention Grabbing Headline Here.
+subhead-1: Supportive subhead goes here.
 cta: Learn More
-
-# ------ CSS Variables ------
-# These map directly to CSS custom properties
-# The key becomes --key-name in CSS
 css-variables:
-  # Images (use relative paths from HTML file)
-  photo-url: url(./src/img/photo-v1.jpg)
-  
-  # Typography
-  general-headline-font-size: 37px
-  
-  # Colors
-  white: "#ffffff"
-  border-color: grey
-
-# ------ Sprites ------
-# Image sprite configuration (for combining multiple images)
+  colors:
+    border-color: grey
+    white: "#ffffff"
+    black: "#000000"
+  images:
+    image-1-url: url(./src/img/bg.jpg)
+  typography:
+    headline-1-font-size: 24px
+    headline-1-line-height: 100%
+    subhead-1-font-size: 14px
+    subhead-1-line-height: 100%
+    cta-font-size: 14px
+  other: {}
 sprites:
   - name: sprite
 ```
@@ -145,34 +142,23 @@ sprites:
 ### Example: Variant Config (`300x250/versions/v2.config.yaml`)
 
 ```yaml
-# ================================
-# Version 2 Ad Configuration
-# ================================
-# Edit the values below for this ad size.
-# This file uses YAML format - comments start with #
-
-# ------ Copy / Headlines ------
-headline: Version 2 Headline
+headline-1: Version 2 Headline
+subhead-1: Different subhead for this version.
 cta: Learn More
-
-# ------ CSS Variables ------
-# These map directly to CSS custom properties
-# The key becomes --key-name in CSS
 css-variables:
-  # Images (use relative paths from HTML file)
-  photo-url: url(./src/img/photo-v2.jpg)
-  
-  # Typography
-  general-headline-font-size: 10px
-  
-  # Colors
-  white: "#ffffff"
-  border-color: grey
-
-# ------ Sprites ------
-# Image sprite configuration (for combining multiple images)
-sprites:
-  - name: sprite
+  colors:
+    border-color: grey
+    white: "#ffffff"
+    black: "#000000"
+  images:
+    image-1-url: url(./src/img/bg-v2.jpg)
+  typography:
+    headline-1-font-size: 22px
+    headline-1-line-height: 100%
+    subhead-1-font-size: 14px
+    subhead-1-line-height: 100%
+    cta-font-size: 14px
+  other: {}
 ```
 
 **Benefits of YAML configs:**
@@ -199,8 +185,6 @@ sprites:
 Templates should follow the naming convention `NAME.template.html`. While the `.template` portion is _technically_ optional, it is recommended so templates are distinguishable from normal HTML files.
 
 Each ad size folder contains its own complete template file (e.g., `300x250.template.html`). Templates are self-contained with all HTML structure, styles, and markup in one file for easy editing.
-
-Templates can also be stored in the `templates` folder for sharing across multiple ad sizes if needed.
 
 ## Spritesheets
 
@@ -267,7 +251,7 @@ Will generate the following:
 │   │   ├── index.jpg
 │   │   └── v2.jpg
 │   └── src/
-│       ├── main.ts
+│       ├── ts/
 │       ├── img/
 │       └── sass/
 ├── lib/                        # Shared library code
