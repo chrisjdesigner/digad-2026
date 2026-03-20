@@ -19,40 +19,43 @@
   <body>
     <div id="banner" class="container">
       <a href="javascript:window.open(window.clickTag)">
+        <!-- Begin Ad Markup -->
 
-        <!-- Any Background Images -->
+        <!-- Background elements -->
         <div class="background">
-          <div class="photo"></div>
+          <div class="bg"></div>
         </div>
+        
+        <!-- Main content area -->
+        <div class="content">
 
-        <!-- Main Content -->
-        <div class="main-content">
-
-          <!-- Insert This Div Only If headline-1 Var Exists -->
-          <!-- (HTML markup is supported in the var) -->
+          <!-- Headline 1 -->
           {{#if headline-1}}
             <div class="headline">
               {{{headline-1}}}
             </div>
           {{/if}}
-
+          
+          <!-- Subhead 1 -->
+          {{#if subhead-1}}
+            <div class="subhead">
+              {{{subhead-1}}}
+            </div>
+          {{/if}}
         </div>
-
-        <!-- Footer with Logo and CTA Button -->
+        
+        <!-- Footer, including logo and CTA -->
         <div class="footer">
           <div class="logo"></div>
-
-          <!-- Insert This Div Only If cta Var Exists -->
-          <!-- (HTML markup is supported in the var) -->
           {{#if cta}}
             <div class="button">
-              <div class="cta-text">
+              <div class="cta">
                 {{{cta}}}
               </div>
             </div>
           {{/if}}
-
         </div>
+        
         <!-- End Ad Markup -->
       </a>
     </div>

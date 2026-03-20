@@ -17,15 +17,32 @@ export const layoutStyles = `
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
-    overflow: auto;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    scrollbar-gutter: stable both-edges;
     background: var(--dev-ad-content-bg);
     position: relative;
+  }
+
+  #dev-ad-content > * {
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   #dev-layout-wrapper.is-all-view #dev-ad-content {
     align-items: flex-start;
     justify-content: flex-start;
+    padding: 0;
+  }
+
+  #dev-layout-wrapper.is-all-view #dev-ad-content > * {
+    margin-left: 0;
+    margin-right: 0;
+    min-width: 100%;
   }
 
   .dev-preview-stage {
@@ -34,7 +51,8 @@ export const layoutStyles = `
     align-items: flex-end;
     justify-content: flex-start;
     gap: 10px;
-    max-width: 100%;
+    max-width: none;
+    flex-shrink: 0;
     padding: 24px;
   }
 
@@ -42,14 +60,16 @@ export const layoutStyles = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    max-width: 100%;
+    max-width: none;
+    flex-shrink: 0;
     position: relative;
     background: var(--dev-bg-secondary, #181819);
     box-shadow: 0 4px 12px var(--dev-shadow, rgba(0, 0, 0, 0.3));
   }
 
   .dev-preview-ad-shell > :not(.dev-preview-loading) {
-    max-width: 100%;
+    max-width: none;
+    flex-shrink: 0;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.22s ease;

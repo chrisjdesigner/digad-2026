@@ -2,8 +2,11 @@
  * CONFIGURATION & SETUP
  * -------------------------- */
 
+import { getRootCssVariable, getRootCssVariables } from './utils';
+
 // Ad container reference - set once on init
 export const adContainer = document.getElementById('banner');
+
 
 /**
  * Hover Gate Control
@@ -30,6 +33,15 @@ window.addEventListener('dev:hover-gate-setting-changed', (event: Event) => {
   hoverState.canRun = !nextDelayedHover;
 });
 
-// Get ad dimensions from CSS variables (--ad-width and --ad-height)
-export const adWidth = getComputedStyle(document.documentElement).getPropertyValue('--ad-width').trim();
-export const adHeight = getComputedStyle(document.documentElement).getPropertyValue('--ad-height').trim();
+
+/**
+ * Read all CSS custom properties from :root into a key/value map.
+ * Example key format: "--ad-width".
+ * This allows us to define ad dimensions and other settings in CSS and access them in JS.
+ */
+export const cssVariables = getRootCssVariables();
+export const getCssVariable = (name: string, fallback = '') => getRootCssVariable(name, fallback);
+
+// Use that helper to fill in js variables (Just add your own here as needed)
+export const adWidth = getCssVariable('--ad-width');
+export const adHeight = getCssVariable('--ad-height');

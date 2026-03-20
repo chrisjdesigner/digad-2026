@@ -1,14 +1,19 @@
-headline-1: Base <span class="red">Ad</span>
+headline-1: Attention Grabbing Headline Here.
+subhead-1: Supportive subhead goes here.
 cta: Learn More
 css-variables:
   colors:
     border-color: grey
     white: "#ffffff"
+    black: "#000000"
   images:
-    image-1-url: url(./src/img/background.jpg)
+    image-1-url: url(./src/img/bg.jpg)
   typography:
-    headline-1-font-size: 50px
-    headline-1-line-height: 110%
+    headline-1-font-size: 24px
+    headline-1-line-height: 100%
+    subhead-1-font-size: 14px
+    subhead-1-line-height: 100%
+    cta-font-size: 14px
   other: {}
 sprites:
   - name: sprite

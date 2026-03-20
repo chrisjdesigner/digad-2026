@@ -43,6 +43,7 @@ export const timelineAdHover = gsap.timeline({
  * Call after fonts are ready to avoid text reflow.
  */
 function init(container: HTMLElement) {
+
   // Build all animation timelines
   adAnimation();
 
@@ -84,12 +85,8 @@ startAd();
 function adAnimation() {
   // ========== MAIN ANIMATION ==========
   timelineSceneOne
-    .to('.container', { duration: 0.5, opacity: 1, delay: 0.2 })
-    .from('.headline', {
-      duration: 0.5,
-      autoAlpha: 0,
-      ease: 'power2.out',
-    })
+    .to('.container', { duration: 0.25, opacity: 1, delay: 0.2 })
+    .from('.content div', { duration: 1, opacity: 0, y: 10, ease: 'back.inOut', stagger: 0.5 })
     // Example of animating headline lines with SplitText (uncomment if using SplitText)
     // .from(headlineSplitText.lines, {
     //   duration: 0.75,
@@ -111,14 +108,7 @@ function adAnimation() {
   timelineSceneOne.play();
 
   // ========== HOVER ANIMATION ==========
-  timelineAdHover.to(
-    '.button',
-    {
-      duration: 0.33,
-      backgroundColor: '#C7520A',
-      borderColor: '#C7520A',
-      ease: 'power2.out',
-    },
-    0,
-  );
+  timelineAdHover
+    .to('.button', { duration: 0.33, backgroundColor: '#F47723', ease: 'power2.out' }, 0)
+  ;
 }
