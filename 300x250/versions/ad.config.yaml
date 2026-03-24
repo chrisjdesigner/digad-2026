@@ -6,6 +6,7 @@ css-variables:
     border-color: grey
     white: "#ffffff"
     black: "#000000"
+    test-var: "#922020"
   images:
     image-1-url: url(./src/img/bg.jpg)
   typography:
